@@ -1,4 +1,4 @@
-﻿namespace Jbta.Indexer
+﻿namespace Jbta.Indexing
 {
     public interface IIndexer
     {
