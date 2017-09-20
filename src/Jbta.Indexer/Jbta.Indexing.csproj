@@ -41,7 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IIndexer.cs" />
+    <Compile Include="Indexing\PrefixTree.cs" />
+    <Compile Include="IParser.cs" />
+    <Compile Include="PositionInFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WordMatch.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
