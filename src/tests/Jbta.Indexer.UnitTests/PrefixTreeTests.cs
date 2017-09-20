@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Jbta.Indexing.Indexing;
 using Xunit;
@@ -29,9 +27,14 @@ namespace Jbta.Indexing.UnitTests
         }
 
         [Fact]
-        public void BigText0()
+        public void BigText()
         {
             var trie = ReadPrefixTree();
+
+            var test = trie.Get("Пьер");
+
+            Assert.True(trie.Contains("что-нибудь"));
+            Assert.True(trie.Contains("something"));
             Assert.True(trie.Contains("War"));
             Assert.True(trie.Contains("war"));
             Assert.True(trie.Contains("Peace"));
@@ -43,6 +46,8 @@ namespace Jbta.Indexing.UnitTests
             Assert.True(trie.Contains("Пьер"));
             Assert.True(trie.Contains("Наташа"));
             Assert.True(trie.Contains("Раскольников"));
+            Assert.True(trie.Contains("краковяк"));
+            Assert.False(trie.Contains("кракозябры"));
         }
 
         private static PrefixTree ReadPrefixTree()
@@ -58,9 +63,9 @@ namespace Jbta.Indexing.UnitTests
                     var buffer = new char[bufferSize];
                     while (reader.ReadBlock(buffer, 0, bufferSize) != 0)
                     {
-                        foreach (var symbol in buffer)
+                        foreach (var character in buffer)
                         {
-                            if (symbol == ' ' || symbol == '\n' || symbol == '\r')
+                            if (char.IsWhiteSpace(character))
                             {
                                 if (node == trie.Root)
                                 {
@@ -71,7 +76,7 @@ namespace Jbta.Indexing.UnitTests
                             }
                             else
                             {
-                                node = trie.Add(symbol, false, node);
+                                node = trie.Add(character, false, node, filePath);
                             }
                         }
                     }
@@ -85,7 +90,7 @@ namespace Jbta.Indexing.UnitTests
             var directoryInfo = new DirectoryInfo(targetDirectory);
             foreach (var file in directoryInfo.EnumerateFiles())
             {
-                yield return file.FullName;
+                yield return string.Intern(file.FullName);
             }
 
             foreach (var subdirectory in directoryInfo.EnumerateDirectories())

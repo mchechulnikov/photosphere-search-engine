@@ -9,7 +9,7 @@ namespace Jbta.Indexing.Indexing
 
         public Node Root { get; } = new Node();
 
-        public Node Add(char letter, bool isTerminal, Node currentNode)
+        public Node Add(char letter, bool isTerminal, Node currentNode, string filePath)
         {
             Node node;
             _lock.EnterWriteLock();
@@ -19,11 +19,12 @@ namespace Jbta.Indexing.Indexing
                 {
                     next = new Node
                     {
-                        Symbol = letter,
-                        IsTerminal = isTerminal
+                        IsTerminal = isTerminal,
+                        Files = new HashSet<string> { filePath }
                     };
                     currentNode.Children.Add(letter, next);
                 }
+                next.Files.Add(filePath);
                 node = next;
             }
             finally
@@ -46,7 +47,6 @@ namespace Jbta.Indexing.Indexing
                     {
                         next = new Node
                         {
-                            Symbol = letter,
                             IsTerminal = i == word.Length - 1
                         };
                         node.Children.Add(letter, next);
@@ -63,28 +63,46 @@ namespace Jbta.Indexing.Indexing
         public bool Contains(string query)
         {
             var node = Root;
-            foreach (var letter in query)
+            for (var i = 0; i < query.Length; i++)
             {
-                if (node.IsTerminal)
-                {
-                    break;
-                }
-                if (!node.Children.TryGetValue(letter, out var next))
+                if (!node.Children.TryGetValue(query[i], out var next))
                 {
                     return false;
+                }
+                if (node.IsTerminal && i == query.Length - 1)
+                {
+                    break;
                 }
                 node = next;
             }
             return true;
         }
 
+        public IEnumerable<string> Get(string query)
+        {
+            var node = Root;
+            for (var i = 0; i < query.Length; i++)
+            {
+                if (!node.Children.TryGetValue(query[i], out var next))
+                {
+                    return null;
+                }
+                if (node.IsTerminal && i == query.Length - 1)
+                {
+                    break;
+                }
+                node = next;
+            }
+            return node.Files;
+        }
+
         public class Node
         {
-            public char Symbol { get; set; }
+            public Dictionary<char, Node> Children { get; } = new Dictionary<char, Node>();
+
+            public ISet<string> Files { get; set; }
 
             public bool IsTerminal { get; set; }
-
-            public Dictionary<char, Node> Children { get; } = new Dictionary<char, Node>();
         }
 
         ~PrefixTree() => _lock?.Dispose();
