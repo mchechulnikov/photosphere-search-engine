@@ -9,23 +9,17 @@ namespace Jbta.Indexing.Indexing
 
         public Node Root { get; } = new Node();
 
-        public Node Add(char letter, bool isTerminal, Node currentNode, string filePath)
+        public Node Add(char letter, bool isTerminal, Node currentNode)
         {
             Node node;
             _lock.EnterWriteLock();
             try
             {
-                if (!currentNode.Children.TryGetValue(letter, out var next))
+                if (!currentNode.Children.TryGetValue(letter, out node))
                 {
-                    next = new Node
-                    {
-                        IsTerminal = isTerminal,
-                        Files = new HashSet<string> { filePath }
-                    };
-                    currentNode.Children.Add(letter, next);
+                    node = new Node { IsTerminal = isTerminal };
+                    currentNode.Children.Add(letter, node);
                 }
-                next.Files.Add(filePath);
-                node = next;
             }
             finally
             {
@@ -104,6 +98,32 @@ namespace Jbta.Indexing.Indexing
 
             public bool IsTerminal { get; set; }
         }
+
+        //public class FileAndPosition
+        //{
+        //    public FileAndPosition(string fileName, int lineNumber, int position)
+        //    {
+        //        FileName = fileName;
+        //        Position = new PositionInFile(lineNumber, position);
+        //    }
+
+        //    public string FileName { get; }
+
+        //    public PositionInFile Position { get; }
+
+        //    public struct PositionInFile
+        //    {
+        //        public PositionInFile(int lineNumber, int position)
+        //        {
+        //            LineNumber = lineNumber;
+        //            Position = position;
+        //        }
+
+        //        public int LineNumber { get; }
+
+        //        public int Position { get; }
+        //    }
+        //}
 
         ~PrefixTree() => _lock?.Dispose();
     }

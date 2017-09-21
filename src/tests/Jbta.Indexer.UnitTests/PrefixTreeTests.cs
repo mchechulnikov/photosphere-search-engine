@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Jbta.Indexing.Indexing;
@@ -30,8 +31,8 @@ namespace Jbta.Indexing.UnitTests
         public void BigText()
         {
             var trie = ReadPrefixTree();
-
             var test = trie.Get("Пьер");
+            
 
             Assert.True(trie.Contains("что-нибудь"));
             Assert.True(trie.Contains("something"));
@@ -60,23 +61,39 @@ namespace Jbta.Indexing.UnitTests
                 {
                     var node = trie.Root;
                     const int bufferSize = 2048;
+                    var line = 0;
+                    var position = 0;
                     var buffer = new char[bufferSize];
                     while (reader.ReadBlock(buffer, 0, bufferSize) != 0)
                     {
                         foreach (var character in buffer)
                         {
+                            position++;
                             if (char.IsWhiteSpace(character))
                             {
+                                if (character == '\n')
+                                {
+                                    line++;
+                                    position = 0;
+                                }
                                 if (node == trie.Root)
                                 {
                                     continue;
                                 }
                                 node.IsTerminal = true;
+                                if (node.Files == null)
+                                {
+                                    node.Files = new HashSet<string>{ filePath };
+                                }
+                                else
+                                {
+                                    node.Files.Add(filePath);
+                                }
                                 node = trie.Root;
                             }
                             else
                             {
-                                node = trie.Add(character, false, node, filePath);
+                                node = trie.Add(character, false, node);
                             }
                         }
                     }
