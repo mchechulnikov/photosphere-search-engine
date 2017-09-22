@@ -9,7 +9,7 @@ namespace Jbta.Indexing.Indexing
 
         public Node Root { get; } = new Node();
 
-        public Node Add(char letter, bool isTerminal, Node currentNode)
+        public Node Add(char letter, Node currentNode)
         {
             Node node;
             _lock.EnterWriteLock();
@@ -17,7 +17,7 @@ namespace Jbta.Indexing.Indexing
             {
                 if (!currentNode.Children.TryGetValue(letter, out node))
                 {
-                    node = new Node { IsTerminal = isTerminal };
+                    node = new Node();
                     currentNode.Children.Add(letter, node);
                 }
             }
@@ -28,7 +28,7 @@ namespace Jbta.Indexing.Indexing
             return node;
         }
 
-        public void Add(char[] word)
+        public void Add(char[] word, string file)
         {
             var node = Root;
             for (var i = 0; i < word.Length; i++)
@@ -39,11 +39,16 @@ namespace Jbta.Indexing.Indexing
                     var letter = word[i];
                     if (!node.Children.TryGetValue(letter, out var next))
                     {
-                        next = new Node
-                        {
-                            IsTerminal = i == word.Length - 1
-                        };
+                        next = new Node();
                         node.Children.Add(letter, next);
+                    }
+                    if (i == word.Length - 1) // is terminal
+                    {
+                        if (next.Files == null)
+                        {
+                            node.Files = new HashSet<string>();
+                        }
+                        node.Files.Add(file);
                     }
                     node = next;
                 }
@@ -63,7 +68,7 @@ namespace Jbta.Indexing.Indexing
                 {
                     return false;
                 }
-                if (node.IsTerminal && i == query.Length - 1)
+                if (node.Files != null && i == query.Length - 1)
                 {
                     break;
                 }
@@ -81,7 +86,7 @@ namespace Jbta.Indexing.Indexing
                 {
                     return null;
                 }
-                if (node.IsTerminal && i == query.Length - 1)
+                if (node.Files != null && i == query.Length - 1)
                 {
                     break;
                 }
@@ -95,8 +100,6 @@ namespace Jbta.Indexing.Indexing
             public Dictionary<char, Node> Children { get; } = new Dictionary<char, Node>();
 
             public ISet<string> Files { get; set; }
-
-            public bool IsTerminal { get; set; }
         }
 
         //public class FileAndPosition

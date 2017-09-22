@@ -16,7 +16,7 @@ namespace Jbta.Indexing.UnitTests
             var trie = new PrefixTree();
             foreach (var word in str.Split(' '))
             {
-                trie.Add(word.ToCharArray());
+                trie.Add(word.ToCharArray(), "file");
             }
 
             Assert.True(trie.Contains("qiz"));
@@ -32,7 +32,7 @@ namespace Jbta.Indexing.UnitTests
         {
             var trie = ReadPrefixTree();
             var test = trie.Get("Пьер");
-            
+            test = trie.Get("Пье");
 
             Assert.True(trie.Contains("что-нибудь"));
             Assert.True(trie.Contains("something"));
@@ -54,33 +54,24 @@ namespace Jbta.Indexing.UnitTests
         private static PrefixTree ReadPrefixTree()
         {
             var trie = new PrefixTree();
-            var filesPathes = GetFilesPathes("test-texts\\");
+            var filesPathes = GetFilesPathes("C:\\test-texts\\");
             Parallel.ForEach(filesPathes, (filePath, _, fileNumber) =>
             {
                 using (var reader = new StreamReader(filePath))
                 {
                     var node = trie.Root;
                     const int bufferSize = 2048;
-                    var line = 0;
-                    var position = 0;
                     var buffer = new char[bufferSize];
                     while (reader.ReadBlock(buffer, 0, bufferSize) != 0)
                     {
                         foreach (var character in buffer)
                         {
-                            position++;
                             if (char.IsWhiteSpace(character))
                             {
-                                if (character == '\n')
-                                {
-                                    line++;
-                                    position = 0;
-                                }
                                 if (node == trie.Root)
                                 {
                                     continue;
                                 }
-                                node.IsTerminal = true;
                                 if (node.Files == null)
                                 {
                                     node.Files = new HashSet<string>{ filePath };
@@ -93,7 +84,7 @@ namespace Jbta.Indexing.UnitTests
                             }
                             else
                             {
-                                node = trie.Add(character, false, node);
+                                node = trie.Add(character, node);
                             }
                         }
                     }
