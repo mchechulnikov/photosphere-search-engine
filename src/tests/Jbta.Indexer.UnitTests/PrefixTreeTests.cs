@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Jbta.Indexing.Indexing;
 using Xunit;
@@ -30,7 +31,7 @@ namespace Jbta.Indexing.UnitTests
         [Fact]
         public void BigText()
         {
-            var trie = ReadPrefixTree();
+            var (trie, directIndex) = ReadPrefixTree();
             var test = trie.Get("Пьер");
             test = trie.Get("Пье");
 
@@ -51,12 +52,14 @@ namespace Jbta.Indexing.UnitTests
             Assert.False(trie.Contains("кракозябры"));
         }
 
-        private static PrefixTree ReadPrefixTree()
+        private static (PrefixTree, IDictionary<string, ISet<string>>) ReadPrefixTree()
         {
+            var directIndex = new Dictionary<string, ISet<string>>();  // direct index
             var trie = new PrefixTree();
             var filesPathes = GetFilesPathes("C:\\test-texts\\");
             Parallel.ForEach(filesPathes, (filePath, _, fileNumber) =>
             {
+                var setOfWords = new HashSet<string>();  // direct index
                 using (var reader = new StreamReader(filePath))
                 {
                     var node = trie.Root;
@@ -64,6 +67,7 @@ namespace Jbta.Indexing.UnitTests
                     var buffer = new char[bufferSize];
                     while (reader.ReadBlock(buffer, 0, bufferSize) != 0)
                     {
+                        var stringBuilder = new StringBuilder();  // direct index
                         foreach (var character in buffer)
                         {
                             if (char.IsWhiteSpace(character))
@@ -81,16 +85,21 @@ namespace Jbta.Indexing.UnitTests
                                     node.Files.Add(filePath);
                                 }
                                 node = trie.Root;
+                                setOfWords.Add(stringBuilder.ToString()); // direct index
+                                stringBuilder.Clear(); // direct index
                             }
                             else
                             {
+                                stringBuilder.Append(character); // direct index
                                 node = trie.Add(character, node);
                             }
                         }
                     }
                 }
+
+                directIndex.Add(filePath, setOfWords); // direct index
             });
-            return trie;
+            return (trie, directIndex);
         }
 
         private static IEnumerable<string> GetFilesPathes(string targetDirectory)
