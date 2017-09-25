@@ -1,0 +1,77 @@
+﻿<UserControl x:Class="Jbta.DemoApp.Views.IndexManagementPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:indexManagement="clr-namespace:Jbta.DemoApp.ViewModels.IndexManagement"
+             xmlns:converters="clr-namespace:Jbta.DemoApp.Views.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <indexManagement:IndexManagementPanelViewModel x:Key="ViewModel"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </UserControl.Resources>
+    <Grid DataContext="{StaticResource ViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="633*"/>
+        </Grid.RowDefinitions>
+        <Button
+            Grid.Row="0"
+            Content="Add files"
+            HorizontalAlignment="Left" 
+            Margin="10,10,0,10" 
+            Width="75"
+            Command="{Binding AddFilesButtonClick}"
+            IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
+            ForceCursor="True"/>
+        <Button
+            Grid.Row="0"
+            Content="Add folder"
+            HorizontalAlignment="Left" 
+            Margin="90,10,0,10" 
+            Width="75"
+            Command="{Binding AddFolderButtonClick}"
+            IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
+            ForceCursor="True"/>
+        <Button
+            Grid.Row="0"
+            Content="Remove"
+            HorizontalAlignment="Left"
+            Margin="170,10,0,10"
+            Command="{Binding RemoveButtonClick}"
+            IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
+            Width="75" />
+        <ProgressBar
+            Grid.Row="0"
+            Margin="250,10,10,10"
+            Minimum="0"
+            Maximum="100"
+            Visibility="{Binding ProgressBarVisibility}" 
+            Value="{Binding ProgressBarValue}"/>
+        <TreeView
+            Grid.Row="1"
+            Margin="10"
+            IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
+            ItemsSource="{Binding TreeViewItems}"
+        >
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}" />
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>

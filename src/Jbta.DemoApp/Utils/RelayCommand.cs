@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Jbta.DemoApp
+namespace Jbta.DemoApp.Utils
 {
-    public class AsyncDelegateCommand : ICommand
+    public class RelayCommand : ICommand
     {
         private readonly Predicate<object> _canExecute;
         private readonly Func<object, Task> _asyncExecute;
@@ -15,7 +15,7 @@ namespace Jbta.DemoApp
             remove => CommandManager.RequerySuggested -= value;
         }
 
-        public AsyncDelegateCommand(
+        public RelayCommand(
             Func<object, Task> asyncExecute,
             Predicate<object> canExecute = null)
         {
