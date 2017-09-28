@@ -5,7 +5,7 @@ using Jbta.DemoApp.Annotations;
 
 namespace Jbta.DemoApp.ViewModels
 {
-    internal abstract class ViewModelBase : INotifyPropertyChanged
+    public abstract class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

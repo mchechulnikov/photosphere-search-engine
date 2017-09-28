@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Jbta.DemoApp"
         xmlns:views="clr-namespace:Jbta.DemoApp.Views"
         mc:Ignorable="d"
         Title="JBTA — Index demo"
@@ -16,9 +15,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <views:IndexManagementPanel
-            Grid.Column="0" />
-        <views:SearchPanel
-            Grid.Column="1" />
+        <views:IndexManagementPanel Grid.Column="0" />
+        <views:SearchPanel Grid.Column="1" />
     </Grid>
 </Window>

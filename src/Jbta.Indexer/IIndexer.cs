@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Jbta.Indexing
 {
     public interface IIndexer
     {
+        event EventHandler IndexingStarted;
+        event EventHandler IndexingStoped;
+
         /// <summary>
         /// Add file or directory to index
         /// </summary>
@@ -19,7 +23,6 @@ namespace Jbta.Indexing
         /// <summary>
         /// Search indexed files that contains searched word
         /// </summary>
-        /// <returns>All files and positions in files that contans searched word</returns>
-        IEnumerable<WordMatch> Search(string query, bool isCaseSensetive, bool isWholeWord);
+        IEnumerable<WordEntry> Search(string query, bool isCaseSensetive = false, bool isWholeWord = false);
     }
 }

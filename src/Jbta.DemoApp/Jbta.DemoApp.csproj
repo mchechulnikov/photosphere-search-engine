@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -55,13 +57,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Utils\FileSystemUtils.cs" />
-    <Compile Include="Utils\ListExtensions.cs" />
+    <Compile Include="Model\Index.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\FileTreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\FolderTreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\ITreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\LoadingDummyTreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\TreeViewItemViewModelBase.cs" />
+    <Compile Include="ViewModels\SearchPanel\ListBoxItemViewModel.cs" />
     <Compile Include="ViewModels\SearchPanel\SearchPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\Converters\InverseConverter.cs" />
@@ -121,8 +123,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\Jbta.Indexer\Jbta.Indexing.csproj">
+      <Project>{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}</Project>
+      <Name>Jbta.Indexing</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

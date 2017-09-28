@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Jbta.DemoApp.Model;
 using Jbta.DemoApp.Utils;
 using Jbta.DemoApp.ViewModels.IndexManagement.TreeView;
 
@@ -14,7 +15,6 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
 {
     internal class IndexManagementPanelViewModel : ViewModelBase
     {
-        private readonly ObservableCollection<ITreeViewItemViewModel> _treeViewItems;
         private bool _isIndexing;
         private Visibility _progressBarVisibility;
         private int _progressBarValue;
@@ -24,7 +24,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
 
         public IndexManagementPanelViewModel()
         {
-            _treeViewItems = new ObservableCollection<ITreeViewItemViewModel>();
+            TreeViewItems = new ObservableCollection<ITreeViewItemViewModel>();
         }
 
         public bool IsIndexing
@@ -45,7 +45,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
             set => SetField(ref _progressBarValue, value, nameof(ProgressBarValue));
         }
 
-        public ObservableCollection<ITreeViewItemViewModel> TreeViewItems => _treeViewItems;
+        public ObservableCollection<ITreeViewItemViewModel> TreeViewItems { get; }
 
         public ICommand AddFolderButtonClick =>
             _addFolderCommand ?? (_addFolderCommand = new RelayCommand(OnAddFolderButtonClick));
@@ -63,7 +63,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
             {
                 dialog.RootFolder = Environment.SpecialFolder.MyComputer;
                 var dialogResult = dialog.ShowDialog();
-                if (dialogResult == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
+                if (dialogResult == DialogResult.OK && !string.IsNullOrWhiteSpace(dialog.SelectedPath))
                 {
                     selectedPath = dialog.SelectedPath;
                 }
@@ -75,10 +75,11 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
             }
 
             ProgressBarVisibility = Visibility.Visible;
-            await AyncIndexing(selectedPath);
+            await Task.Run(() => Index.Instance.Add(selectedPath));
+            ProgressBarValue += 100;
+            TreeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
             ProgressBarValue = 0;
             ProgressBarVisibility = Visibility.Hidden;
-            _treeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
         }
 
         private async Task OnAddFilesButtonClick(object sender)
@@ -94,7 +95,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
                 dialog.Filter = "Text files (*.txt)|*.txt|Log Files (*.log)|*.log|C# Files (*.cs)|*.cs";
 
                 var dialogResult = dialog.ShowDialog();
-                if (dialogResult == System.Windows.Forms.DialogResult.OK && dialog.FileNames != null && dialog.FileNames.Any())
+                if (dialogResult == DialogResult.OK && dialog.FileNames != null && dialog.FileNames.Any())
                 {
                     selectedPathes = dialog.FileNames;
                 }
@@ -105,30 +106,22 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
                 return;
             }
 
-            await OnFileSelected(selectedPathes);
-        }
-
-        private async Task OnFileSelected(string[] pathes)
-        {
             ProgressBarVisibility = Visibility.Visible;
-            await AyncIndexing(pathes);
-            ProgressBarValue = 0;
+            await AyncIndexing(selectedPathes);
             ProgressBarVisibility = Visibility.Hidden;
-
-            foreach (var path in pathes)
-            {
-                _treeViewItems.Add(new FileTreeViewItemViewModel(path));
-            }
+            ProgressBarValue = 0;
         }
 
-        private async Task AyncIndexing(params string[] pathes)
+        private async Task AyncIndexing(string[] pathes)
         {
-            for (var i = 0; i < 100; i++)
+            var step = 100 / pathes.Length;
+            var tasks = pathes.Select(async path =>
             {
-                // TODO
-                ProgressBarValue = i;
-                await Task.Delay(3);
-            }
+                await Task.Run(() => Index.Instance.Add(path));
+                ProgressBarValue += step;
+                TreeViewItems.Add(new FileTreeViewItemViewModel(path));
+            });
+            await Task.WhenAll(tasks);
         }
 
         private async Task OnRemoveButtonClick(object sender)
