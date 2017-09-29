@@ -1,8 +1,8 @@
 ﻿namespace Jbta.Indexing.Indexing
 {
-    public enum MatchKind
+    internal enum MatchKind
     {
-        ExactMatch,
+        Match,
         Contains,
         IsContained,
         Partial,
