@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Jbta.Indexing.Utils;
 
 namespace Jbta.Indexing.Indexing
 {
@@ -13,16 +14,7 @@ namespace Jbta.Indexing.Indexing
 
         public StringSlice(string source, int startIndex, int partitionLength)
         {
-            if (startIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            }
-            if (partitionLength < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(partitionLength));
-            }
-
-            Origin = source ?? throw new ArgumentNullException(nameof(source));
+            Origin = source;
             StartIndex = startIndex;
             Length = Math.Min(partitionLength, Origin.Length - startIndex);
         }
@@ -35,7 +27,9 @@ namespace Jbta.Indexing.Indexing
 
         public char this[int index] => Origin[StartIndex + index];
 
-        public bool StartsWith(StringSlice slice)
+        public string SubstringFromBegin => Origin.Substring(0, StartIndex + Length);
+
+        public bool StartsWith(StringSlice slice, bool caseSensetive = true)
         {
             if (Length < slice.Length)
             {
@@ -43,7 +37,9 @@ namespace Jbta.Indexing.Indexing
             }
 
             var that = this;
-            return !slice.Where((t, i) => that[i] != t).Any();
+            return caseSensetive
+                ? !slice.Where((t, i) => that[i] != t).Any()
+                : !slice.Where((t, i) => !that[i].EqualsIgnoreCase(t)).Any();
         }
 
         public IEnumerator<char> GetEnumerator()

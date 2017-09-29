@@ -1,13 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Jbta.DemoApp.Model;
+using Jbta.Indexing;
 
 namespace Jbta.DemoApp.ViewModels.SearchPanel
 {
     internal class SearchPanelViewModel : ViewModelBase
     {
         private string _searchString = string.Empty;
+        private bool _isCaseSensetive = true;
+        private bool _isWholeWord;
 
         public SearchPanelViewModel()
         {
@@ -20,26 +23,60 @@ namespace Jbta.DemoApp.ViewModels.SearchPanel
             set
             {
                 SetField(ref _searchString, value, nameof(SearchText));
+                Search(value, IsCaseSensetive, IsWholeWord);
+            }
+        }
 
-                ListBoxItems.Clear();
-                if (value.Length < 3)
-                {
-                    return;
-                }
-                var serchResult = Index.Instance.Search(value);
-                if (serchResult == null)
-                {
-                    return;
-                }
+        public bool IsCaseSensetive
+        {
+            get => _isCaseSensetive;
+            set
+            {
+                SetField(ref _isCaseSensetive, value, nameof(IsCaseSensetive));
+                Search(SearchText, value, IsWholeWord);
+            }
+        }
 
-                foreach (var wordEntry in serchResult.OrderBy(r => r.FileName).ThenBy(r => r.LineNumber).ThenBy(r => r.Position))
-                {
-                    var item = new ListBoxItemViewModel(wordEntry.FileName, wordEntry.LineNumber, wordEntry.Position);
-                    ListBoxItems.Add(item);
-                }
+        public bool IsWholeWord
+        {
+            get => _isWholeWord;
+            set
+            {
+                SetField(ref _isWholeWord, value, nameof(IsWholeWord));
+                Search(SearchText, IsCaseSensetive, value);
             }
         }
 
         public ObservableCollection<ListBoxItemViewModel> ListBoxItems { get; }
+
+        private void Search(string value, bool isCaseSensetive, bool isWholeWord)
+        {
+            ListBoxItems.Clear();
+            if (value.Length < 3)
+            {
+                return;
+            }
+            var serchResult = Index.Instance.Search(value, isCaseSensetive, isWholeWord);
+            if (serchResult == null)
+            {
+                return;
+            }
+
+            AddResultsToList(serchResult);
+        }
+
+        private void AddResultsToList(IEnumerable<WordEntry> result)
+        {
+            var orderedResult = result
+                .OrderBy(r => r.FileName)
+                .ThenBy(r => r.LineNumber)
+                .ThenBy(r => r.Position);
+
+            foreach (var wordEntry in orderedResult)
+            {
+                var item = new ListBoxItemViewModel(wordEntry.FileName, wordEntry.LineNumber, wordEntry.Position);
+                ListBoxItems.Add(item);
+            }
+        }
     }
 }

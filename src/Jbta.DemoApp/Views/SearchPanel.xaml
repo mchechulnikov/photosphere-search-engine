@@ -23,15 +23,17 @@
             Tag="Enter search query"
             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
         <CheckBox
-            Content="Whole word"
-            Grid.Row="0"
-            Margin="403,13,10,12" />
-        <CheckBox
             Content="Case sensetive"
             Grid.Row="0"
             HorizontalAlignment="Left"
             Margin="298,13,0,12"
-            Width="100" />
+            Width="100"
+            IsChecked="{Binding IsCaseSensetive}" />
+        <CheckBox
+            Content="Whole word"
+            Grid.Row="0"
+            Margin="403,13,10,12"
+            IsChecked="{Binding IsWholeWord}" />
         <ListBox
             Grid.Row="1"
             Margin="10,10,13,10"

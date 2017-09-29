@@ -6,6 +6,6 @@ namespace Jbta.Indexing.Indexing
     {
         void Add(string key, T value);
         void Remove(string key);
-        IEnumerable<T> Get(string query);
+        IEnumerable<T> Get(string query, SearchSettings searchSettings);
     }
 }

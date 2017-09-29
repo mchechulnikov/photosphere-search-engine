@@ -37,9 +37,9 @@ namespace Jbta.Indexing
             throw new NotImplementedException();
         }
 
-        public IEnumerable<WordEntry> Search(string query, bool isCaseSensetive, bool isWholeWord)
+        public IEnumerable<WordEntry> Search(string query, bool caseSensetive, bool wholeWord)
         {
-            return _invertedIndex.Get(query);
+            return _invertedIndex.Get(query, new SearchSettings(caseSensetive, wholeWord));
         }
 
         private void LoadFiles(params string[] filePathes)

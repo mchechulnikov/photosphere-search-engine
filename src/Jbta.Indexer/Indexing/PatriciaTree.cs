@@ -38,13 +38,13 @@ namespace Jbta.Indexing.Indexing
             _keyRemover.Remove(key);
         }
 
-        public IEnumerable<T> Get(string query)
+        public IEnumerable<T> Get(string query, SearchSettings searchSettings)
         {
             if (query == null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
-            return _valuesGetter.Get(query);
+            return _valuesGetter.Get(query, searchSettings);
         }
     }
 }

@@ -48,6 +48,7 @@
     <Compile Include="Indexing\old\PrefixTree.cs" />
     <Compile Include="Indexing\PatriciaTree.cs" />
     <Compile Include="Indexing\Node.cs" />
+    <Compile Include="Indexing\SearchSettings.cs" />
     <Compile Include="Indexing\Services\KeyRemover.cs" />
     <Compile Include="Indexing\Services\KeyAdder.cs" />
     <Compile Include="Indexing\Services\KeysZipper.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Indexing\ZippedSlices.cs" />
     <Compile Include="IParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\CharExtensions.cs" />
     <Compile Include="Utils\FileSystem.cs" />
     <Compile Include="WordEntry.cs" />
   </ItemGroup>

@@ -19,6 +19,6 @@ namespace Jbta.Indexing
         /// <summary>
         /// Get indexed files that contains searched word
         /// </summary>
-        IEnumerable<WordEntry> Search(string query, bool isCaseSensetive = false, bool isWholeWord = false);
+        IEnumerable<WordEntry> Search(string query, bool caseSensetive = true, bool wholeWord = false);
     }
 }
