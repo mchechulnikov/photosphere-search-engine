@@ -51,15 +51,15 @@ namespace Jbta.Indexing.Indexing.Services
                     Add(node, zippedSlices.SecondTail, value);
                     break;
                 case MatchKind.Contains:
-                    AddOneTail(node, zippedSlices, value);
+                    AddFirstTail(node, zippedSlices, value);
                     break;
                 case MatchKind.Partial:
-                    AddTwoTails(node, zippedSlices, value);
+                    AddBothTails(node, zippedSlices, value);
                     break;
             }
         }
 
-        private static void AddOneTail(Node<T> node, ZippedSlices zippedSlices, T value)
+        private static void AddFirstTail(Node<T> node, ZippedSlices zippedSlices, T value)
         {
             var leftChild = new Node<T>(zippedSlices.FirstTail, node.Values, node.Children);
 
@@ -70,7 +70,7 @@ namespace Jbta.Indexing.Indexing.Services
                 node.Key = zippedSlices.Head;
                 node.Children = new Dictionary<char, Node<T>>
                 {
-                    {zippedSlices.FirstTail[0], leftChild}
+                    { zippedSlices.FirstTail[0], leftChild }
                 };
             }
             finally
@@ -79,7 +79,7 @@ namespace Jbta.Indexing.Indexing.Services
             }
         }
 
-        private static void AddTwoTails(Node<T> node, ZippedSlices zippedSlices, T value)
+        private static void AddBothTails(Node<T> node, ZippedSlices zippedSlices, T value)
         {
             node.Lock.EnterWriteLock();
             try

@@ -14,13 +14,13 @@
         private static int CalculateSplitIndex(StringSlice first, StringSlice second)
         {
             var splitIndex = 0;
-            using (var thisEnumerator = first.GetEnumerator())
+            using (var firstEnumerator = first.GetEnumerator())
             {
-                using (var otherEnumerator = second.GetEnumerator())
+                using (var secondEnumerator = second.GetEnumerator())
                 {
-                    while (thisEnumerator.MoveNext() && otherEnumerator.MoveNext())
+                    while (firstEnumerator.MoveNext() && secondEnumerator.MoveNext())
                     {
-                        if (thisEnumerator.Current != otherEnumerator.Current)
+                        if (firstEnumerator.Current != secondEnumerator.Current)
                         {
                             break;
                         }

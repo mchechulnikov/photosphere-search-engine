@@ -51,7 +51,8 @@
     <Compile Include="Indexing\Services\KeyRemover.cs" />
     <Compile Include="Indexing\Services\KeyAdder.cs" />
     <Compile Include="Indexing\Services\KeysZipper.cs" />
-    <Compile Include="Indexing\Services\ValuesRetriever.cs" />
+    <Compile Include="Indexing\Services\NodeRetriever.cs" />
+    <Compile Include="Indexing\Services\ValuesGetter.cs" />
     <Compile Include="Indexing\StringSlice.cs" />
     <Compile Include="Indexing\ZippedSlices.cs" />
     <Compile Include="IParser.cs" />

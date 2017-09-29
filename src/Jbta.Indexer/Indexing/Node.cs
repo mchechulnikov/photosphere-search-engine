@@ -35,8 +35,17 @@ namespace Jbta.Indexing.Indexing
 
         public ReaderWriterLockSlim Lock { get; }
 
-        public IEnumerable<Node<T>> Subtree =>
-            Enumerable.Repeat(this, 1).Concat(Children.Values.SelectMany(child => child.Subtree));
+        public IEnumerable<Node<T>> Subtree
+        {
+            get
+            {
+                yield return this;
+                foreach (var node in Children.Values.SelectMany(n => n.Subtree))
+                {
+                    yield return node;
+                }
+            }
+        }
 
         // READING
 
