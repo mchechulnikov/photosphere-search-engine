@@ -13,10 +13,9 @@ namespace Jbta.Indexing.Indexing
         public PatriciaTrie()
         {
             var rootNode = new Node<T>();
-            var keysZipper = new KeysZipper();
             var nodeRetriever = new NodeRetriever<T>();
-            _keyAdder = new KeyAdder<T>(keysZipper, rootNode);
-            _keyRemover = new KeyRemover<T>(keysZipper, nodeRetriever, rootNode);
+            _keyAdder = new KeyAdder<T>(rootNode);
+            _keyRemover = new KeyRemover<T>(nodeRetriever, rootNode);
             _valuesGetter = new ValuesGetter<T>(nodeRetriever, rootNode);
         }
 
@@ -29,13 +28,13 @@ namespace Jbta.Indexing.Indexing
             _keyAdder.Add(key, value);
         }
 
-        public void Remove(string key)
+        public void Remove(string key, Func<T, bool> valueSelector)
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
-            _keyRemover.Remove(key);
+            _keyRemover.Remove(key, valueSelector);
         }
 
         public IEnumerable<T> Get(string query, SearchSettings searchSettings)

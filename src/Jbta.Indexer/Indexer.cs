@@ -34,7 +34,12 @@ namespace Jbta.Indexing
 
         public void Remove(string path)
         {
-            throw new NotImplementedException();
+            var words = _directIndex[path];
+            foreach (var word in words)
+            {
+                _invertedIndex.Remove(word, e => e.FileName == path);
+            }
+            _directIndex.Remove(path);
         }
 
         public IEnumerable<WordEntry> Search(string query, bool caseSensetive, bool wholeWord)

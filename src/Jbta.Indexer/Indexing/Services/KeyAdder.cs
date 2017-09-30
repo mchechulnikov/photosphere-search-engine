@@ -7,9 +7,9 @@ namespace Jbta.Indexing.Indexing.Services
         private readonly KeysZipper _keysZipper;
         private readonly Node<T> _rootNode;
 
-        public KeyAdder(KeysZipper keysZipper, Node<T> rootNode)
+        public KeyAdder(Node<T> rootNode)
         {
-            _keysZipper = keysZipper;
+            _keysZipper = new KeysZipper();
             _rootNode = rootNode;
         }
 

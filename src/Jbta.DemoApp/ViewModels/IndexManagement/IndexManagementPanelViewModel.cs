@@ -133,6 +133,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
                     if (item.IsSelected)
                     {
                         items.Remove(item);
+                        RemoveFromIndex(item);
                         return;
                     }
                     if (item.Children != null)
@@ -143,6 +144,11 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
             }
 
             await RemoveAction(TreeViewItems);
+        }
+
+        private static void RemoveFromIndex(ITreeViewItemViewModel item)
+        {
+            Task.Run(() => Index.Instance.Remove(item.Content));
         }
     }
 }
