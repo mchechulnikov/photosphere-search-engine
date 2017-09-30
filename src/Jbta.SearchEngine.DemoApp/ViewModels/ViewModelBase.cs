@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Jbta.DemoApp.Properties;
+using Jbta.SearchEngine.DemoApp.Properties;
 
-namespace Jbta.DemoApp.ViewModels
+namespace Jbta.SearchEngine.DemoApp.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {

@@ -7,6 +7,6 @@ namespace Jbta.SearchEngine.Index
     {
         void Add(string key, T value);
         void Remove(string key, Func<T, bool> valueSelector);
-        IEnumerable<T> Get(string query, SearchSettings searchSettings);
+        IEnumerable<T> Get(string query, bool wholeWord = false);
     }
 }

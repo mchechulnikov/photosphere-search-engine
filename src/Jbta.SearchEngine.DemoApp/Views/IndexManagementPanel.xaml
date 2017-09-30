@@ -1,14 +1,14 @@
-﻿<UserControl x:Class="Jbta.DemoApp.Views.IndexManagementPanel"
+﻿<UserControl x:Class="Jbta.SearchEngine.DemoApp.Views.IndexManagementPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:indexManagement="clr-namespace:Jbta.DemoApp.ViewModels.IndexManagement"
-             xmlns:converters="clr-namespace:Jbta.DemoApp.Views.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement"
+             xmlns:converters="clr-namespace:Jbta.SearchEngine.DemoApp.Views.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <indexManagement:IndexManagementPanelViewModel x:Key="ViewModel"/>
+        <vm:IndexManagementPanelViewModel x:Key="ViewModel"/>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </UserControl.Resources>
     <Grid DataContext="{StaticResource ViewModel}">

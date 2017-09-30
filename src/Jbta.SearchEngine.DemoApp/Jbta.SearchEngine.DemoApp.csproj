@@ -57,7 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Index.cs" />
+    <Compile Include="Model\SearchSystem.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\FileTreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\FolderTreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\ITreeViewItemViewModel.cs" />

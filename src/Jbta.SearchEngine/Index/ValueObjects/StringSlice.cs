@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine.Index.Services.Adding.ValueObjects
+namespace Jbta.SearchEngine.Index.ValueObjects
 {
     internal struct StringSlice : IEnumerable<char>
     {

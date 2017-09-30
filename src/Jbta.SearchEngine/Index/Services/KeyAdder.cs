@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Jbta.SearchEngine.Index.Services.Adding;
 using Jbta.SearchEngine.Index.Services.Adding.ValueObjects;
+using Jbta.SearchEngine.Index.ValueObjects;
 
 namespace Jbta.SearchEngine.Index.Services
 {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Jbta.DemoApp.ViewModels.IndexManagement.TreeView
+namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement.TreeView
 {
     internal class FolderTreeViewItemViewModel : TreeViewItemViewModelBase
     {        

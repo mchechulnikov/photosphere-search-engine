@@ -1,4 +1,4 @@
-﻿namespace Jbta.DemoApp
+﻿namespace Jbta.SearchEngine.DemoApp
 {
     public partial class MainWindow
     {

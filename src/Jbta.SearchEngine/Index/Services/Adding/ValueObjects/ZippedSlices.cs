@@ -1,3 +1,5 @@
+using Jbta.SearchEngine.Index.ValueObjects;
+
 namespace Jbta.SearchEngine.Index.Services.Adding.ValueObjects
 {
     internal struct ZippedSlices

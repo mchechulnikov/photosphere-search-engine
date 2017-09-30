@@ -16,18 +16,15 @@ namespace Jbta.SearchEngine.Index.Services
             _rootNode = rootNode;
         }
 
-        public IEnumerable<T> Get(string query, SearchSettings searchSettings)
+        public IEnumerable<T> Get(string query, bool wholeWord)
         {
-            var keyNode = searchSettings.CaseSensetive 
-                ? _nodeRetriever.Retrieve(_rootNode, query, 0)
-                : _nodeRetriever.RetrieveIgnoreCase(_rootNode, query, 0);
-
+            var keyNode = _nodeRetriever.Retrieve(_rootNode, query, 0);
             if (keyNode == null)
             {
                 return Enumerable.Empty<T>();
             }
 
-            if (searchSettings.WholeWord)
+            if (wholeWord)
             {
                 return keyNode.Key.SubstringFromBegin.Equals(query)
                     ? keyNode.Values

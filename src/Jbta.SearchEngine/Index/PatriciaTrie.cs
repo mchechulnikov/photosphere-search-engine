@@ -37,13 +37,13 @@ namespace Jbta.SearchEngine.Index
             _keyRemover.Remove(key, valueSelector);
         }
 
-        public IEnumerable<T> Get(string query, SearchSettings searchSettings)
+        public IEnumerable<T> Get(string query, bool wholeWord = false)
         {
             if (query == null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
-            return _valuesGetter.Get(query, searchSettings);
+            return _valuesGetter.Get(query, wholeWord);
         }
     }
 }

@@ -2,16 +2,16 @@
 
 namespace Jbta.SearchEngine
 {
-    public interface IIndexer
+    public interface ISearchEngine
     {
         /// <summary>
-        /// Add file or directory to index
+        /// Add file or directory to system
         /// </summary>
         /// <param name="path">Path to directory or file that you want to be indexed</param>
         void Add(string path);
 
         /// <summary>
-        /// Remove file or directory from index
+        /// Remove file or directory from system
         /// </summary>
         /// <param name="path">Path to directory or file</param>
         void Remove(string path);
@@ -19,6 +19,6 @@ namespace Jbta.SearchEngine
         /// <summary>
         /// Get indexed files that contains searched word
         /// </summary>
-        IEnumerable<WordEntry> Search(string query, bool caseSensetive = true, bool wholeWord = false);
+        IEnumerable<WordEntry> Search(string query, bool wholeWord = false);
     }
 }

@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Jbta.DemoApp.Model;
-using Jbta.SearchEngine;
+using Jbta.SearchEngine.DemoApp.Model;
 
-namespace Jbta.DemoApp.ViewModels.SearchPanel
+namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 {
     internal class SearchPanelViewModel : ViewModelBase
     {
         private string _searchString = string.Empty;
-        private bool _isCaseSensetive = true;
         private bool _isWholeWord;
 
         public SearchPanelViewModel()
@@ -23,17 +21,7 @@ namespace Jbta.DemoApp.ViewModels.SearchPanel
             set
             {
                 SetField(ref _searchString, value, nameof(SearchText));
-                Search(value, IsCaseSensetive, IsWholeWord);
-            }
-        }
-
-        public bool IsCaseSensetive
-        {
-            get => _isCaseSensetive;
-            set
-            {
-                SetField(ref _isCaseSensetive, value, nameof(IsCaseSensetive));
-                Search(SearchText, value, IsWholeWord);
+                Search(value, IsWholeWord);
             }
         }
 
@@ -43,20 +31,20 @@ namespace Jbta.DemoApp.ViewModels.SearchPanel
             set
             {
                 SetField(ref _isWholeWord, value, nameof(IsWholeWord));
-                Search(SearchText, IsCaseSensetive, value);
+                Search(SearchText, value);
             }
         }
 
         public ObservableCollection<ListBoxItemViewModel> ListBoxItems { get; }
 
-        private void Search(string value, bool isCaseSensetive, bool isWholeWord)
+        private void Search(string value, bool isWholeWord)
         {
             ListBoxItems.Clear();
-            if (value.Length < 3)
+            if (value.Length < 1)
             {
                 return;
             }
-            var serchResult = Index.Instance.Search(value, isCaseSensetive, isWholeWord);
+            var serchResult = SearchSystem.Instance.Search(value, isWholeWord);
             if (serchResult == null)
             {
                 return;
@@ -70,7 +58,8 @@ namespace Jbta.DemoApp.ViewModels.SearchPanel
             var orderedResult = result
                 .OrderBy(r => r.FileName)
                 .ThenBy(r => r.LineNumber)
-                .ThenBy(r => r.Position);
+                .ThenBy(r => r.Position)
+                .Take(500);
 
             foreach (var wordEntry in orderedResult)
             {

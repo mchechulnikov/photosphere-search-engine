@@ -1,5 +1,6 @@
 ﻿using System;
 using Jbta.SearchEngine.Index.Services.Adding.ValueObjects;
+using Jbta.SearchEngine.Index.ValueObjects;
 
 namespace Jbta.SearchEngine.Index.Services
 {
@@ -48,19 +49,6 @@ namespace Jbta.SearchEngine.Index.Services
             finally
             {
                 startNode.Lock.ExitReadLock();
-            }
-        }
-
-        public Node<T> RetrieveIgnoreCase(Node<T> node, string query, int position)
-        {
-            node.Lock.EnterReadLock();
-            try
-            {
-                throw new NotImplementedException();
-            }
-            finally
-            {
-                node.Lock.ExitReadLock();
             }
         }
 

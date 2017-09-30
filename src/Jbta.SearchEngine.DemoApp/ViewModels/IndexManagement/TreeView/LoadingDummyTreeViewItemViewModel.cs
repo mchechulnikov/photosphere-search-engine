@@ -1,4 +1,4 @@
-﻿namespace Jbta.DemoApp.ViewModels.IndexManagement.TreeView
+﻿namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement.TreeView
 {
     internal sealed class LoadingDummyTreeViewItemViewModel : TreeViewItemViewModelBase
     {

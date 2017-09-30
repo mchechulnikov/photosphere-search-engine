@@ -1,72 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using Jbta.SearchEngine.Index;
-using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine
+namespace Jbta.SearchEngine.FileParsing
 {
-    public class Indexer : IIndexer
+    internal class StandartFileParser : IFileParser
     {
-        private readonly IDictionary<string, ISet<string>> _directIndex;
-        private readonly ITrie<WordEntry> _invertedIndex;
-
-        public Indexer()
-        {
-            _invertedIndex = new PatriciaTrie<WordEntry>();
-            _directIndex = new Dictionary<string, ISet<string>>();
-        }
-
-        public void Add(string path)
-        {
-            if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
-            {
-                var filesPathes = FileSystem.GetFilesPathesByDirectory(path).ToArray();
-                LoadFiles(filesPathes);
-            }
-            else
-            {
-                LoadFile(path);
-            }
-        }
-
-        public void Remove(string path)
-        {
-            var words = _directIndex[path];
-            foreach (var word in words)
-            {
-                _invertedIndex.Remove(word, e => e.FileName == path);
-            }
-            _directIndex.Remove(path);
-        }
-
-        public IEnumerable<WordEntry> Search(string query, bool caseSensetive, bool wholeWord)
-        {
-            return _invertedIndex.Get(query, new SearchSettings(caseSensetive, wholeWord));
-        }
-
-        private void LoadFiles(params string[] filePathes)
-        {
-            foreach (var filePath in filePathes)
-            {
-                LoadFile(filePath);
-            }
-        }
-
-        private void LoadFile(string filePath)
-        {
-            var wordsEntries = GetWords(filePath).ToArray();
-            var setOfWords = new HashSet<string>();
-            foreach (var (word, wordEntry) in wordsEntries)
-            {
-                setOfWords.Add(word);
-                _invertedIndex.Add(word, wordEntry);
-            }
-            _directIndex.Add(filePath, setOfWords);
-        }
-
-        private static IEnumerable<(string, WordEntry)> GetWords(string filePath)
+        public IEnumerable<(string word, WordEntry)> Parse(string filePath)
         {
             using (var reader = new StreamReader(filePath))
             {
@@ -111,7 +51,7 @@ namespace Jbta.SearchEngine
         //    var setOfWords = new HashSet<string>();  // direct index
         //    using (var reader = new StreamReader(filePath))
         //    {
-        //        var node = _invertedIndex.Root;
+        //        var node = _searchIndex.Root;
         //        const int bufferSize = 2048;
         //        var buffer = new char[bufferSize];
         //        var position = 0;
@@ -129,7 +69,7 @@ namespace Jbta.SearchEngine
         //                        position = 1;
         //                        lineNumber++;
         //                    }
-        //                    if (node == _invertedIndex.Root)
+        //                    if (node == _searchIndex.Root)
         //                    {
         //                        continue;
         //                    }
@@ -157,7 +97,7 @@ namespace Jbta.SearchEngine
         //                        node.Lock.ExitWriteLock();
         //                    }
 
-        //                    node = _invertedIndex.Root;
+        //                    node = _searchIndex.Root;
         //                }
         //                else if (!(char.IsPunctuation(character) && wordBuilder.Length == 0))
         //                {
@@ -167,7 +107,7 @@ namespace Jbta.SearchEngine
         //                    node.Lock.EnterWriteLock();
         //                    try
         //                    {
-        //                        newNode = _invertedIndex.Add(character, node);
+        //                        newNode = _searchIndex.Add(character, node);
         //                    }
         //                    finally
         //                    {

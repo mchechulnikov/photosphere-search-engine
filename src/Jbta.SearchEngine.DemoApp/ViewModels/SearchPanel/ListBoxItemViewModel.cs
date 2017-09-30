@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Jbta.DemoApp.ViewModels.SearchPanel
+namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 {
     internal class ListBoxItemViewModel : ViewModelBase
     {

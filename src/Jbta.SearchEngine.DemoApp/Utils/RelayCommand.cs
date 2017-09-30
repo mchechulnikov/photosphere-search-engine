@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Jbta.DemoApp.Utils
+namespace Jbta.SearchEngine.DemoApp.Utils
 {
     public class RelayCommand : ICommand
     {

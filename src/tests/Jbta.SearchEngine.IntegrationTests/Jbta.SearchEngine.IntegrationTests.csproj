@@ -58,5 +58,16 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test-texts\small-number-of-words.txt" />
+    <Content Include="test-texts\Толстой Л. - Война и Мир ч.1.txt" />
+    <Content Include="test-texts\Толстой Л. - Война и Мир ч.2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Jbta.SearchEngine\Jbta.SearchEngine.csproj">
+      <Project>{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}</Project>
+      <Name>Jbta.SearchEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

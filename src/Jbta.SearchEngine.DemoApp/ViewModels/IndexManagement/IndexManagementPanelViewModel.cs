@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using Jbta.DemoApp.Model;
-using Jbta.DemoApp.Utils;
-using Jbta.DemoApp.ViewModels.IndexManagement.TreeView;
+using Jbta.SearchEngine.DemoApp.Model;
+using Jbta.SearchEngine.DemoApp.Utils;
+using Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement.TreeView;
 
-namespace Jbta.DemoApp.ViewModels.IndexManagement
+namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 {
     internal class IndexManagementPanelViewModel : ViewModelBase
     {
         private bool _isIndexing;
-        private Visibility _progressBarVisibility;
+        private Visibility _progressBarVisibility = Visibility.Hidden;
         private int _progressBarValue;
         private RelayCommand _addFolderCommand;
         private RelayCommand _addFilesCommand;
@@ -75,7 +75,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
             }
 
             ProgressBarVisibility = Visibility.Visible;
-            await Task.Run(() => Index.Instance.Add(selectedPath));
+            await Task.Run(() => SearchEngine.DemoApp.Model.SearchSystem.Instance.Add(selectedPath));
             ProgressBarValue += 100;
             TreeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
             ProgressBarValue = 0;
@@ -117,7 +117,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
             var step = 100 / pathes.Length;
             var tasks = pathes.Select(async path =>
             {
-                await Task.Run(() => Index.Instance.Add(path));
+                await Task.Run(() => SearchSystem.Instance.Add(path));
                 ProgressBarValue += step;
                 TreeViewItems.Add(new FileTreeViewItemViewModel(path));
             });
@@ -133,7 +133,7 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
                     if (item.IsSelected)
                     {
                         items.Remove(item);
-                        RemoveFromIndex(item);
+                        RemoveFromSearchSystem(item);
                         return;
                     }
                     if (item.Children != null)
@@ -146,9 +146,9 @@ namespace Jbta.DemoApp.ViewModels.IndexManagement
             await RemoveAction(TreeViewItems);
         }
 
-        private static void RemoveFromIndex(ITreeViewItemViewModel item)
+        private static void RemoveFromSearchSystem(ITreeViewItemViewModel item)
         {
-            Task.Run(() => Index.Instance.Remove(item.Content));
+            Task.Run(() => SearchSystem.Instance.Remove(item.Content));
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Jbta.DemoApp.ViewModels.IndexManagement.TreeView
+namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement.TreeView
 {
     internal abstract class TreeViewItemViewModelBase : ViewModelBase, ITreeViewItemViewModel
     {
