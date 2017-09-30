@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{71775C2D-FB7B-4AFB-B622-B92871855BE9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.SearchEngine", "Jbta.SearchEngine\Jbta.SearchEngine.csproj", "{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.Indexing.IntegrationTests", "tests\Jbta.Indexer.IntegrationTests\Jbta.Indexing.IntegrationTests.csproj", "{845CAB52-8AE8-415E-B124-0A4D6B2882F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.SearchEngine.UnitTests", "tests\Jbta.SearchEngine.UnitTests\Jbta.SearchEngine.UnitTests.csproj", "{A4A661F3-FCAE-45BC-952C-5A4230B88E69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.Indexing.UnitTests", "tests\Jbta.Indexer.UnitTests\Jbta.Indexing.UnitTests.csproj", "{A4A661F3-FCAE-45BC-952C-5A4230B88E69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.SearchEngine.IntegrationTests", "tests\Jbta.SearchEngine.IntegrationTests\Jbta.SearchEngine.IntegrationTests.csproj", "{845CAB52-8AE8-415E-B124-0A4D6B2882F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.Indexing", "Jbta.Indexer\Jbta.Indexing.csproj", "{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.SearchEngine.DemoApp", "Jbta.SearchEngine.DemoApp\Jbta.SearchEngine.DemoApp.csproj", "{AA428C71-3C41-4CAE-B04E-B5A0CAE91922}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jbta.DemoApp", "Jbta.DemoApp\Jbta.DemoApp.csproj", "{AA428C71-3C41-4CAE-B04E-B5A0CAE91922}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A4287FA6-5FBB-4686-AB7B-22B290304D36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,18 +19,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C41C9DC7-6C2D-4625-8F23-A0EA54DD512F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4A661F3-FCAE-45BC-952C-5A4230B88E69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{845CAB52-8AE8-415E-B124-0A4D6B2882F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA428C71-3C41-4CAE-B04E-B5A0CAE91922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AA428C71-3C41-4CAE-B04E-B5A0CAE91922}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA428C71-3C41-4CAE-B04E-B5A0CAE91922}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -40,8 +40,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{845CAB52-8AE8-415E-B124-0A4D6B2882F4} = {71775C2D-FB7B-4AFB-B622-B92871855BE9}
-		{A4A661F3-FCAE-45BC-952C-5A4230B88E69} = {71775C2D-FB7B-4AFB-B622-B92871855BE9}
+		{A4A661F3-FCAE-45BC-952C-5A4230B88E69} = {A4287FA6-5FBB-4686-AB7B-22B290304D36}
+		{845CAB52-8AE8-415E-B124-0A4D6B2882F4} = {A4287FA6-5FBB-4686-AB7B-22B290304D36}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4636D8F6-6BE5-48B9-8598-6CF98B9BF9EF}
