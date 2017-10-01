@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Jbta.SearchEngine.FileIndexing;
 
 namespace Jbta.SearchEngine.FileParsing
 {
@@ -15,7 +16,7 @@ namespace Jbta.SearchEngine.FileParsing
 
         public IEnumerable<string> FileExtensions => _settings.SupportedFilesExtensions;
 
-        public IEnumerable<(string word, WordEntry)> Parse(IFileVersion fileVersion)
+        public IEnumerable<ParsedWord> Parse(IFileVersion fileVersion)
         {
             using (var reader = new StreamReader(fileVersion.Path))
             {
@@ -42,13 +43,13 @@ namespace Jbta.SearchEngine.FileParsing
                             }
 
                             var wordString = word.ToString();
-                            yield return (wordString, new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
+                            yield return new ParsedWord(wordString, new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
                             word.Clear();
                         }
                         else if (character == '\0')
                         {
                             var wordString = word.ToString();
-                            yield return (wordString, new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
+                            yield return new ParsedWord(wordString, new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
                             word.Clear();
                             break;
                         }

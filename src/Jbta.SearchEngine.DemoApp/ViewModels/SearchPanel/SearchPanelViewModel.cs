@@ -41,7 +41,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
         private void Search(string value, bool isWholeWord)
         {
             ListBoxItems.Clear();
-            if (value.Length < 1)
+            if (value.Length < 3)
             {
                 return;
             }

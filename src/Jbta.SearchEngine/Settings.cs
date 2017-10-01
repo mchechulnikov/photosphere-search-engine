@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.Resources;
 
 namespace Jbta.SearchEngine

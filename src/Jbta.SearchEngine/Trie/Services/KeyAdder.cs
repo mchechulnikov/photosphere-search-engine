@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Jbta.SearchEngine.Index.Services.Adding;
-using Jbta.SearchEngine.Index.Services.Adding.ValueObjects;
-using Jbta.SearchEngine.Index.ValueObjects;
+using Jbta.SearchEngine.Trie.Services.Adding;
+using Jbta.SearchEngine.Trie.Services.Adding.ValueObjects;
+using Jbta.SearchEngine.Trie.ValueObjects;
 
-namespace Jbta.SearchEngine.Index.Services
+namespace Jbta.SearchEngine.Trie.Services
 {
     internal class KeyAdder<T>
     {

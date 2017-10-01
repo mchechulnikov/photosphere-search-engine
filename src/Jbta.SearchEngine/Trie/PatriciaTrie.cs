@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Jbta.SearchEngine.Index.Services;
+using Jbta.SearchEngine.Trie.Services;
 
-namespace Jbta.SearchEngine.Index
+namespace Jbta.SearchEngine.Trie
 {
     internal sealed class PatriciaTrie<T> : ITrie<T>
     {

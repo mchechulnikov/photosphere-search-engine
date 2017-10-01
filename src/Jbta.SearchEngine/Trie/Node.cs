@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Jbta.SearchEngine.Index.ValueObjects;
+using Jbta.SearchEngine.Trie.ValueObjects;
 
-namespace Jbta.SearchEngine.Index
+namespace Jbta.SearchEngine.Trie
 {
     internal class Node<T>
     {

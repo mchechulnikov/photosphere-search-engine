@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jbta.SearchEngine
+namespace Jbta.SearchEngine.FileIndexing
 {
     internal class FileVersion : IComparable<FileVersion>, IFileVersion
     {

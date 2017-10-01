@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Jbta.SearchEngine.Index.Services
+namespace Jbta.SearchEngine.Trie.Services
 {
     internal class ValuesGetter<T>
     {

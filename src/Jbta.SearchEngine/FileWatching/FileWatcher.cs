@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.IO;
 using Jbta.SearchEngine.FileIndexing;
+using Jbta.SearchEngine.FileIndexing.Services;
 using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileWatching
@@ -12,30 +13,43 @@ namespace Jbta.SearchEngine.FileWatching
             | NotifyFilters.FileName
             | NotifyFilters.DirectoryName;
 
-        private readonly IFileIndexer _fileIndexer;
+        private readonly IFileIndexer _indexer;
+        private readonly IIndexUpdater _indexUpdater;
+        private readonly IIndexEjector _indexEjector;
+        private readonly FilesVersionsRegistry _filesVersionsRegistry;
         private readonly ConcurrentDictionary<string, FileSystemWatcher> _watchers;
 
-        public FileWatcher(IFileIndexer fileIndexer)
+        public FileWatcher(
+            IFileIndexer indexer,
+            IIndexUpdater indexUpdater,
+            IIndexEjector indexEjector,
+            FilesVersionsRegistry filesVersionsRegistry)
         {
-            _fileIndexer = fileIndexer;
+            _indexer = indexer;
+            _indexUpdater = indexUpdater;
+            _indexEjector = indexEjector;
+            _filesVersionsRegistry = filesVersionsRegistry;
             _watchers = new ConcurrentDictionary<string, FileSystemWatcher>();
         }
 
         public void Watch(string path)
         {
+            _indexer.Index(path);
+
             var watcher = GetNewWatcher(path);
             _watchers.AddOrUpdate(path, watcher, (k, v) => v);
+
             watcher.EnableRaisingEvents = true;
         }
 
         public void Unwatch(string path)
         {
-            if (_watchers.TryRemove(path, out var watcher))
+            if (!_watchers.TryRemove(path, out var watcher))
             {
-                watcher.EnableRaisingEvents = false;
-                watcher.Dispose();
+                return;
             }
-            _fileIndexer.RemoveFromIndex(path);
+            watcher.EnableRaisingEvents = false;
+            watcher.Dispose();
         }
 
         public void Dispose()
@@ -61,10 +75,10 @@ namespace Jbta.SearchEngine.FileWatching
                 watcher.Path = FileSystem.GetDirectoryPathByFilePath(path);
                 watcher.Filter = new FileInfo(path).Name;
             }
-            watcher.Created += (o, e) => _fileIndexer.Index(e.FullPath);
-            watcher.Changed += (o, e) => _fileIndexer.UpdateIndex(e.FullPath);;
-            watcher.Deleted += (o, e) => _fileIndexer.RemoveFromIndex(e.FullPath);
-            watcher.Renamed += (o, e) => _fileIndexer.ChangePath(e.OldFullPath, e.FullPath);
+            watcher.Created += (o, e) => _indexer.Index(e.FullPath);
+            watcher.Changed += (o, e) => _indexUpdater.Update(e.FullPath);;
+            watcher.Deleted += (o, e) => _indexEjector.Eject(e.FullPath);
+            watcher.Renamed += (o, e) => _filesVersionsRegistry.ChangePath(e.OldFullPath, e.FullPath);
             return watcher;
         }
     }

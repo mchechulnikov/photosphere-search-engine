@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Jbta.SearchEngine.Index.ValueObjects;
+using Jbta.SearchEngine.Trie.ValueObjects;
 
-namespace Jbta.SearchEngine.Index.Services
+namespace Jbta.SearchEngine.Trie.Services
 {
     internal class KeyRemover<T>
     {

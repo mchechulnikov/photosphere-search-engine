@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Jbta.SearchEngine.Index
+namespace Jbta.SearchEngine.Trie
 {
     internal interface ITrie<T>
     {

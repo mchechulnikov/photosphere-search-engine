@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using Jbta.SearchEngine.Events;
 
 namespace Jbta.SearchEngine
 {
     public interface ISearchEngine : IDisposable
     {
+        event EventHandler<FileEventArgs> FileIndexed;
+
+        event EventHandler<FileEventArgs> FileRemovedFromIndex;
+
+        event EventHandler<FileEventArgs> FilePathChanged;
+
         /// <summary>
         /// Add file or directory to system
         /// </summary>
