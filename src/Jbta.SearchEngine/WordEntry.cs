@@ -4,14 +4,14 @@ namespace Jbta.SearchEngine
 { 
     public class WordEntry : IComparable<WordEntry>
     {
-        public WordEntry(FileVersion fileVersion, int position, int lineNumber)
+        public WordEntry(IFileVersion fileVersion, int position, int lineNumber)
         {
             FileVersion = fileVersion;
             Position = position;
             LineNumber = lineNumber;
         }
 
-        public FileVersion FileVersion { get; }
+        public IFileVersion FileVersion { get; }
 
         public int Position { get; }
 

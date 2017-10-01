@@ -59,7 +59,7 @@ namespace Jbta.SearchEngine.FileWatching
             else
             {
                 watcher.Path = FileSystem.GetDirectoryPathByFilePath(path);
-                watcher.Filter = "*.txt";
+                watcher.Filter = new FileInfo(path).Name;
             }
             watcher.Created += (o, e) => _fileIndexer.Index(e.FullPath);
             watcher.Changed += (o, e) => _fileIndexer.UpdateIndex(e.FullPath);;

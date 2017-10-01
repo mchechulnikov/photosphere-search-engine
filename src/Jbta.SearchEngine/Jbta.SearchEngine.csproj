@@ -40,10 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileParsing\FileParserProvider.cs" />
     <Compile Include="FileVersion.cs" />
     <Compile Include="FileParsing\StandartFileParser.cs" />
     <Compile Include="FileWatching\FileWatcher.cs" />
     <Compile Include="FileWatching\IFileWatcher.cs" />
+    <Compile Include="IFileVersion.cs" />
     <Compile Include="Index\ITrie.cs" />
     <Compile Include="FileIndexing\IFileIndexer.cs" />
     <Compile Include="FileIndexing\FileIndexer.cs" />
@@ -56,14 +58,16 @@
     <Compile Include="Index\Services\ValuesGetter.cs" />
     <Compile Include="Index\ValueObjects\StringSlice.cs" />
     <Compile Include="Index\Services\Adding\ValueObjects\ZippedSlices.cs" />
-    <Compile Include="FileParsing\IFileParser.cs" />
+    <Compile Include="IFileParser.cs" />
     <Compile Include="ISearchEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\DefaultSupportedFiles.cs" />
     <Compile Include="Searching\ISearcher.cs" />
     <Compile Include="Searching\Searcher.cs" />
     <Compile Include="Utils\CharExtensions.cs" />
     <Compile Include="Utils\FileSystem.cs" />
     <Compile Include="WordEntry.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="WordsSearchEngine.cs" />
   </ItemGroup>
   <ItemGroup />

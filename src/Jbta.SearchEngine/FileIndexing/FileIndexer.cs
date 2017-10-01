@@ -10,17 +10,20 @@ namespace Jbta.SearchEngine.FileIndexing
 {
     internal class FileIndexer : IFileIndexer
     {
-        private readonly IFileParser _fileParser;
+        private readonly FileParserProvider _parserProvider;
         private readonly ITrie<WordEntry> _searchIndex;
         private readonly IDictionary<FileVersion, ISet<string>> _directIndex;
         private readonly IDictionary<string, ISet<FileVersion>> _fileVersions;
+        private readonly Settings _settings;
 
         public FileIndexer(
-            IFileParser fileParser,
-            ITrie<WordEntry> searchIndex)
+            FileParserProvider parserProvider,
+            ITrie<WordEntry> searchIndex,
+            Settings settings)
         {
-            _fileParser = fileParser;
+            _parserProvider = parserProvider;
             _searchIndex = searchIndex;
+            _settings = settings;
             _directIndex = new Dictionary<FileVersion, ISet<string>>();
             _fileVersions = new Dictionary<string, ISet<FileVersion>>();
         }
@@ -87,9 +90,16 @@ namespace Jbta.SearchEngine.FileIndexing
 
         private void LoadFile(string filePath)
         {
+            var extension = Path.GetExtension(filePath);
+            if (_settings.SupportedFilesExtensions.Contains(extension))
+            {
+                return;
+            }
+
             var fileVersion = RegisterFileVersion(filePath);
 
-            var wordsEntries = _fileParser.Parse(fileVersion).ToArray();
+            var fileParser = _parserProvider.Provide(filePath);
+            var wordsEntries = fileParser.Parse(fileVersion).ToArray();
             var setOfWords = new HashSet<string>();
             _directIndex.Add(fileVersion, setOfWords);
 
@@ -136,7 +146,11 @@ namespace Jbta.SearchEngine.FileIndexing
                 _searchIndex.Remove(word, we => we.FileVersion == fileVersion);
             }
             _directIndex.Remove(fileVersion);
-            GC.Collect();
+
+            if (_settings.GcCollect)
+            {
+                GC.Collect();
+            }
         }
 
         private void RemoveIrrelevantFileVersions(string filePath)

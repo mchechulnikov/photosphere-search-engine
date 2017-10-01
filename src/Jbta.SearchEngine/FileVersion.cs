@@ -2,7 +2,7 @@
 
 namespace Jbta.SearchEngine
 {
-    public class FileVersion : IComparable<FileVersion>
+    internal class FileVersion : IComparable<FileVersion>, IFileVersion
     {
         public FileVersion(string path, DateTime version)
         {
@@ -13,7 +13,6 @@ namespace Jbta.SearchEngine
         public string Path { get; set; }
 
         public DateTime Version { get; }
-
 
         public int CompareTo(FileVersion other)
         {

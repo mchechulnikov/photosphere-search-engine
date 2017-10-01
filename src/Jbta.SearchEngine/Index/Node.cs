@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Jbta.SearchEngine.Index.Services.Adding.ValueObjects;
 using Jbta.SearchEngine.Index.ValueObjects;
 
 namespace Jbta.SearchEngine.Index

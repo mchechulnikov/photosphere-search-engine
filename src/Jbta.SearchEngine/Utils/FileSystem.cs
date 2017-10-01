@@ -5,6 +5,9 @@ namespace Jbta.SearchEngine.Utils
 {
     internal static class FileSystem
     {
+        public static bool IsExistingPath(string path) =>
+            IsDirectory(path) ? Directory.Exists(path) : File.Exists(path);
+
         public static bool IsDirectory(string path) =>
             File.GetAttributes(path).HasFlag(FileAttributes.Directory);
 

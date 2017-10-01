@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Jbta.SearchEngine.Index.Services.Adding.ValueObjects;
 using Jbta.SearchEngine.Index.ValueObjects;
 
 namespace Jbta.SearchEngine.Index.Services

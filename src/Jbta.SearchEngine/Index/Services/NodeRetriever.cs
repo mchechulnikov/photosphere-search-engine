@@ -1,6 +1,4 @@
-﻿using System;
-using Jbta.SearchEngine.Index.Services.Adding.ValueObjects;
-using Jbta.SearchEngine.Index.ValueObjects;
+﻿using Jbta.SearchEngine.Index.ValueObjects;
 
 namespace Jbta.SearchEngine.Index.Services
 {

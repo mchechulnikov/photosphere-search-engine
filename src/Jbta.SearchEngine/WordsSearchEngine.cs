@@ -4,6 +4,7 @@ using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileWatching;
 using Jbta.SearchEngine.Index;
 using Jbta.SearchEngine.Searching;
+using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine
 {
@@ -13,23 +14,35 @@ namespace Jbta.SearchEngine
         private readonly IFileWatcher _watcher;
         private readonly ISearcher _searcher;
 
-        public WordsSearchEngine()
+        public WordsSearchEngine() : this(new Settings()) { }
+
+        public WordsSearchEngine(Settings settings)
         {
             var searchIndex = new PatriciaTrie<WordEntry>();
-            var fileParser = new StandartFileParser();
-            _indexer = new FileIndexer(fileParser, searchIndex);
+            var fileParserProvider = new FileParserProvider(settings);
+            _indexer = new FileIndexer(fileParserProvider, searchIndex, settings);
             _watcher = new FileWatcher(_indexer);
             _searcher = new Searcher(searchIndex);
         }
 
         public void Add(string path)
         {
+            if (!FileSystem.IsExistingPath(path))
+            {
+                return;
+            }
+
             _indexer.Index(path);
             _watcher.Watch(path);
         }
 
         public void Remove(string path)
         {
+            if (!FileSystem.IsExistingPath(path))
+            {
+                return;
+            }
+
             _watcher.Unwatch(path);
         }
 

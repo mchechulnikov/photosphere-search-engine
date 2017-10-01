@@ -75,7 +75,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             }
 
             ProgressBarVisibility = Visibility.Visible;
-            await Task.Run(() => SearchEngine.DemoApp.Model.SearchSystem.Instance.Add(selectedPath));
+            await Task.Run(() => SearchEngine.DemoApp.Model.SearchSystem.EngineInstance.Add(selectedPath));
             ProgressBarValue += 100;
             TreeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
             ProgressBarValue = 0;
@@ -117,7 +117,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             var step = 100 / pathes.Length;
             var tasks = pathes.Select(async path =>
             {
-                await Task.Run(() => SearchSystem.Instance.Add(path));
+                await Task.Run(() => SearchSystem.EngineInstance.Add(path));
                 ProgressBarValue += step;
                 TreeViewItems.Add(new FileTreeViewItemViewModel(path));
             });
@@ -148,7 +148,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         private static void RemoveFromSearchSystem(ITreeViewItemViewModel item)
         {
-            Task.Run(() => SearchSystem.Instance.Remove(item.Content));
+            Task.Run(() => SearchSystem.EngineInstance.Remove(item.Content));
         }
     }
 }

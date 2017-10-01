@@ -45,7 +45,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
             {
                 return;
             }
-            var serchResult = SearchSystem.Instance.Search(value, isWholeWord);
+            var serchResult = SearchSystem.EngineInstance.Search(value, isWholeWord);
             if (serchResult == null)
             {
                 return;

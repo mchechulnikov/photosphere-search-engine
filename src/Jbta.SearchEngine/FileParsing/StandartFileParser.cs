@@ -6,14 +6,23 @@ namespace Jbta.SearchEngine.FileParsing
 {
     internal class StandartFileParser : IFileParser
     {
-        public IEnumerable<(string word, WordEntry)> Parse(FileVersion fileVersion)
+        private readonly Settings _settings;
+
+        public StandartFileParser(Settings settings)
+        {
+            _settings = settings;
+        }
+
+        public IEnumerable<string> FileExtensions => _settings.SupportedFilesExtensions;
+
+        public IEnumerable<(string word, WordEntry)> Parse(IFileVersion fileVersion)
         {
             using (var reader = new StreamReader(fileVersion.Path))
             {
                 const int bufferSize = 2048;
                 var buffer = new char[bufferSize];
                 var word = new StringBuilder();
-                var position = 2;
+                var position = 1;
                 var lineNumber = 1;
                 while (reader.ReadBlock(buffer, 0, bufferSize) != 0)
                 {
