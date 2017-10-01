@@ -14,7 +14,7 @@ namespace Jbta.SearchEngine.Searching
 
         public IEnumerable<WordEntry> Search(string query, bool wholeWord)
         {
-            return _searchIndex.Get(query, wholeWord);
+            return _searchIndex.Get(query?.Trim(), wholeWord);
         }
     }
 }

@@ -20,8 +20,9 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
             get => _searchString;
             set
             {
-                SetField(ref _searchString, value, nameof(SearchText));
-                Search(value, IsWholeWord);
+                var val = value?.Trim();
+                SetField(ref _searchString, val, nameof(SearchText));
+                Search(val, IsWholeWord);
             }
         }
 
@@ -59,7 +60,8 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
                 .OrderBy(r => r.FileVersion.Path)
                 .ThenBy(r => r.LineNumber)
                 .ThenBy(r => r.Position)
-                .Take(500);
+                .Take(500)
+                .ToList();
 
             foreach (var wordEntry in orderedResult)
             {
