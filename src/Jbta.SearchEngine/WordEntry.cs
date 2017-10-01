@@ -4,14 +4,14 @@ namespace Jbta.SearchEngine
 { 
     public class WordEntry : IComparable<WordEntry>
     {
-        public WordEntry(string fileName, int position, int lineNumber)
+        public WordEntry(FileVersion fileVersion, int position, int lineNumber)
         {
-            FileName = fileName;
+            FileVersion = fileVersion;
             Position = position;
             LineNumber = lineNumber;
         }
 
-        public string FileName { get; }
+        public FileVersion FileVersion { get; }
 
         public int Position { get; }
 
@@ -21,7 +21,7 @@ namespace Jbta.SearchEngine
         {
             if (ReferenceEquals(this, other)) return 0;
             if (ReferenceEquals(null, other)) return 1;
-            var fileNameComparison = string.Compare(FileName, other.FileName, StringComparison.InvariantCulture);
+            var fileNameComparison = string.Compare(FileVersion.Path, other.FileVersion.Path, StringComparison.InvariantCulture);
             if (fileNameComparison != 0) return fileNameComparison;
             var positionComparison = Position.CompareTo(other.Position);
             return positionComparison != 0 ? positionComparison : LineNumber.CompareTo(other.LineNumber);

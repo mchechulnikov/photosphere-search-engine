@@ -24,8 +24,8 @@ namespace Jbta.SearchEngine
 
         public void Add(string path)
         {
-            _watcher.Watch(path);
             _indexer.Index(path);
+            _watcher.Watch(path);
         }
 
         public void Remove(string path)
@@ -37,5 +37,7 @@ namespace Jbta.SearchEngine
         {
             return _searcher.Search(query, wholeWord);
         }
+
+        public void Dispose() => _watcher?.Dispose();
     }
 }

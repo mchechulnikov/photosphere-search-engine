@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -8,6 +9,8 @@ namespace Jbta.SearchEngine.FileParsing
     {
         public IEnumerable<(string word, WordEntry)> Parse(string filePath)
         {
+            var lastWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
+            var fileVersion = new FileVersion(filePath, lastWriteTimeUtc);
             using (var reader = new StreamReader(filePath))
             {
                 const int bufferSize = 2048;
@@ -25,7 +28,7 @@ namespace Jbta.SearchEngine.FileParsing
                             if (character == '\n')
                             {
                                 lineNumber++;
-                                position = 0;
+                                position = 1;
                             }
                             if (word.Length < 1)
                             {
@@ -33,9 +36,15 @@ namespace Jbta.SearchEngine.FileParsing
                             }
 
                             var wordString = word.ToString();
-                            yield return (wordString, new WordEntry(filePath, position - wordString.Length - 1, lineNumber));
-
+                            yield return (wordString, new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
                             word.Clear();
+                        }
+                        else if (character == '\0')
+                        {
+                            var wordString = word.ToString();
+                            yield return (wordString, new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
+                            word.Clear();
+                            break;
                         }
                         else if (!char.IsPunctuation(character))
                         {

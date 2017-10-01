@@ -56,14 +56,14 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
         private void AddResultsToList(IEnumerable<WordEntry> result)
         {
             var orderedResult = result
-                .OrderBy(r => r.FileName)
+                .OrderBy(r => r.FileVersion.Path)
                 .ThenBy(r => r.LineNumber)
                 .ThenBy(r => r.Position)
                 .Take(500);
 
             foreach (var wordEntry in orderedResult)
             {
-                var item = new ListBoxItemViewModel(wordEntry.FileName, wordEntry.LineNumber, wordEntry.Position);
+                var item = new ListBoxItemViewModel(wordEntry.FileVersion.Path, wordEntry.LineNumber, wordEntry.Position);
                 ListBoxItems.Add(item);
             }
         }

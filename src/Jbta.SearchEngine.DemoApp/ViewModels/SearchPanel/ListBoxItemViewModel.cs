@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
+﻿namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 {
     internal class ListBoxItemViewModel : ViewModelBase
     {
@@ -17,6 +15,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 
         private string EntryPosition => $"({_lineNumber}:{_position})";
 
-        public override string ToString() => $"{Path.GetFileName(_path)} {EntryPosition}";
+        public override string ToString() => $"{_path} {EntryPosition}";
+        //public override string ToString() => $"{Path.GetFileName(_path)} {EntryPosition}";
     }
 }

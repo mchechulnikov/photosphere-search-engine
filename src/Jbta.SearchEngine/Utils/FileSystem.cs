@@ -5,6 +5,12 @@ namespace Jbta.SearchEngine.Utils
 {
     internal static class FileSystem
     {
+        public static bool IsDirectory(string path) =>
+            File.GetAttributes(path).HasFlag(FileAttributes.Directory);
+
+        public static string GetDirectoryPathByFilePath(string filePath) =>
+            new FileInfo(filePath).DirectoryName;
+
         public static IEnumerable<string> GetFilesPathesByDirectory(string directoryPath)
         {
             var directoryInfo = new DirectoryInfo(directoryPath);

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Jbta.SearchEngine
 {
-    public interface ISearchEngine
+    public interface ISearchEngine : IDisposable
     {
         /// <summary>
         /// Add file or directory to system
