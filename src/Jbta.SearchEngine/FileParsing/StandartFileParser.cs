@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -7,11 +6,9 @@ namespace Jbta.SearchEngine.FileParsing
 {
     internal class StandartFileParser : IFileParser
     {
-        public IEnumerable<(string word, WordEntry)> Parse(string filePath)
+        public IEnumerable<(string word, WordEntry)> Parse(FileVersion fileVersion)
         {
-            var lastWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
-            var fileVersion = new FileVersion(filePath, lastWriteTimeUtc);
-            using (var reader = new StreamReader(filePath))
+            using (var reader = new StreamReader(fileVersion.Path))
             {
                 const int bufferSize = 2048;
                 var buffer = new char[bufferSize];

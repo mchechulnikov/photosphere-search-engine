@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,7 +30,10 @@ namespace Jbta.SearchEngine.FileIndexing
             if (FileSystem.IsDirectory(path))
             {
                 var filesPathes = FileSystem.GetFilesPathesByDirectory(path).ToArray();
-                LoadFiles(filesPathes);
+                foreach (var filePath in filesPathes)
+                {
+                    LoadFile(filePath);
+                }
             }
             else
             {
@@ -40,21 +43,34 @@ namespace Jbta.SearchEngine.FileIndexing
 
         public void RemoveFromIndex(string path)
         {
-            var fileVersions = _fileVersions[path];
-            foreach (var fileVersion in fileVersions)
+            if (_fileVersions.ContainsKey(path))
             {
-                RemoveFileVersion(fileVersion);
+                RemoveFilesFromIndex(path);
+            }
+            else
+            {
+                var filesPathes = _fileVersions.Keys.Where(p => p.StartsWith(path));
+                foreach (var filesPath in filesPathes)
+                {
+                    RemoveFilesFromIndex(filesPath);
+                }
             }
         }
 
-        public void ChangeFilePath(string oldPath, string newPath)
+        public void ChangePath(string oldPath, string newPath)
         {
-            var fileVersions = _fileVersions[oldPath];
-            _fileVersions.Add(newPath, fileVersions);
-
-            foreach (var fileVersion in fileVersions)
+            if (FileSystem.IsDirectory(newPath))
             {
-                fileVersion.Path = newPath;
+                var oldFilesPathes = _fileVersions.Keys.Where(p => p.StartsWith(oldPath)).ToList();
+                foreach (var oldFilePath in oldFilesPathes)
+                {
+                    var newFilePath = newPath + oldFilePath.Substring(oldPath.Length);
+                    ChangeFilePath(oldFilePath, newFilePath);
+                }
+            }
+            else
+            {
+                ChangeFilePath(oldPath, newPath);
             }
         }
 
@@ -69,18 +85,14 @@ namespace Jbta.SearchEngine.FileIndexing
             RemoveIrrelevantFileVersions(filePath);
         }
 
-        private void LoadFiles(params string[] filePathes)
-        {
-            foreach (var filePath in filePathes)
-            {
-                LoadFile(filePath);
-            }
-        }
-
         private void LoadFile(string filePath)
         {
-            var wordsEntries = _fileParser.Parse(filePath).ToArray();
+            var fileVersion = RegisterFileVersion(filePath);
+
+            var wordsEntries = _fileParser.Parse(fileVersion).ToArray();
             var setOfWords = new HashSet<string>();
+            _directIndex.Add(fileVersion, setOfWords);
+
             if (!wordsEntries.Any())
             {
                 return;
@@ -91,21 +103,29 @@ namespace Jbta.SearchEngine.FileIndexing
                 setOfWords.Add(word);
                 _searchIndex.Add(word, wordEntry);
             }
-
-            var fileVersion = AddFileVersion(filePath, wordsEntries);
-            _directIndex.Add(fileVersion, setOfWords);
         }
 
-        private FileVersion AddFileVersion(string filePath, IEnumerable<(string word, WordEntry)> wordsEntries)
+        private FileVersion RegisterFileVersion(string filePath)
         {
-            if (!_fileVersions.TryGetValue(filePath, out var setOfFileVersions))
+            var lastWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
+            var fileVersion = new FileVersion(filePath, lastWriteTimeUtc);
+
+            if (!_fileVersions.TryGetValue(fileVersion.Path, out var setOfFileVersions))
             {
                 setOfFileVersions = new SortedSet<FileVersion>();
-                _fileVersions.Add(filePath, setOfFileVersions);
+                _fileVersions.Add(fileVersion.Path, setOfFileVersions);
             }
-            var fileVersion = wordsEntries.First().Item2.FileVersion;
             setOfFileVersions.Add(fileVersion);
             return fileVersion;
+        }
+
+        private void RemoveFilesFromIndex(string filePath)
+        {
+            var fileVersions = _fileVersions[filePath];
+            foreach (var fileVersion in fileVersions)
+            {
+                RemoveFileVersion(fileVersion);
+            }
         }
 
         private void RemoveFileVersion(FileVersion fileVersion)
@@ -123,8 +143,6 @@ namespace Jbta.SearchEngine.FileIndexing
         {
             var fileVersions = _fileVersions[filePath];
             var lastFileVersion = fileVersions.Last();
-            //var latestFileVersionDateTime = fileVersions.Max(fv => fv.Version);
-            //var lastFileVersion = fileVersions.First(v => v.Version == latestFileVersionDateTime);
             var irrelevantFileVersions = fileVersions.Where(fv => fv != lastFileVersion).ToList();
             if (!irrelevantFileVersions.Any())
             {
@@ -146,8 +164,28 @@ namespace Jbta.SearchEngine.FileIndexing
 
         private bool IsUniqueChange(string filePath)
         {
-            var fileVersions = _fileVersions[filePath];
-            return fileVersions.All(fv => fv.Version != File.GetLastWriteTimeUtc(filePath));
+            if (_fileVersions.TryGetValue(filePath, out var fileVersions))
+            {
+                return fileVersions.All(fv => fv.Version != File.GetLastWriteTimeUtc(filePath));
+            }
+            return false;
+        }
+
+        private void ChangeFilePath(string oldPath, string newPath)
+        {
+            if (!_fileVersions.TryGetValue(oldPath, out var fileVersions))
+            {
+                return;
+            }
+
+            _fileVersions.Add(newPath, fileVersions);
+
+            foreach (var fileVersion in fileVersions)
+            {
+                fileVersion.Path = newPath;
+            }
+
+            _fileVersions.Remove(oldPath);
         }
     }
 }

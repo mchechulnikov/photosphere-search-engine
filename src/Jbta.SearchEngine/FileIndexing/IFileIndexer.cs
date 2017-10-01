@@ -5,6 +5,6 @@
         void Index(string path);
         void RemoveFromIndex(string path);
         void UpdateIndex(string filePath);
-        void ChangeFilePath(string oldPath, string newPath);
+        void ChangePath(string oldPath, string newPath);
     }
 }

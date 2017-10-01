@@ -4,6 +4,6 @@ namespace Jbta.SearchEngine.FileParsing
 {
     public interface IFileParser
     {
-        IEnumerable<(string word, WordEntry)> Parse(string filePath);
+        IEnumerable<(string word, WordEntry)> Parse(FileVersion fileVersion);
     }
 }

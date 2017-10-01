@@ -64,7 +64,7 @@ namespace Jbta.SearchEngine.FileWatching
             watcher.Created += (o, e) => _fileIndexer.Index(e.FullPath);
             watcher.Changed += (o, e) => _fileIndexer.UpdateIndex(e.FullPath);;
             watcher.Deleted += (o, e) => _fileIndexer.RemoveFromIndex(e.FullPath);
-            watcher.Renamed += (o, e) => _fileIndexer.ChangeFilePath(e.OldFullPath, e.FullPath);
+            watcher.Renamed += (o, e) => _fileIndexer.ChangePath(e.OldFullPath, e.FullPath);
             return watcher;
         }
     }
