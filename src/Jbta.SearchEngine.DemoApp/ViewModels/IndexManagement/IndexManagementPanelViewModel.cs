@@ -97,6 +97,18 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         private async Task OnAddFilesButtonClick(object sender)
         {
+            var selectedPathes = GetFilesFromDialog();
+
+            if (selectedPathes == null || !selectedPathes.Any())
+            {
+                return;
+            }
+
+            await AyncIndexing(selectedPathes);
+        }
+
+        private static string[] GetFilesFromDialog()
+        {
             string[] selectedPathes = null;
             using (var dialog = new OpenFileDialog())
             {
@@ -113,13 +125,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                     selectedPathes = dialog.FileNames;
                 }
             }
-
-            if (selectedPathes == null || !selectedPathes.Any())
-            {
-                return;
-            }
-
-            await AyncIndexing(selectedPathes);
+            return selectedPathes;
         }
 
         private async Task AyncIndexing(IReadOnlyCollection<string> pathes)

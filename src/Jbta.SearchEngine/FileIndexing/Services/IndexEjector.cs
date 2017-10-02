@@ -43,25 +43,17 @@ namespace Jbta.SearchEngine.FileIndexing.Services
         {
             Task.Run(() =>
             {
-                var fileVersions = _filesVersionsRegistry.Get(filePath);
-                foreach (var fileVersion in fileVersions)
+                var fileVersions = _filesVersionsRegistry.Get(filePath).ToList();
+                _index.Remove(fileVersions);
+
+                if (_settings.GcCollect)
                 {
-                    RemoveFileVersionFromIndex(fileVersion);
+                    GC.Collect();
                 }
                 _filesVersionsRegistry.Remove(filePath);
 
                 FileRemovedFromIndex?.Invoke(new FileIndexingEventArgs(filePath));
             });
-        }
-
-        private void RemoveFileVersionFromIndex(FileVersion fileVersion)
-        {
-            _index.Remove(fileVersion);
-
-            if (_settings.GcCollect)
-            {
-                GC.Collect();
-            }
         }
     }
 }

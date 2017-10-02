@@ -12,6 +12,8 @@ namespace Jbta.SearchEngine.FileIndexing
 
         public string Path { get; set; }
 
+        public string IsDeleted { get; set; }
+
         public DateTime Version { get; }
 
         public int CompareTo(FileVersion other)
