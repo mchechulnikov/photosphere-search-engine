@@ -58,6 +58,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\SearchSystem.cs" />
+    <Compile Include="Utils\ActionExtensions.cs" />
+    <Compile Include="Utils\FileSystem.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\FileTreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\FolderTreeViewItemViewModel.cs" />
     <Compile Include="ViewModels\IndexManagement\TreeView\ITreeViewItemViewModel.cs" />

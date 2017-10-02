@@ -33,41 +33,25 @@ namespace Jbta.SearchEngine.Trie.Services
 
         private static void RemoveValue(Func<T, bool> valueSelector, Node<T> node)
         {
-            node.Lock.EnterWriteLock();
-            try
+            foreach (var value in node.Values.Where(valueSelector).ToList())
             {
-                foreach (var value in node.Values.Where(valueSelector).ToList())
-                {
-                    node.Values.Remove(value);
-                }
-            }
-            finally
-            {
-                node.Lock.ExitWriteLock();
+                node.Values.Remove(value);
             }
         }
 
         private void RemoveNode(Node<T> node, Node<T> parent)
         {
-            parent.Lock.EnterWriteLock();
-            try
+            if (node.Children.Count < 1)
             {
-                if (node.Children.Count < 1)
+                parent.Children.Remove(node.Key[0]);
+                if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
                 {
-                    parent.Children.Remove(node.Key[0]);
-                    if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
-                    {
-                        MergeParentWithAloneChild(parent);
-                    }
-                }
-                else if (node.Children.Count == 1)
-                {
-                    MergeParentWithAloneChild(node);
+                    MergeParentWithAloneChild(parent);
                 }
             }
-            finally
+            else if (node.Children.Count == 1)
             {
-                parent.Lock.ExitWriteLock();
+                MergeParentWithAloneChild(node);
             }
         }
 

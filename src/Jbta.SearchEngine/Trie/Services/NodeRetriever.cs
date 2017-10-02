@@ -6,48 +6,32 @@ namespace Jbta.SearchEngine.Trie.Services
     {
         public Node<T> Retrieve(Node<T> node, string query, int position)
         {
-            node.Lock.EnterReadLock();
-            try
-            {
-                return position >= query.Length
-                    ? node
-                    : SearchDeep(node, query, position);
-            }
-            finally
-            {
-                node.Lock.ExitReadLock();
-            }
+            return position >= query.Length
+                ? node
+                : SearchDeep(node, query, position);
         }
 
         public (Node<T> node, Node<T> parent) RetrieveWithParent(Node<T> startNode, string query, int position)
         {
-            startNode.Lock.EnterReadLock();
-            try
+            var node = startNode;
+            var parent = node;
+            while (true)
             {
-                var node = startNode;
-                var parent = node;
-                while (true)
+                if (position >= query.Length)
                 {
-                    if (position >= query.Length)
-                    {
-                        break;
-                    }
-
-                    var nextNode = SearchChild(node, query, position);
-                    if (nextNode == null)
-                    {
-                        break;
-                    }
-                    parent = node;
-                    node = nextNode;
-                    position += nextNode.Key.Length;
+                    break;
                 }
-                return (node, parent);
+
+                var nextNode = SearchChild(node, query, position);
+                if (nextNode == null)
+                {
+                    break;
+                }
+                parent = node;
+                node = nextNode;
+                position += nextNode.Key.Length;
             }
-            finally
-            {
-                startNode.Lock.ExitReadLock();
-            }
+            return (node, parent);
         }
 
         private Node<T> SearchDeep(Node<T> node, string query, int position)

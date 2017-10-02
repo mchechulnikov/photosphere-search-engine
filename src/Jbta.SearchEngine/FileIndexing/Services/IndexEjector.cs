@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Jbta.SearchEngine.Events;
 
 namespace Jbta.SearchEngine.FileIndexing.Services
 {
     internal class IndexEjector : IIndexEjector
     {
-        private readonly FilesVersionsRegistry _filesVersionsRegistry;
         private readonly IIndex _index;
+        private readonly FilesVersionsRegistry _filesVersionsRegistry;
         private readonly Settings _settings;
 
         public IndexEjector(
-            FilesVersionsRegistry filesVersionsRegistry,
             IIndex index,
+            FilesVersionsRegistry filesVersionsRegistry,
             Settings settings)
         {
-            _filesVersionsRegistry = filesVersionsRegistry;
             _index = index;
+            _filesVersionsRegistry = filesVersionsRegistry;
             _settings = settings;
         }
+
+        public event FileIndexingEventHandler FileRemovedFromIndex;
 
         public void Eject(string path)
         {
@@ -27,7 +31,7 @@ namespace Jbta.SearchEngine.FileIndexing.Services
             }
             else
             {
-                var filesPathes = _filesVersionsRegistry.Files.Where(p => p.StartsWith(path));
+                var filesPathes = _filesVersionsRegistry.Files.Where(p => p.StartsWith(path)).ToList();
                 foreach (var filePath in filesPathes)
                 {
                     RemoveFileFromIndex(filePath);
@@ -37,12 +41,17 @@ namespace Jbta.SearchEngine.FileIndexing.Services
 
         private void RemoveFileFromIndex(string filePath)
         {
-            var fileVersions = _filesVersionsRegistry.Get(filePath);
-            foreach (var fileVersion in fileVersions)
+            Task.Run(() =>
             {
-                RemoveFileVersionFromIndex(fileVersion);
-            }
-            _filesVersionsRegistry.Remove(filePath);
+                var fileVersions = _filesVersionsRegistry.Get(filePath);
+                foreach (var fileVersion in fileVersions)
+                {
+                    RemoveFileVersionFromIndex(fileVersion);
+                }
+                _filesVersionsRegistry.Remove(filePath);
+
+                FileRemovedFromIndex?.Invoke(new FileIndexingEventArgs(filePath));
+            });
         }
 
         private void RemoveFileVersionFromIndex(FileVersion fileVersion)

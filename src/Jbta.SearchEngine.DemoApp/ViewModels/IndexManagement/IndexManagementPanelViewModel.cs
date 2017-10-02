@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -15,9 +16,9 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 {
     internal class IndexManagementPanelViewModel : ViewModelBase
     {
+        private int _indexingFilesCount;
         private bool _isIndexing;
-        private Visibility _progressBarVisibility = Visibility.Hidden;
-        private int _progressBarValue;
+        private Visibility _indexingStatusLabelVisibility = Visibility.Hidden;
         private RelayCommand _addFolderCommand;
         private RelayCommand _addFilesCommand;
         private RelayCommand _removeButtonClickCommand;
@@ -25,6 +26,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
         public IndexManagementPanelViewModel()
         {
             TreeViewItems = new ObservableCollection<ITreeViewItemViewModel>();
+            SubscribeOnIndexStateChange();
         }
 
         public bool IsIndexing
@@ -33,16 +35,10 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             set => SetField(ref _isIndexing, value, nameof(IsIndexing));
         }
 
-        public Visibility ProgressBarVisibility
+        public Visibility IndexingStatusLabelVisibility
         {
-            get => _progressBarVisibility;
-            set => SetField(ref _progressBarVisibility, value, nameof(ProgressBarVisibility));
-        }
-
-        public int ProgressBarValue
-        {
-            get => _progressBarValue;
-            set => SetField(ref _progressBarValue, value, nameof(ProgressBarValue));
+            get => _indexingStatusLabelVisibility;
+            set => SetField(ref _indexingStatusLabelVisibility, value, nameof(IndexingStatusLabelVisibility));
         }
 
         public ObservableCollection<ITreeViewItemViewModel> TreeViewItems { get; }
@@ -55,6 +51,27 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         public ICommand RemoveButtonClick =>
             _removeButtonClickCommand ?? (_removeButtonClickCommand = new RelayCommand(OnRemoveButtonClick));
+
+        private void SubscribeOnIndexStateChange()
+        {
+            SearchSystem.EngineInstance.FileIndexingStarted += a => DispatchService.Invoke(() =>
+            {
+                Interlocked.Increment(ref _indexingFilesCount);
+                if (_indexingFilesCount >= 1)
+                {
+                    IndexingStatusLabelVisibility = Visibility.Visible;
+                }
+            });
+            SearchSystem.EngineInstance.FileIndexed += a => DispatchService.Invoke(() =>
+            {
+                Interlocked.Decrement(ref _indexingFilesCount);
+                if (_indexingFilesCount < 1)
+                {
+                    IndexingStatusLabelVisibility = Visibility.Hidden;
+                }
+            });
+            SearchSystem.EngineInstance.FilePathChanged += a => DispatchService.Invoke(RefreshTree);
+        }
 
         private async Task OnAddFolderButtonClick(object sender)
         {
@@ -74,12 +91,8 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                 return;
             }
 
-            ProgressBarVisibility = Visibility.Visible;
-            await Task.Run(() => SearchEngine.DemoApp.Model.SearchSystem.EngineInstance.Add(selectedPath));
-            ProgressBarValue += 100;
+            await Task.Run(() => SearchSystem.EngineInstance.Add(selectedPath));
             TreeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
-            ProgressBarValue = 0;
-            ProgressBarVisibility = Visibility.Hidden;
         }
 
         private async Task OnAddFilesButtonClick(object sender)
@@ -92,7 +105,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                 dialog.DefaultExt = ".txt";
                 dialog.CheckFileExists = true;
                 dialog.CheckPathExists = true;
-                dialog.Filter = "Text files (*.txt)|*.txt|Log Files (*.log)|*.log|C# Files (*.cs)|*.cs";
+                dialog.Filter = "Text files (*.txt)|*.txt|Log Files (*.log)|*.log|C# Files (*.cs)|*.cs|All files (*.*)|*.*";
 
                 var dialogResult = dialog.ShowDialog();
                 if (dialogResult == DialogResult.OK && dialog.FileNames != null && dialog.FileNames.Any())
@@ -106,19 +119,14 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                 return;
             }
 
-            ProgressBarVisibility = Visibility.Visible;
             await AyncIndexing(selectedPathes);
-            ProgressBarVisibility = Visibility.Hidden;
-            ProgressBarValue = 0;
         }
 
-        private async Task AyncIndexing(string[] pathes)
+        private async Task AyncIndexing(IReadOnlyCollection<string> pathes)
         {
-            var step = 100 / pathes.Length;
             var tasks = pathes.Select(async path =>
             {
                 await Task.Run(() => SearchSystem.EngineInstance.Add(path));
-                ProgressBarValue += step;
                 TreeViewItems.Add(new FileTreeViewItemViewModel(path));
             });
             await Task.WhenAll(tasks);
@@ -149,6 +157,23 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
         private static void RemoveFromSearchSystem(ITreeViewItemViewModel item)
         {
             Task.Run(() => SearchSystem.EngineInstance.Remove(item.Content));
+        }
+
+        private void RefreshTree()
+        {
+            var indexedPathes = SearchSystem.EngineInstance.IndexedPathes;
+            TreeViewItems.Clear();
+            foreach (var path in indexedPathes.OrderBy(p => p))
+            {
+                if (FileSystem.IsDirectory(path))
+                {
+                    TreeViewItems.Add(new FolderTreeViewItemViewModel(path));
+                }
+                else
+                {
+                    TreeViewItems.Add(new FileTreeViewItemViewModel(path));
+                }
+            }
         }
     }
 }

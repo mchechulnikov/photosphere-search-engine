@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.Trie;
+using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileIndexing
 {
@@ -9,6 +11,7 @@ namespace Jbta.SearchEngine.FileIndexing
     {
         private readonly ITrie<WordEntry> _searchIndex;
         private readonly IDictionary<FileVersion, ISet<string>> _directIndex;
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         public Index()
         {
@@ -18,43 +21,64 @@ namespace Jbta.SearchEngine.FileIndexing
 
         public void Add(FileVersion fileVersion, IEnumerable<ParsedWord> words)
         {
-            var setOfWords = new HashSet<string>();
-            _directIndex.Add(fileVersion, setOfWords);
-
-            foreach (var word in words)
+            using(_lock.ForWriting())
             {
-                setOfWords.Add(word.Word);
-                _searchIndex.Add(word.Word, word.Entry);
+                var setOfWords = new HashSet<string>();
+                _directIndex.Add(fileVersion, setOfWords);
+
+                foreach (var word in words)
+                {
+                    setOfWords.Add(word.Word);
+                    _searchIndex.Add(word.Word, word.Entry);
+                }
             }
         }
 
         public void Remove(FileVersion fileVersion)
         {
-            var words = _directIndex[fileVersion];
-            foreach (var word in words)
+            using (_lock.ForWriting())
             {
-                _searchIndex.Remove(word, we => we.FileVersion == fileVersion);
+                var words = _directIndex[fileVersion];
+                foreach (var word in words)
+                {
+                    _searchIndex.Remove(word, we => we.FileVersion == fileVersion);
+                }
+                _directIndex.Remove(fileVersion);
             }
-            _directIndex.Remove(fileVersion);
         }
 
         public void Remove(IReadOnlyCollection<FileVersion> fileVersions)
         {
-            var words = fileVersions.SelectMany(fv => _directIndex[fv]);
-            foreach (var word in words)
+            using (_lock.ForWriting())
             {
-                _searchIndex.Remove(word, e => fileVersions.Contains(e.FileVersion));
-            }
+                var words = fileVersions.SelectMany(fv => _directIndex[fv]);
+                foreach (var word in words)
+                {
+                    _searchIndex.Remove(word, e => fileVersions.Contains(e.FileVersion));
+                }
 
-            foreach (var fileVersion in fileVersions)
-            {
-                _directIndex.Remove(fileVersion);
+                foreach (var fileVersion in fileVersions)
+                {
+                    _directIndex.Remove(fileVersion);
+                }
             }
         }
 
         public IEnumerable<WordEntry> Get(string query, bool wholeWord)
         {
-            return _searchIndex.Get(query?.Trim(), wholeWord);
+            using (_lock.ForReading())
+            {
+                return _searchIndex
+                    .Get(query?.Trim(), wholeWord)
+                    .GroupBy(e => e.FileVersion.Path)
+                    .Select(g => new
+                    {
+                        Path = g.Key,
+                        ActualVersion = g.Max(e => e.FileVersion.Version),
+                        Entry = g.ToList()
+                    })
+                    .SelectMany(o => o.Entry.Where(e => e.FileVersion.Version == o.ActualVersion));
+            }
         }
     }
 }

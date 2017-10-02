@@ -24,13 +24,18 @@ namespace Jbta.SearchEngine.Trie.Services
                 return Enumerable.Empty<T>();
             }
 
+            IEnumerable<T> values;
             if (wholeWord)
             {
-                return keyNode.Key.SubstringFromBegin.Equals(query)
+                values = keyNode.Key.SubstringFromBegin.Equals(query)
                     ? keyNode.Values
                     : Enumerable.Empty<T>();
             }
-            return keyNode.Subtree.SelectMany(n => n.Values);
+            else
+            {
+                values = keyNode.Subtree.SelectMany(n => n.Values);
+            }
+            return values;
         } 
     }
 }

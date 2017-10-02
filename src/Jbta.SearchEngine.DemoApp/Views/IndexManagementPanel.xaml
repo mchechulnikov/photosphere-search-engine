@@ -42,13 +42,15 @@
             Command="{Binding RemoveButtonClick}"
             IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
             Width="75" />
-        <ProgressBar
-            Grid.Row="0"
+        <Label
+            Content="Indexing..."
+            HorizontalAlignment="Center"
             Margin="250,10,10,10"
-            Minimum="0"
-            Maximum="100"
-            Visibility="{Binding ProgressBarVisibility}" 
-            Value="{Binding ProgressBarValue}"/>
+            VerticalAlignment="Top"
+            Padding="0"
+            FontWeight="Bold"
+            FontSize="14"
+            Visibility="{Binding IndexingStatusLabelVisibility}"/>
         <TreeView
             Grid.Row="1"
             Margin="10"

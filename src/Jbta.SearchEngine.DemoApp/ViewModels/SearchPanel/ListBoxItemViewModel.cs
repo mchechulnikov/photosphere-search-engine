@@ -16,6 +16,5 @@
         private string EntryPosition => $"({_lineNumber}:{_position})";
 
         public override string ToString() => $"{_path} {EntryPosition}";
-        //public override string ToString() => $"{Path.GetFileName(_path)} {EntryPosition}";
     }
 }

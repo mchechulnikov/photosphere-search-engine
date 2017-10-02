@@ -1,5 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileIndexing.Services;
 using Jbta.SearchEngine.Utils;
@@ -17,7 +18,8 @@ namespace Jbta.SearchEngine.FileWatching
         private readonly IIndexUpdater _indexUpdater;
         private readonly IIndexEjector _indexEjector;
         private readonly FilesVersionsRegistry _filesVersionsRegistry;
-        private readonly ConcurrentDictionary<string, FileSystemWatcher> _watchers;
+        private readonly IDictionary<string, FileSystemWatcher> _watchers;
+        private readonly ReaderWriterLockSlim _lock;
 
         public FileWatcher(
             IFileIndexer indexer,
@@ -29,27 +31,36 @@ namespace Jbta.SearchEngine.FileWatching
             _indexUpdater = indexUpdater;
             _indexEjector = indexEjector;
             _filesVersionsRegistry = filesVersionsRegistry;
-            _watchers = new ConcurrentDictionary<string, FileSystemWatcher>();
+            _watchers = new Dictionary<string, FileSystemWatcher>();
+            _lock = new ReaderWriterLockSlim();
         }
+
+        public IEnumerable<string> WatchedPathes => _watchers.Keys;
 
         public void Watch(string path)
         {
-            _indexer.Index(path);
-
             var watcher = GetNewWatcher(path);
-            _watchers.AddOrUpdate(path, watcher, (k, v) => v);
+
+            using (_lock.ForWriting())
+            {
+                _watchers.Add(path, watcher);
+            }
 
             watcher.EnableRaisingEvents = true;
         }
 
         public void Unwatch(string path)
         {
-            if (!_watchers.TryRemove(path, out var watcher))
+            using (_lock.ForWriting())
             {
-                return;
+                if (!_watchers.TryGetValue(path, out var watcher))
+                {
+                    return;
+                }
+                watcher.EnableRaisingEvents = false;
+                watcher.Dispose();
+                _watchers.Remove(path);
             }
-            watcher.EnableRaisingEvents = false;
-            watcher.Dispose();
         }
 
         public void Dispose()

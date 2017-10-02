@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Jbta.SearchEngine.Trie.ValueObjects;
 
 namespace Jbta.SearchEngine.Trie
@@ -12,7 +11,6 @@ namespace Jbta.SearchEngine.Trie
             Key = new StringSlice(string.Empty);
             Values = new List<T>();
             Children = new Dictionary<char, Node<T>>();
-            Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         }
 
         public Node(StringSlice key, T value)
@@ -25,7 +23,6 @@ namespace Jbta.SearchEngine.Trie
             Values = values;
             Key = key;
             Children = children;
-            Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         }
 
         public Dictionary<char, Node<T>> Children { get; set; }
@@ -33,8 +30,6 @@ namespace Jbta.SearchEngine.Trie
         public StringSlice Key { get; set; }
 
         public IList<T> Values { get; set; }
-
-        public ReaderWriterLockSlim Lock { get; }
 
         public IEnumerable<Node<T>> Subtree
         {

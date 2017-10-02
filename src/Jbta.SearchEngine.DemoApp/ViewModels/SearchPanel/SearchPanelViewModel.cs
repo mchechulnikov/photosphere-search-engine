@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using Jbta.SearchEngine.DemoApp.Model;
+using Jbta.SearchEngine.DemoApp.Utils;
+using Jbta.SearchEngine.Events;
 
 namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 {
@@ -13,6 +15,8 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
         public SearchPanelViewModel()
         {
             ListBoxItems = new ObservableCollection<ListBoxItemViewModel>();
+
+            SubscribeOnIndexStateChange();
         }
 
         public string SearchText
@@ -38,6 +42,18 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 
         public ObservableCollection<ListBoxItemViewModel> ListBoxItems { get; }
 
+        private void SubscribeOnIndexStateChange()
+        {
+            SearchSystem.EngineInstance.FileIndexed += OnIndexStateChange;
+            SearchSystem.EngineInstance.FileRemovedFromIndex += OnIndexStateChange;
+            SearchSystem.EngineInstance.FilePathChanged += OnIndexStateChange;
+
+            void OnIndexStateChange(FileIndexingEventArgs a)
+            {
+                DispatchService.Invoke(() => Search(_searchString, _isWholeWord));
+            }
+        }
+
         private void Search(string value, bool isWholeWord)
         {
             ListBoxItems.Clear();
@@ -45,6 +61,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
             {
                 return;
             }
+
             var serchResult = SearchSystem.EngineInstance.Search(value, isWholeWord);
             if (serchResult == null)
             {

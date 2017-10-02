@@ -40,7 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Events\FileEventArgs.cs" />
+    <Compile Include="Events\FileIndexingEventArgs.cs" />
+    <Compile Include="Events\FileIndexingEventHandler.cs" />
     <Compile Include="FileIndexing\FilesVersionsRegistry.cs" />
     <Compile Include="FileIndexing\IIndex.cs" />
     <Compile Include="FileIndexing\Services\IIndexEjector.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Resources\DefaultSupportedFiles.cs" />
     <Compile Include="Utils\CharExtensions.cs" />
     <Compile Include="Utils\FileSystem.cs" />
+    <Compile Include="Utils\ReaderWriterLockSlimExtensions.cs" />
     <Compile Include="WordEntry.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="WordsSearchEngine.cs" />

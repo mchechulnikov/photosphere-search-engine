@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileIndexing
@@ -8,30 +10,32 @@ namespace Jbta.SearchEngine.FileIndexing
     internal class FilesVersionsRegistry
     {
         private readonly IDictionary<string, ISet<FileVersion>> _fileVersions;
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         public FilesVersionsRegistry()
         {
             _fileVersions = new Dictionary<string, ISet<FileVersion>>();
         }
 
-        public bool Contains(string filePath) => _fileVersions.ContainsKey(filePath);
+        public event FileIndexingEventHandler FilePathChanged;
 
-        public IEnumerable<string> Files => _fileVersions.Keys;
-
-        public IEnumerable<FileVersion> Get(string filePath) => _fileVersions[filePath];
-
-        public void Remove(string filePath) => _fileVersions.Remove(filePath);
-
-        public IReadOnlyCollection<FileVersion> RemoveIrrelevantFileVersions(string filePath)
+        public bool Contains(string filePath)
         {
-            var fileVersions = _fileVersions[filePath];
-            var lastFileVersion = fileVersions.Last();
-            var irrelevantFileVersions = fileVersions.Where(fv => fv != lastFileVersion).ToList();
-            foreach (var fileVersion in irrelevantFileVersions)
+            using (_lock.ForReading())
             {
-                fileVersions.Remove(fileVersion);
+                return _fileVersions.ContainsKey(filePath);
             }
-            return irrelevantFileVersions;
+        }
+
+        public IEnumerable<string> Files
+        {
+            get
+            {
+                using (_lock.ForReading())
+                {
+                    return _fileVersions.Keys;
+                }
+            }
         }
 
         public FileVersion RegisterFileVersion(string filePath)
@@ -39,19 +43,56 @@ namespace Jbta.SearchEngine.FileIndexing
             var lastWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
             var fileVersion = new FileVersion(filePath, lastWriteTimeUtc);
 
-            if (!_fileVersions.TryGetValue(fileVersion.Path, out var setOfFileVersions))
+            using (_lock.ForWriting())
             {
-                setOfFileVersions = new SortedSet<FileVersion>();
-                _fileVersions.Add(fileVersion.Path, setOfFileVersions);
+                if (!_fileVersions.TryGetValue(fileVersion.Path, out var setOfFileVersions))
+                {
+                    setOfFileVersions = new SortedSet<FileVersion>();
+                    _fileVersions.Add(fileVersion.Path, setOfFileVersions);
+                }
+                setOfFileVersions.Add(fileVersion);
             }
-            setOfFileVersions.Add(fileVersion);
             return fileVersion;
+        }
+
+        public IEnumerable<FileVersion> Get(string filePath)
+        {
+            using (_lock.ForReading())
+            {
+                return _fileVersions[filePath];
+            }
+        }
+
+        public void Remove(string filePath)
+        {
+            using (_lock.ForWriting())
+            {
+                _fileVersions.Remove(filePath);
+            }
+        }
+
+        public IReadOnlyCollection<FileVersion> RemoveIrrelevantFileVersions(string filePath)
+        {
+            using (_lock.ForWriting())
+            {
+                var fileVersions = _fileVersions[filePath];
+                var lastFileVersion = fileVersions.Last();
+                var irrelevantFileVersions = fileVersions.Where(fv => fv != lastFileVersion).ToList();
+                foreach (var fileVersion in irrelevantFileVersions)
+                {
+                    fileVersions.Remove(fileVersion);
+                }
+                return irrelevantFileVersions;
+            }
         }
 
         public bool IsNeedToBeUpdated(string filePath)
         {
-            return _fileVersions.TryGetValue(filePath, out var fileVersions)
-                && fileVersions.All(fv => fv.Version != File.GetLastWriteTimeUtc(filePath));
+            using (_lock.ForWriting())
+            {
+                return _fileVersions.TryGetValue(filePath, out var fileVersions)
+                       && fileVersions.All(fv => fv.Version != File.GetLastWriteTimeUtc(filePath));
+            }
         }
 
         public void ChangePath(string oldPath, string newPath)
@@ -73,19 +114,24 @@ namespace Jbta.SearchEngine.FileIndexing
 
         private void ChangeFilePath(string oldPath, string newPath)
         {
-            if (!_fileVersions.TryGetValue(oldPath, out var fileVersions))
+            using (_lock.ForWriting())
             {
-                return;
+                if (!_fileVersions.TryGetValue(oldPath, out var fileVersions))
+                {
+                    return;
+                }
+
+                _fileVersions.Add(newPath, fileVersions);
+
+                foreach (var fileVersion in fileVersions)
+                {
+                    fileVersion.Path = newPath;
+                }
+
+                _fileVersions.Remove(oldPath);
             }
 
-            _fileVersions.Add(newPath, fileVersions);
-
-            foreach (var fileVersion in fileVersions)
-            {
-                fileVersion.Path = newPath;
-            }
-
-            _fileVersions.Remove(oldPath);
+            FilePathChanged?.Invoke(new FileIndexingEventArgs(newPath));
         }
     }
 }

@@ -23,21 +23,13 @@ namespace Jbta.SearchEngine.Trie.Services
 
         private void Add(Node<T> node, StringSlice key, T value)
         {
-            node.Lock.EnterWriteLock();
-            try
+            if (node.Children.TryGetValue(key[0], out var childNode))
             {
-                if (node.Children.TryGetValue(key[0], out var childNode))
-                {
-                    AddWithZip(childNode, key, value);
-                }
-                else
-                {
-                    node.Children.Add(key[0], new Node<T>(key, value));
-                }
+                AddWithZip(childNode, key, value);
             }
-            finally
+            else
             {
-                node.Lock.ExitWriteLock();
+                node.Children.Add(key[0], new Node<T>(key, value));
             }
         }
 
@@ -65,39 +57,23 @@ namespace Jbta.SearchEngine.Trie.Services
         {
             var leftChild = new Node<T>(zippedSlices.FirstTail, node.Values, node.Children);
 
-            node.Lock.EnterWriteLock();
-            try
+            node.Values = new List<T> {value};
+            node.Key = zippedSlices.Head;
+            node.Children = new Dictionary<char, Node<T>>
             {
-                node.Values = new List<T> {value};
-                node.Key = zippedSlices.Head;
-                node.Children = new Dictionary<char, Node<T>>
-                {
-                    { zippedSlices.FirstTail[0], leftChild }
-                };
-            }
-            finally
-            {
-                node.Lock.ExitWriteLock();
-            }
+                { zippedSlices.FirstTail[0], leftChild }
+            };
         }
 
         private static void AddBothTails(Node<T> node, ZippedSlices zippedSlices, T value)
         {
-            node.Lock.EnterWriteLock();
-            try
+            node.Children = new Dictionary<char, Node<T>>
             {
-                node.Children = new Dictionary<char, Node<T>>
-                {
-                    { zippedSlices.FirstTail[0], new Node<T>(zippedSlices.FirstTail, node.Values, node.Children) },
-                    { zippedSlices.SecondTail[0], new Node<T>(zippedSlices.SecondTail, value) }
-                };
-                node.Values = new List<T>();
-                node.Key = zippedSlices.Head;
-            }
-            finally
-            {
-                node.Lock.ExitWriteLock();
-            }
+                { zippedSlices.FirstTail[0], new Node<T>(zippedSlices.FirstTail, node.Values, node.Children) },
+                { zippedSlices.SecondTail[0], new Node<T>(zippedSlices.SecondTail, value) }
+            };
+            node.Values = new List<T>();
+            node.Key = zippedSlices.Head;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileIndexing.Services;
@@ -12,6 +11,7 @@ namespace Jbta.SearchEngine
     public class WordsSearchEngine : ISearchEngine
     {
         private readonly IIndex _index;
+        private readonly FilesVersionsRegistry _filesVersionsRegistry;
         private readonly IFileIndexer _indexer;
         private readonly IFileWatcher _watcher;
         private readonly IIndexEjector _indexEjector;
@@ -21,17 +21,25 @@ namespace Jbta.SearchEngine
         public WordsSearchEngine(Settings settings)
         {
             var fileParserProvider = new FileParserProvider(settings);
-            var filesVersionsRegistry = new FilesVersionsRegistry();
+            _filesVersionsRegistry = new FilesVersionsRegistry();
             _index = new Index();
-            _indexer = new FileIndexer(fileParserProvider, _index, filesVersionsRegistry, settings);
-            _indexEjector = new IndexEjector(filesVersionsRegistry, _index, settings);
-            var indexUpdater = new IndexUpdater(_indexer, _index, filesVersionsRegistry);
-            _watcher = new FileWatcher(_indexer, indexUpdater, _indexEjector, filesVersionsRegistry);
+            _indexer = new FileIndexer(fileParserProvider, _index, _filesVersionsRegistry, settings);
+            _indexEjector = new IndexEjector(_index, _filesVersionsRegistry, settings);
+            var indexUpdater = new IndexUpdater(_indexer, _index, _filesVersionsRegistry);
+            _watcher = new FileWatcher(_indexer, indexUpdater, _indexEjector, _filesVersionsRegistry);
+
+            _indexer.FileIndexingStarted += OnFileIndexingStarted;
+            _indexer.FileIndexed += OnFileIndexed;
+            _indexEjector.FileRemovedFromIndex += OnFileRemovedFromIndex;
+            _filesVersionsRegistry.FilePathChanged += OnFilePathChanged;
         }
 
-        public event EventHandler<FileEventArgs> FileIndexed;
-        public event EventHandler<FileEventArgs> FileRemovedFromIndex;
-        public event EventHandler<FileEventArgs> FilePathChanged;
+        public event FileIndexingEventHandler FileIndexingStarted;
+        public event FileIndexingEventHandler FileIndexed;
+        public event FileIndexingEventHandler FileRemovedFromIndex;
+        public event FileIndexingEventHandler FilePathChanged;
+
+        public IEnumerable<string> IndexedPathes => _watcher.WatchedPathes;
 
         public void Add(string path)
         {
@@ -60,6 +68,27 @@ namespace Jbta.SearchEngine
             return _index.Get(query, wholeWord);
         }
 
-        public void Dispose() => _watcher?.Dispose();
+        public void Dispose()
+        {
+            _watcher?.Dispose();
+
+            _indexer.FileIndexingStarted -= OnFileIndexingStarted;
+            _indexer.FileIndexed -= OnFileIndexed;
+            _indexEjector.FileRemovedFromIndex -= OnFileRemovedFromIndex;
+            _filesVersionsRegistry.FilePathChanged -= OnFilePathChanged;
+
+            FileIndexingStarted = null;
+            FileIndexed = null;
+            FileRemovedFromIndex = null;
+            FilePathChanged = null;
+        }
+
+        private void OnFileIndexingStarted(FileIndexingEventArgs args) => FileIndexingStarted?.Invoke(args);
+
+        private void OnFileIndexed(FileIndexingEventArgs args) => FileIndexed?.Invoke(args);
+
+        private void OnFileRemovedFromIndex(FileIndexingEventArgs args) => FileRemovedFromIndex?.Invoke(args);
+
+        private void OnFilePathChanged(FileIndexingEventArgs args) => FilePathChanged?.Invoke(args);
     }
 }
