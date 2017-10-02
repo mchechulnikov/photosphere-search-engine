@@ -67,6 +67,78 @@ namespace Jbta.SearchEngine.IntegrationTests
             Assert.Equal(0, result.Count());
         }
 
+        [Fact]
+        public void Add_OneKeyTwice_TwoResultValues()
+        {
+            var trie = new PatriciaTrie<int>();
+
+            trie.Add("foo", 42);
+            trie.Add("foo", 43);
+
+            var result = trie.Get("foo");
+            Assert.Equal(2, result.Count());
+        }
+
+        [Fact]
+        public void Add_OneKeyTwice_ExpectedValues()
+        {
+            var trie = new PatriciaTrie<int>();
+
+            trie.Add("foo", 42);
+            trie.Add("foo", 43);
+
+            var result = trie.Get("foo").ToArray();
+            Assert.Equal(42, result[0]);
+            Assert.Equal(43, result[1]);
+        }
+
+        [Fact]
+        public void Remove_OneKeyOneValue_Removed()
+        {
+            var trie = new PatriciaTrie<int>();
+            trie.Add("foo", 42);
+
+            trie.Remove("foo", v => true);
+
+            Assert.Equal(0, trie.Get("foo").Count());
+        }
+
+        [Fact]
+        public void Remove_OneKeyTwoValuesRemoveBoth_Removed()
+        {
+            var trie = new PatriciaTrie<int>();
+            trie.Add("foo", 42);
+            trie.Add("foo", 43);
+
+            trie.Remove("foo", v => true);
+
+            Assert.Equal(0, trie.Get("foo").Count());
+        }
+
+        [Fact]
+        public void Remove_OneKeyTwoValuesRemoveOne_OneValueLost()
+        {
+            var trie = new PatriciaTrie<int>();
+            trie.Add("foo", 42);
+            trie.Add("foo", 43);
+
+            trie.Remove("foo", v => v == 42);
+
+            Assert.Equal(1, trie.Get("foo").Count());
+        }
+
+        [Fact]
+        public void Remove_OneKeyTwoValuesRemoveOne_ExpectedValueLost()
+        {
+            var trie = new PatriciaTrie<int>();
+            trie.Add("foo", 42);
+            trie.Add("foo", 43);
+
+            trie.Remove("foo", v => v == 42);
+
+            Assert.Equal(43, trie.Get("foo").First());
+        }
+
         private static (ITrie<int> trie, IDictionary<string, int> map) GetTrieWithData()
         {
             var randomizer = new Random();
