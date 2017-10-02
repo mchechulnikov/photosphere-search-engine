@@ -40,10 +40,10 @@ namespace Jbta.SearchEngine.FileIndexing
             var words = fileVersions.SelectMany(fv => _directIndex[fv]).Distinct().ToList();
             foreach (var word in words)
             {
-                //using (_lock.ForWriting())
-                //{
+                using (_lock.ForWriting())
+                {
                     _searchIndex.Remove(word, e => fileVersions.Contains(e.FileVersion));
-                //}
+                }
             }
 
             foreach (var fileVersion in fileVersions)
