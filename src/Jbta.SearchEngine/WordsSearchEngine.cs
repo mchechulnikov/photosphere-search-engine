@@ -11,7 +11,6 @@ namespace Jbta.SearchEngine
     public class WordsSearchEngine : ISearchEngine
     {
         private readonly IIndex _index;
-        private readonly FilesVersionsRegistry _filesVersionsRegistry;
         private readonly IFileIndexer _indexer;
         private readonly IFileWatcher _watcher;
         private readonly IIndexEjector _indexEjector;
@@ -20,24 +19,27 @@ namespace Jbta.SearchEngine
 
         public WordsSearchEngine(Settings settings)
         {
+            var eventReactor = new EventReactor();
             var fileParserProvider = new FileParserProvider(settings);
-            _filesVersionsRegistry = new FilesVersionsRegistry();
+            var filesVersionsRegistry = new FilesVersionsRegistry(eventReactor);
             _index = new Index();
-            _indexer = new FileIndexer(fileParserProvider, _index, _filesVersionsRegistry, settings);
-            _indexEjector = new IndexEjector(_index, _filesVersionsRegistry, settings);
-            var indexUpdater = new IndexUpdater(_indexer, _index, _filesVersionsRegistry);
-            _watcher = new FileWatcher(_indexer, indexUpdater, _indexEjector, _filesVersionsRegistry);
+            _indexer = new FileIndexer(eventReactor, fileParserProvider, _index, filesVersionsRegistry, settings);
+            _indexEjector = new IndexEjector(eventReactor, _index, filesVersionsRegistry, settings);
+            var indexUpdater = new IndexUpdater(_indexer, _index, filesVersionsRegistry);
+            _watcher = new FileWatcher(_indexer, indexUpdater, _indexEjector, filesVersionsRegistry);
 
-            _indexer.FileIndexingStarted += OnFileIndexingStarted;
-            _indexer.FileIndexed += OnFileIndexed;
-            _indexEjector.FileRemovedFromIndex += OnFileRemovedFromIndex;
-            _filesVersionsRegistry.FilePathChanged += OnFilePathChanged;
+            eventReactor.Register(EngineEvent.FileIndexing, a => FileIndexing?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileIndexed, a => FileIndexed?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileRemoving, a => FileRemoving?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileRemoved, a => FileRemoved?.Invoke(a));
+            eventReactor.Register(EngineEvent.FilePathChanged, a => FilePathChanged?.Invoke(a));
         }
 
-        public event FileIndexingEventHandler FileIndexingStarted;
-        public event FileIndexingEventHandler FileIndexed;
-        public event FileIndexingEventHandler FileRemovedFromIndex;
-        public event FileIndexingEventHandler FilePathChanged;
+        public event SearchEngineEventHandler FileIndexing;
+        public event SearchEngineEventHandler FileIndexed;
+        public event SearchEngineEventHandler FileRemoving;
+        public event SearchEngineEventHandler FileRemoved;
+        public event SearchEngineEventHandler FilePathChanged;
 
         public IEnumerable<string> IndexedPathes => _watcher.WatchedPathes;
 
@@ -68,27 +70,6 @@ namespace Jbta.SearchEngine
             return _index.Get(query, wholeWord);
         }
 
-        public void Dispose()
-        {
-            _watcher?.Dispose();
-
-            _indexer.FileIndexingStarted -= OnFileIndexingStarted;
-            _indexer.FileIndexed -= OnFileIndexed;
-            _indexEjector.FileRemovedFromIndex -= OnFileRemovedFromIndex;
-            _filesVersionsRegistry.FilePathChanged -= OnFilePathChanged;
-
-            FileIndexingStarted = null;
-            FileIndexed = null;
-            FileRemovedFromIndex = null;
-            FilePathChanged = null;
-        }
-
-        private void OnFileIndexingStarted(FileIndexingEventArgs args) => FileIndexingStarted?.Invoke(args);
-
-        private void OnFileIndexed(FileIndexingEventArgs args) => FileIndexed?.Invoke(args);
-
-        private void OnFileRemovedFromIndex(FileIndexingEventArgs args) => FileRemovedFromIndex?.Invoke(args);
-
-        private void OnFilePathChanged(FileIndexingEventArgs args) => FilePathChanged?.Invoke(args);
+        public void Dispose() => _watcher?.Dispose();
     }
 }

@@ -1,0 +1,3 @@
+﻿namespace Jbta.SearchEngine.IntegrationTests
+{
+}

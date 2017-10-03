@@ -9,19 +9,20 @@ namespace Jbta.SearchEngine.FileIndexing.Services
     {
         private readonly IIndex _index;
         private readonly FilesVersionsRegistry _filesVersionsRegistry;
+        private readonly IEventReactor _eventReactor;
         private readonly Settings _settings;
 
         public IndexEjector(
+            IEventReactor eventReactor,
             IIndex index,
             FilesVersionsRegistry filesVersionsRegistry,
             Settings settings)
         {
+            _eventReactor = eventReactor;
             _index = index;
             _filesVersionsRegistry = filesVersionsRegistry;
             _settings = settings;
         }
-
-        public event FileIndexingEventHandler FileRemovedFromIndex;
 
         public void Eject(string path)
         {
@@ -43,6 +44,8 @@ namespace Jbta.SearchEngine.FileIndexing.Services
         {
             Task.Run(() =>
             {
+                _eventReactor.React(EngineEvent.FileRemoving, filePath);
+
                 var fileVersions = _filesVersionsRegistry.Get(filePath).ToList();
                 _index.Remove(fileVersions);
 
@@ -52,7 +55,7 @@ namespace Jbta.SearchEngine.FileIndexing.Services
                 }
                 _filesVersionsRegistry.Remove(filePath);
 
-                FileRemovedFromIndex?.Invoke(new FileIndexingEventArgs(filePath));
+                _eventReactor.React(EngineEvent.FileRemoved, filePath);
             });
         }
     }

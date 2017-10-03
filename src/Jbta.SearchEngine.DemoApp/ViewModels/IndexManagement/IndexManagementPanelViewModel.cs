@@ -54,7 +54,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         private void SubscribeOnIndexStateChange()
         {
-            SearchSystem.EngineInstance.FileIndexingStarted += a => DispatchService.Invoke(() =>
+            SearchSystem.EngineInstance.FileIndexing += a => DispatchService.Invoke(() =>
             {
                 Interlocked.Increment(ref _indexingFilesCount);
                 if (_indexingFilesCount >= 1)

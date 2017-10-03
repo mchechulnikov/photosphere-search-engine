@@ -9,15 +9,15 @@ namespace Jbta.SearchEngine.FileIndexing
 {
     internal class FilesVersionsRegistry
     {
+        private readonly IEventReactor _eventReactor;
         private readonly IDictionary<string, ISet<FileVersion>> _fileVersions;
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
-        public FilesVersionsRegistry()
+        public FilesVersionsRegistry(IEventReactor eventReactor)
         {
+            _eventReactor = eventReactor;
             _fileVersions = new Dictionary<string, ISet<FileVersion>>();
         }
-
-        public event FileIndexingEventHandler FilePathChanged;
 
         public bool Contains(string filePath)
         {
@@ -131,7 +131,7 @@ namespace Jbta.SearchEngine.FileIndexing
                 _fileVersions.Remove(oldPath);
             }
 
-            FilePathChanged?.Invoke(new FileIndexingEventArgs(newPath));
+            _eventReactor.React(EngineEvent.FilePathChanged, oldPath, newPath);
         }
     }
 }

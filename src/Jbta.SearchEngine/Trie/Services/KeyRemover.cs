@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.Trie.Services
 {
@@ -23,7 +25,7 @@ namespace Jbta.SearchEngine.Trie.Services
 
             RemoveValue(valueSelector, node);
 
-            if (node.Values.Any())
+            if (node.Values.Count > 0)
             {
                 return;
             }
@@ -33,25 +35,31 @@ namespace Jbta.SearchEngine.Trie.Services
 
         private static void RemoveValue(Func<T, bool> valueSelector, Node<T> node)
         {
-            foreach (var value in node.Values.Where(valueSelector).ToList())
+            using (node.Lock.ForWriting())
             {
-                node.Values.Remove(value);
+                foreach (var value in node.Values.Where(valueSelector).ToList())
+                {
+                    node.Values.Remove(value);
+                }
             }
         }
 
         private void RemoveNode(Node<T> node, Node<T> parent)
         {
-            if (node.Children.Count < 1)
+            using (node.Lock.ForWriting())
             {
-                parent.Children.Remove(node.Key[0]);
-                if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
+                if (node.Children.Count < 1)
                 {
-                    MergeParentWithAloneChild(parent);
+                    parent.Children.Remove(node.Key[0]);
+                    if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
+                    {
+                        MergeParentWithAloneChild(parent);
+                    }
                 }
-            }
-            else if (node.Children.Count == 1)
-            {
-                MergeParentWithAloneChild(node);
+                else if (node.Children.Count == 1)
+                {
+                    MergeParentWithAloneChild(node);
+                }
             }
         }
 

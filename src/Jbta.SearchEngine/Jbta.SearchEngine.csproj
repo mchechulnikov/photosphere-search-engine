@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.4.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,8 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Events\FileIndexingEventArgs.cs" />
-    <Compile Include="Events\FileIndexingEventHandler.cs" />
+    <Compile Include="Events\EngineEvent.cs" />
+    <Compile Include="Events\Args\FilePathChangedEventArgs.cs" />
+    <Compile Include="Events\Args\SearchEngineEventArgs.cs" />
+    <Compile Include="Events\EventHandlers.cs" />
+    <Compile Include="Events\EventReactor.cs" />
+    <Compile Include="Events\IEventReactor.cs" />
     <Compile Include="FileIndexing\FilesVersionsRegistry.cs" />
     <Compile Include="FileIndexing\IIndex.cs" />
     <Compile Include="FileIndexing\Services\IIndexEjector.cs" />
@@ -75,10 +83,26 @@
     <Compile Include="Utils\CharExtensions.cs" />
     <Compile Include="Utils\FileSystem.cs" />
     <Compile Include="Utils\ReaderWriterLockSlimExtensions.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\ConcurrentDictionary.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImpl.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImpl.Enumerators.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImplBoxed.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImplInt.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImplIntPtr.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImplLong.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImplRef.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImplUInt.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImplULong.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImpl`2.cs" />
+    <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImpl`3.cs" />
+    <Compile Include="Vendor\NonBlocking\Counter\Counter32.cs" />
+    <Compile Include="Vendor\NonBlocking\Counter\Counter64.cs" />
     <Compile Include="WordEntry.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="WordsSearchEngine.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

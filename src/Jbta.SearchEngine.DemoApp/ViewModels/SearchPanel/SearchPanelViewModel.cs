@@ -4,6 +4,7 @@ using System.Linq;
 using Jbta.SearchEngine.DemoApp.Model;
 using Jbta.SearchEngine.DemoApp.Utils;
 using Jbta.SearchEngine.Events;
+using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 {
@@ -45,10 +46,10 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
         private void SubscribeOnIndexStateChange()
         {
             SearchSystem.EngineInstance.FileIndexed += OnIndexStateChange;
-            SearchSystem.EngineInstance.FileRemovedFromIndex += OnIndexStateChange;
+            SearchSystem.EngineInstance.FileRemoved += OnIndexStateChange;
             SearchSystem.EngineInstance.FilePathChanged += OnIndexStateChange;
 
-            void OnIndexStateChange(FileIndexingEventArgs a)
+            void OnIndexStateChange(SearchEngineEventArgs a)
             {
                 DispatchService.Invoke(() => Search(_searchString, _isWholeWord));
             }

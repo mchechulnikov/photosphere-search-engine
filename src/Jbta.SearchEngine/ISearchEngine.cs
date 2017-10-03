@@ -9,22 +9,27 @@ namespace Jbta.SearchEngine
         /// <summary>
         /// Raises when file starts indexing
         /// </summary>
-        event FileIndexingEventHandler FileIndexingStarted;
+        event SearchEngineEventHandler FileIndexing;
 
         /// <summary>
         /// Raises when file indexing done
         /// </summary>
-        event FileIndexingEventHandler FileIndexed;
+        event SearchEngineEventHandler FileIndexed;
+
+        /// <summary>
+        /// Raises when the file removing from index started
+        /// </summary>
+        event SearchEngineEventHandler FileRemoving;
 
         /// <summary>
         /// Raises when the file removed from index
         /// </summary>
-        event FileIndexingEventHandler FileRemovedFromIndex;
+        event SearchEngineEventHandler FileRemoved;
 
         /// <summary>
         /// Raises when file path was changed
         /// </summary>
-        event FileIndexingEventHandler FilePathChanged;
+        event SearchEngineEventHandler FilePathChanged;
 
         /// <summary>
         /// All pathes, which were added to index

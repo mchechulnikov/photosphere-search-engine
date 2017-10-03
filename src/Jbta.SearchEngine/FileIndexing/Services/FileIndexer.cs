@@ -9,25 +9,25 @@ namespace Jbta.SearchEngine.FileIndexing.Services
 {
     internal class FileIndexer : IFileIndexer
     {
+        private readonly IEventReactor _eventReactor;
         private readonly FileParserProvider _parserProvider;
         private readonly IIndex _index;
         private readonly FilesVersionsRegistry _filesVersionsRegistry;
         private readonly Settings _settings;
 
         public FileIndexer(
+            IEventReactor eventReactor,
             FileParserProvider parserProvider,
             IIndex index,
             FilesVersionsRegistry filesVersionsRegistry,
             Settings settings)
         {
+            _eventReactor = eventReactor;
             _parserProvider = parserProvider;
             _index = index;
             _filesVersionsRegistry = filesVersionsRegistry;
             _settings = settings;
         }
-
-        public event FileIndexingEventHandler FileIndexingStarted;
-        public event FileIndexingEventHandler FileIndexed;
 
         public void Index(string path)
         {
@@ -58,7 +58,7 @@ namespace Jbta.SearchEngine.FileIndexing.Services
 
         private void IndexFile(string filePath)
         {
-            FileIndexingStarted?.Invoke(new FileIndexingEventArgs(filePath));
+            _eventReactor.React(EngineEvent.FileIndexing, filePath);
 
             var fileVersion = _filesVersionsRegistry.RegisterFileVersion(filePath);
 
@@ -67,7 +67,7 @@ namespace Jbta.SearchEngine.FileIndexing.Services
 
             _index.Add(fileVersion, words);
 
-            FileIndexed?.Invoke(new FileIndexingEventArgs(filePath));
+            _eventReactor.React(EngineEvent.FileIndexed, filePath);
         }
     }
 }

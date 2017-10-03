@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Jbta.SearchEngine.Trie.ValueObjects;
+using NonBlocking;
 
 namespace Jbta.SearchEngine.Trie
 {
@@ -10,22 +12,24 @@ namespace Jbta.SearchEngine.Trie
         {
             Key = new StringSlice(string.Empty);
             Values = new List<T>();
-            Children = new Dictionary<char, Node<T>>();
+            Children = new ConcurrentDictionary<char, Node<T>>();
         }
 
         public Node(StringSlice key, T value)
-            : this(key, new List<T>(new[] { value }), new Dictionary<char, Node<T>>())
+            : this(key, new List<T>(new[] { value }), new ConcurrentDictionary<char, Node<T>>())
         {
         }
 
-        public Node(StringSlice key, IList<T> values, Dictionary<char, Node<T>> children)
+        public Node(StringSlice key, IList<T> values, ConcurrentDictionary<char, Node<T>> children)
         {
             Values = values;
             Key = key;
             Children = children;
         }
 
-        public Dictionary<char, Node<T>> Children { get; set; }
+        public ReaderWriterLockSlim Lock { get; } = new ReaderWriterLockSlim();
+
+        public ConcurrentDictionary<char, Node<T>> Children { get; set; }
 
         public StringSlice Key { get; set; }
 
