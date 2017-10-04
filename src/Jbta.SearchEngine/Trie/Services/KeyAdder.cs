@@ -2,6 +2,7 @@
 using Jbta.SearchEngine.Trie.Services.Adding;
 using Jbta.SearchEngine.Trie.Services.Adding.ValueObjects;
 using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Utils;
 using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
 namespace Jbta.SearchEngine.Trie.Services
@@ -24,14 +25,18 @@ namespace Jbta.SearchEngine.Trie.Services
 
         private void Add(Node<T> node, StringSlice key, T value)
         {
+            if (node != _rootNode) node.Lock.EnterWriteLock();
+
             if (node.Children.TryGetValue(key[0], out var childNode))
             {
                 AddWithZip(childNode, key, value);
             }
             else
             {
-                node.Children.Add(key[0], new Node<T>(key, value));
+                node.Children.AddOrUpdate(key[0], new Node<T>(key, value), (k, v) => v);
             }
+
+            if (node != _rootNode) node.Lock.ExitWriteLock();
         }
 
         private void AddWithZip(Node<T> node, StringSlice keyRest, T value)
@@ -40,7 +45,7 @@ namespace Jbta.SearchEngine.Trie.Services
             switch (zippedSlices.MatchKind)
             {
                 case ZippedSlices.Match.Match:
-                    node.Values.Add(value);
+                    using (node.Lock.ForWriting()) node.Values.Add(value);
                     break;
                 case ZippedSlices.Match.IsContained:
                     Add(node, zippedSlices.SecondTail, value);
@@ -58,7 +63,7 @@ namespace Jbta.SearchEngine.Trie.Services
         {
             var leftChild = new Node<T>(zippedSlices.FirstTail, node.Values, node.Children);
 
-            node.Values = new List<T> {value};
+            node.Values = new HashSet<T> {value};
             node.Key = zippedSlices.Head;
             node.Children = new ConcurrentDictionary<char, Node<T>>
             {
@@ -73,7 +78,7 @@ namespace Jbta.SearchEngine.Trie.Services
                 { zippedSlices.FirstTail[0], new Node<T>(zippedSlices.FirstTail, node.Values, node.Children) },
                 { zippedSlices.SecondTail[0], new Node<T>(zippedSlices.SecondTail, value) }
             };
-            node.Values = new List<T>();
+            node.Values = new HashSet<T>();
             node.Key = zippedSlices.Head;
         }
     }

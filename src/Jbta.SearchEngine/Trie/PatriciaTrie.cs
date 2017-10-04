@@ -13,10 +13,10 @@ namespace Jbta.SearchEngine.Trie
         public PatriciaTrie()
         {
             var rootNode = new Node<T>();
-            var nodeRetriever = new NodeRetriever<T>();
+            var nodeRetriever = new NodeRetriever<T>(rootNode);
             _keyAdder = new KeyAdder<T>(rootNode);
             _keyRemover = new KeyRemover<T>(nodeRetriever, rootNode);
-            _valuesGetter = new ValuesGetter<T>(nodeRetriever, rootNode);
+            _valuesGetter = new ValuesGetter<T>(nodeRetriever);
         }
 
         public void Add(string key, T value)

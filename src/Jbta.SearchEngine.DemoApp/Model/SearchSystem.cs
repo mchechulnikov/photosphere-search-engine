@@ -2,6 +2,7 @@
 {
     public static class SearchSystem
     {
-        public static readonly ISearchEngine EngineInstance = SearchEngineFactory.New();
+        public static readonly ISearchEngine EngineInstance =
+            SearchEngineFactory.New(new Settings { GcCollect = true });
     }
 }

@@ -11,7 +11,6 @@ using System.Windows.Input;
 using Jbta.SearchEngine.DemoApp.Model;
 using Jbta.SearchEngine.DemoApp.Utils;
 using Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement.TreeView;
-using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
@@ -99,8 +98,11 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                 return;
             }
 
-            await Task.Run(() => SearchSystem.EngineInstance.Add(selectedPath));
-            TreeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
+            var willBeAdded = await Task.Run(() => SearchSystem.EngineInstance.Add(selectedPath));
+            if (willBeAdded)
+            {
+                TreeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
+            }
         }
 
         private async Task OnAddFilesButtonClick(object sender)
@@ -140,8 +142,11 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
         {
             var tasks = pathes.Select(async path =>
             {
-                await Task.Run(() => SearchSystem.EngineInstance.Add(path));
-                TreeViewItems.Add(new FileTreeViewItemViewModel(path));
+                var willBeAdded = await Task.Run(() => SearchSystem.EngineInstance.Add(path));
+                if (willBeAdded)
+                {
+                    TreeViewItems.Add(new FileTreeViewItemViewModel(path));
+                }
             });
             await Task.WhenAll(tasks);
         }
@@ -175,7 +180,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         private void RefreshTree()
         {
-            var indexedPathes = SearchSystem.EngineInstance.IndexedPathes;
+            var indexedPathes = SearchSystem.EngineInstance.PathesUnderIndex;
             TreeViewItems.Clear();
             foreach (var path in indexedPathes.OrderBy(p => p))
             {

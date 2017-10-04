@@ -1,36 +1,62 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.Trie.Services
 {
     internal class ValuesGetter<T>
     {
         private readonly NodeRetriever<T> _nodeRetriever;        
-        private readonly Node<T> _rootNode;
 
-        public ValuesGetter(
-            NodeRetriever<T> nodeRetriever,
-            Node<T> rootNode)
+        public ValuesGetter(NodeRetriever<T> nodeRetriever)
         {
             _nodeRetriever = nodeRetriever;
-            _rootNode = rootNode;
         }
 
-        public IEnumerable<T> Get(string query, bool wholeWord)
+        public IReadOnlyCollection<T> Get(string query, bool wholeWord)
         {
-            var keyNode = _nodeRetriever.Retrieve(_rootNode, query, 0);
-            if (keyNode == null)
+            var (node, nodesStack) = _nodeRetriever.RetrieveForReading(query);
+            var result = GetFromNode(node, query, wholeWord);
+            ReleaseLocks(nodesStack);
+            return result;
+        }
+
+        private IReadOnlyCollection<T> GetFromNode(Node<T> node, string query, bool wholeWord)
+        {
+            if (node == null)
             {
-                return Enumerable.Empty<T>();
+                return new List<T>();
             }
 
             if (wholeWord)
             {
-                return keyNode.Key.SubstringFromBegin.Equals(query)
-                    ? keyNode.Values
-                    : Enumerable.Empty<T>();
+                return node.Key.SubstringFromBegin.Equals(query)
+                    ? node.Values.NotNull().ToList()
+                    : new List<T>();
             }
-            return keyNode.Subtree.SelectMany(n => n.Values);
-        } 
+
+            return GetSubtreeValues(node);
+        }
+
+        private IReadOnlyCollection<T> GetSubtreeValues(Node<T> node)
+        {
+            var subtreeNodes = _nodeRetriever.GetSubtree(node).ToList();
+            var subtreeValues = subtreeNodes.SelectMany(n => n.Values).NotNull().ToList();
+            foreach (var subtreeNode in subtreeNodes)
+            {
+                var locker = subtreeNode.Lock;
+                if (locker.IsReadLockHeld) locker.ExitReadLock();
+            }
+            return subtreeValues;
+        }
+
+        private static void ReleaseLocks(Stack<Node<T>> nodesStack)
+        {
+            while (nodesStack.Count > 0)
+            {
+                var locker = nodesStack.Pop().Lock;
+                if (locker.IsReadLockHeld) locker.ExitReadLock();
+            }
+        }
     }
 }

@@ -34,19 +34,21 @@ namespace Jbta.SearchEngine
         /// <summary>
         /// All pathes, which were added to index
         /// </summary>
-        IEnumerable<string> IndexedPathes { get; }
+        IEnumerable<string> PathesUnderIndex { get; }
 
         /// <summary>
         /// Add file or directory to system
         /// </summary>
         /// <param name="path">Path to directory or file that you want to be indexed</param>
-        void Add(string path);
+        /// <returns>Will be added or not</returns>
+        bool Add(string path);
 
         /// <summary>
         /// Remove file or directory from system
         /// </summary>
         /// <param name="path">Path to directory or file</param>
-        void Remove(string path);
+        /// <returns>Will be removed or not</returns>
+        bool Remove(string path);
 
         /// <summary>
         /// Get indexed files that contains searched word

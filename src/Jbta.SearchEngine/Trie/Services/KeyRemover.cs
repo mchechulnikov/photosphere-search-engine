@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Jbta.SearchEngine.Trie.ValueObjects;
 using Jbta.SearchEngine.Utils;
@@ -20,45 +21,46 @@ namespace Jbta.SearchEngine.Trie.Services
 
         public void Remove(string key, Func<T, bool> valueSelector)
         {
-            var (node, parent) = _nodeRetriever.RetrieveWithParent(_rootNode, key, 0);
+            var (node, parent, nodesStack) = _nodeRetriever.RetrieveForWriting(key);
+
+            node.Lock.EnterWriteLock();
 
             RemoveValue(valueSelector, node);
 
             if (node.Values.Count > 0)
             {
+                ReleaseLocks(nodesStack);
                 return;
             }
 
             RemoveNode(node, parent);
+            ReleaseLocks(nodesStack);
         }
 
         private static void RemoveValue(Func<T, bool> valueSelector, Node<T> node)
         {
-            using (node.Lock.ForWriting())
+            foreach (var value in node.Values.Where(e => e != null && valueSelector(e)).ToList())
             {
-                foreach (var value in node.Values.Where(valueSelector).ToList())
-                {
-                    node.Values.Remove(value);
-                }
+                node.Values.Remove(value);
             }
         }
 
         private void RemoveNode(Node<T> node, Node<T> parent)
         {
-            using (node.Lock.ForWriting())
+            if (node.Children.Count < 1)
             {
-                if (node.Children.Count < 1)
+                parent.Children.TryRemove(node.Key[0], out var _);
+                if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
                 {
-                    parent.Children.Remove(node.Key[0]);
-                    if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
+                    using (parent.Lock.ForWriting())
                     {
                         MergeParentWithAloneChild(parent);
                     }
                 }
-                else if (node.Children.Count == 1)
-                {
-                    MergeParentWithAloneChild(node);
-                }
+            }
+            else if (node.Children.Count == 1)
+            {
+                MergeParentWithAloneChild(node);
             }
         }
 
@@ -68,6 +70,16 @@ namespace Jbta.SearchEngine.Trie.Services
             parent.Key = new StringSlice(child.Key.Origin, parent.Key.StartIndex, parent.Key.Length + child.Key.Length);
             parent.Values = child.Values;
             parent.Children.Remove(child.Key[0]);
+        }
+
+        private static void ReleaseLocks(Stack<Node<T>> nodesStack)
+        {
+            while (nodesStack.Count > 0)
+            {
+                var locker = nodesStack.Pop().Lock;
+                if (locker.IsWriteLockHeld) locker.ExitWriteLock();
+                if (locker.IsUpgradeableReadLockHeld) locker.ExitUpgradeableReadLock();
+            }
         }
     }
 }

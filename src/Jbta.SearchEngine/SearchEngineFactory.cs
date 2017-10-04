@@ -5,6 +5,7 @@ using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileSupervision;
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.FileVersioning.Services;
+using Jbta.SearchEngine.Searching;
 
 namespace Jbta.SearchEngine
 {
@@ -32,7 +33,8 @@ namespace Jbta.SearchEngine
                 new FilePathActualizer(filesVersionsRegistry)
             );
             var fileSupervisor = new FileSupervisor(fileWatcherFactory);
-            return new SearchEngine(eventReactor, index, indexer, indexEjector, fileSupervisor);
+            var searcher = new Searcher(index);
+            return new SearchEngine(eventReactor, indexer, indexEjector, fileSupervisor, searcher);
         }
     }
 }

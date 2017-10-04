@@ -7,7 +7,7 @@ namespace Jbta.SearchEngine.FileSupervision
     internal class FileSupervisor : IFileSupervisor
     {
         private readonly FileSystemWatcherFactory _watcherFactory;
-        private readonly IDictionary<string, FileSystemWatcher> _watchers;
+        private readonly ConcurrentDictionary<string, FileSystemWatcher> _watchers;
 
         public FileSupervisor(FileSystemWatcherFactory watcherFactory)
         {
@@ -17,12 +17,17 @@ namespace Jbta.SearchEngine.FileSupervision
 
         public IEnumerable<string> WatchedPathes => _watchers.Keys;
 
+        public bool IsUnderWatching(string path) => _watchers.ContainsKey(path);
+
         public void Watch(string path)
         {
+            if (_watchers.ContainsKey(path))
+            {
+                return;
+            }
+
             var watcher = _watcherFactory.New(path);
-
-            _watchers.Add(path, watcher);
-
+            _watchers.AddOrUpdate(path, watcher, (k, v) => v);
             watcher.EnableRaisingEvents = true;
         }
 

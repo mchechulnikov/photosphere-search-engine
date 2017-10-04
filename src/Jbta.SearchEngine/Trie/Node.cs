@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Jbta.SearchEngine.Trie.ValueObjects;
 using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
@@ -11,16 +10,16 @@ namespace Jbta.SearchEngine.Trie
         public Node()
         {
             Key = new StringSlice(string.Empty);
-            Values = new List<T>();
+            Values = new HashSet<T>();
             Children = new ConcurrentDictionary<char, Node<T>>();
         }
 
         public Node(StringSlice key, T value)
-            : this(key, new List<T>(new[] { value }), new ConcurrentDictionary<char, Node<T>>())
+            : this(key, new HashSet<T>(new[] { value }), new ConcurrentDictionary<char, Node<T>>())
         {
         }
 
-        public Node(StringSlice key, IList<T> values, ConcurrentDictionary<char, Node<T>> children)
+        public Node(StringSlice key, ISet<T> values, ConcurrentDictionary<char, Node<T>> children)
         {
             Values = values;
             Key = key;
@@ -33,18 +32,6 @@ namespace Jbta.SearchEngine.Trie
 
         public StringSlice Key { get; set; }
 
-        public IList<T> Values { get; set; }
-
-        public IEnumerable<Node<T>> Subtree
-        {
-            get
-            {
-                yield return this;
-                foreach (var node in Children.Values.SelectMany(n => n.Subtree))
-                {
-                    yield return node;
-                }
-            }
-        }
+        public ISet<T> Values { get; set; }
     }
 }

@@ -1,22 +1,55 @@
-﻿using Jbta.SearchEngine.Trie.ValueObjects;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Jbta.SearchEngine.Trie.ValueObjects;
 
 namespace Jbta.SearchEngine.Trie.Services
 {
     internal class NodeRetriever<T>
     {
-        public Node<T> Retrieve(Node<T> node, string query, int position)
+        private readonly Node<T> _rootNode;
+
+        public NodeRetriever(Node<T> rootNode)
         {
-            return position >= query.Length
-                ? node
-                : SearchDeep(node, query, position);
+            _rootNode = rootNode;
         }
 
-        public (Node<T> node, Node<T> parent) RetrieveWithParent(Node<T> startNode, string query, int position)
+        public (Node<T> node, Stack<Node<T>> nodesStack) RetrieveForReading(string query)
         {
-            var node = startNode;
+            var position = 0;
+            var nodesStack = new Stack<Node<T>>();
+            var node = _rootNode;
+            while (true)
+            {
+                node.Lock.EnterReadLock();
+                nodesStack.Push(node);
+
+                if (position >= query.Length)
+                {
+                    break;
+                }
+
+                var nextNode = SearchChild(node, query, position);
+                node = nextNode;
+                if (nextNode == null)
+                {
+                    break;
+                }
+                position += nextNode.Key.Length;
+            }
+            return (node, nodesStack);
+        }
+
+        public (Node<T> node, Node<T> parent, Stack<Node<T>> nodesStack) RetrieveForWriting(string query)
+        {
+            var position = 0;
+            var nodesStack = new Stack<Node<T>>();
+            var node = _rootNode;
             var parent = node;
             while (true)
             {
+                node.Lock.EnterUpgradeableReadLock();
+                nodesStack.Push(node);
+
                 if (position >= query.Length)
                 {
                     break;
@@ -31,15 +64,22 @@ namespace Jbta.SearchEngine.Trie.Services
                 node = nextNode;
                 position += nextNode.Key.Length;
             }
-            return (node, parent);
+            return (node, parent, nodesStack);
         }
 
-        private Node<T> SearchDeep(Node<T> node, string query, int position)
+        public IEnumerable<Node<T>> GetSubtree(Node<T> node)
         {
-            var nextNode = SearchChild(node, query, position);
-            return nextNode == null
-                ? null
-                : Retrieve(nextNode, query, position + nextNode.Key.Length);
+            yield return node;
+            var subtreeNodes = node.Children.Values.SelectMany(n =>
+            {
+                n.Lock.EnterReadLock();
+                return GetSubtree(n);
+            });
+
+            foreach (var subtreeNode in subtreeNodes)
+            {
+                yield return subtreeNode;
+            }
         }
 
         private static Node<T> SearchChild(Node<T> node, string query, int position)
