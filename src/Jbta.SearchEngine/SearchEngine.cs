@@ -2,29 +2,29 @@
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileIndexing.Services;
-using Jbta.SearchEngine.FileWatching;
+using Jbta.SearchEngine.FileSupervision;
 using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine
 {
-    internal class WordsSearchEngine : ISearchEngine
+    internal class SearchEngine : ISearchEngine
     {
         private readonly IIndex _index;
         private readonly IFileIndexer _indexer;
         private readonly IIndexEjector _indexEjector;
-        private readonly IFileWatcher _watcher;
+        private readonly IFileSupervisor _supervisor;
 
-        public WordsSearchEngine(
+        public SearchEngine(
             EventReactor eventReactor,
             IIndex index,
             IFileIndexer indexer,
             IIndexEjector indexEjector,
-            IFileWatcher watcher)
+            IFileSupervisor supervisor)
         {
             _index = index;
             _indexer = indexer;
             _indexEjector = indexEjector;
-            _watcher = watcher;
+            _supervisor = supervisor;
 
             eventReactor.Register(EngineEvent.FileIndexing, a => FileIndexing?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexed, a => FileIndexed?.Invoke(a));
@@ -39,7 +39,7 @@ namespace Jbta.SearchEngine
         public event SearchEngineEventHandler FileRemoved;
         public event SearchEngineEventHandler FilePathChanged;
 
-        public IEnumerable<string> IndexedPathes => _watcher.WatchedPathes;
+        public IEnumerable<string> IndexedPathes => _supervisor.WatchedPathes;
 
         public void Add(string path)
         {
@@ -49,7 +49,7 @@ namespace Jbta.SearchEngine
             }
 
             _indexer.Index(path);
-            _watcher.Watch(path);
+            _supervisor.Watch(path);
         }
 
         public void Remove(string path)
@@ -59,7 +59,7 @@ namespace Jbta.SearchEngine
                 return;
             }
 
-            _watcher.Unwatch(path);
+            _supervisor.Unwatch(path);
             _indexEjector.Eject(path);
         }
 
@@ -68,6 +68,6 @@ namespace Jbta.SearchEngine
             return _index.Get(query, wholeWord);
         }
 
-        public void Dispose() => _watcher?.Dispose();
+        public void Dispose() => _supervisor?.Dispose();
     }
 }

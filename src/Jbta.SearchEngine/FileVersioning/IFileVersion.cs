@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jbta.SearchEngine.FileIndexing
+namespace Jbta.SearchEngine.FileVersioning
 {
     public interface IFileVersion
     {

@@ -50,7 +50,8 @@
     <Compile Include="Events\EventHandlers.cs" />
     <Compile Include="Events\EventReactor.cs" />
     <Compile Include="Events\IEventReactor.cs" />
-    <Compile Include="FileIndexing\FilesVersionsRegistry.cs" />
+    <Compile Include="FileSupervision\FileSystemWatcherFactory.cs" />
+    <Compile Include="FileVersioning\FilesVersionsRegistry.cs" />
     <Compile Include="FileIndexing\IIndex.cs" />
     <Compile Include="FileIndexing\Services\IIndexEjector.cs" />
     <Compile Include="FileIndexing\Services\IIndexUpdater.cs" />
@@ -59,11 +60,14 @@
     <Compile Include="FileIndexing\Services\IndexUpdater.cs" />
     <Compile Include="FileParsing\FileParserProvider.cs" />
     <Compile Include="FileParsing\ParsedWord.cs" />
-    <Compile Include="FileIndexing\FileVersion.cs" />
+    <Compile Include="FileVersioning\FileVersion.cs" />
     <Compile Include="FileParsing\StandartFileParser.cs" />
-    <Compile Include="FileWatching\FileWatcher.cs" />
-    <Compile Include="FileWatching\IFileWatcher.cs" />
-    <Compile Include="FileIndexing\IFileVersion.cs" />
+    <Compile Include="FileVersioning\Services\FilePathActualizer.cs" />
+    <Compile Include="FileVersioning\Services\IFilePathActualizer.cs" />
+    <Compile Include="FileSupervision\FileSupervisor.cs" />
+    <Compile Include="FileSupervision\IFileSystemWatcherFactory.cs" />
+    <Compile Include="FileSupervision\IFileSupervisor.cs" />
+    <Compile Include="FileVersioning\IFileVersion.cs" />
     <Compile Include="SearchEngineFactory.cs" />
     <Compile Include="Trie\ITrie.cs" />
     <Compile Include="FileIndexing\Services\IFileIndexer.cs" />
@@ -100,10 +104,12 @@
     <Compile Include="Vendor\NonBlocking\Counter\Counter64.cs" />
     <Compile Include="WordEntry.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="WordsSearchEngine.cs" />
+    <Compile Include="SearchEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Vendor\vendor.md" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

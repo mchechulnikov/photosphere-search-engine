@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using Jbta.SearchEngine.Trie.ValueObjects;
-using NonBlocking;
+using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
 namespace Jbta.SearchEngine.Trie
 {

@@ -3,12 +3,10 @@
 // This file is distributed under the MIT License. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace NonBlocking
+namespace Jbta.SearchEngine.Vendor.NonBlocking.Counter
 {    
     /// <summary>
     /// Scalable 64bit counter that can be used from multiple threads.

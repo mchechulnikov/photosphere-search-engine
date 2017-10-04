@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Jbta.SearchEngine.FileParsing;
+using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.Trie;
 using Jbta.SearchEngine.Utils;
 

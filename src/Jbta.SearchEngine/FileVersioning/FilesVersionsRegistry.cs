@@ -5,18 +5,19 @@ using System.Threading;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine.FileIndexing
+namespace Jbta.SearchEngine.FileVersioning
 {
     internal class FilesVersionsRegistry
     {
         private readonly IEventReactor _eventReactor;
         private readonly IDictionary<string, ISet<FileVersion>> _fileVersions;
-        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim _lock;
 
         public FilesVersionsRegistry(IEventReactor eventReactor)
         {
             _eventReactor = eventReactor;
             _fileVersions = new Dictionary<string, ISet<FileVersion>>();
+            _lock = new ReaderWriterLockSlim();
         }
 
         public bool Contains(string filePath)
@@ -95,24 +96,7 @@ namespace Jbta.SearchEngine.FileIndexing
             }
         }
 
-        public void ChangePath(string oldPath, string newPath)
-        {
-            if (FileSystem.IsDirectory(newPath))
-            {
-                var oldFilesPathes = Files.Where(p => p.StartsWith(oldPath)).ToList();
-                foreach (var oldFilePath in oldFilesPathes)
-                {
-                    var newFilePath = newPath + oldFilePath.Substring(oldPath.Length);
-                    ChangeFilePath(oldFilePath, newFilePath);
-                }
-            }
-            else
-            {
-                ChangeFilePath(oldPath, newPath);
-            }
-        }
-
-        private void ChangeFilePath(string oldPath, string newPath)
+        public void ChangeFilePath(string oldPath, string newPath)
         {
             using (_lock.ForWriting())
             {

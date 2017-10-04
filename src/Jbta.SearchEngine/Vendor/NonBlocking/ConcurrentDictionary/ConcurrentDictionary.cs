@@ -14,9 +14,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using static NonBlocking.DictionaryImpl;
 
-namespace NonBlocking
+namespace Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary
 {
     /// <summary>
     /// Represents a thread-safe and lock-free collection of keys and values.
@@ -322,8 +321,8 @@ namespace NonBlocking
         public bool TryAdd(TKey key, TValue value)
         {
             object oldValObj = null;
-            object newValObj = ToObjectValue(value);
-            return _table.PutIfMatch(key, newValObj, ref oldValObj, ValueMatch.NullOrDead);
+            object newValObj = DictionaryImpl.ToObjectValue(value);
+            return _table.PutIfMatch(key, newValObj, ref oldValObj, DictionaryImpl.ValueMatch.NullOrDead);
         }
 
         /// <summary>
@@ -341,8 +340,8 @@ namespace NonBlocking
         public bool Remove(TKey key)
         {
             object oldValObj = null;
-            var found = _table.PutIfMatch(key, TOMBSTONE, ref oldValObj, ValueMatch.NotNullOrDead);
-            Debug.Assert(!(oldValObj is Prime));
+            var found = _table.PutIfMatch(key, DictionaryImpl.TOMBSTONE, ref oldValObj, DictionaryImpl.ValueMatch.NotNullOrDead);
+            Debug.Assert(!(oldValObj is DictionaryImpl.Prime));
 
             return found;
         }
@@ -362,9 +361,9 @@ namespace NonBlocking
         public bool TryRemove(TKey key, out TValue value)
         {
             object oldValObj = null;
-            var found = _table.PutIfMatch(key, TOMBSTONE, ref oldValObj, ValueMatch.NotNullOrDead);
+            var found = _table.PutIfMatch(key, DictionaryImpl.TOMBSTONE, ref oldValObj, DictionaryImpl.ValueMatch.NotNullOrDead);
 
-            Debug.Assert(!(oldValObj is Prime));
+            Debug.Assert(!(oldValObj is DictionaryImpl.Prime));
             Debug.Assert(found ^ oldValObj == null);
 
             if (!found)
@@ -384,7 +383,7 @@ namespace NonBlocking
                 else
                 {
                     // null
-                    if (oldValObj == NULLVALUE)
+                    if (oldValObj == DictionaryImpl.NULLVALUE)
                     {
                         value = default(TValue);
                     }
@@ -416,7 +415,7 @@ namespace NonBlocking
         {
             object oldValObj = _table.TryGetValue(key);
 
-            Debug.Assert(!(oldValObj is Prime));
+            Debug.Assert(!(oldValObj is DictionaryImpl.Prime));
 
             if (oldValObj != null)
             {
@@ -431,7 +430,7 @@ namespace NonBlocking
                 else
                 {
                     // null
-                    if (oldValObj == NULLVALUE)
+                    if (oldValObj == DictionaryImpl.NULLVALUE)
                     {
                         value = default(TValue);
                     }
@@ -470,7 +469,7 @@ namespace NonBlocking
             {
                 object oldValObj = _table.TryGetValue(key);
 
-                Debug.Assert(!(oldValObj is Prime));
+                Debug.Assert(!(oldValObj is DictionaryImpl.Prime));
 
                 if (oldValObj != null)
                 {
@@ -485,7 +484,7 @@ namespace NonBlocking
 
                     TValue ret;
                     // null
-                    if (oldValObj == NULLVALUE)
+                    if (oldValObj == DictionaryImpl.NULLVALUE)
                     {
                         ret = default(TValue);
                     }
@@ -503,8 +502,8 @@ namespace NonBlocking
             set
             {
                 object oldValObj = null;
-                object newValObj = ToObjectValue(value);
-                _table.PutIfMatch(key, newValObj, ref oldValObj, ValueMatch.Any);
+                object newValObj = DictionaryImpl.ToObjectValue(value);
+                _table.PutIfMatch(key, newValObj, ref oldValObj, DictionaryImpl.ValueMatch.Any);
             }
         }
 
@@ -575,9 +574,9 @@ namespace NonBlocking
         /// reference.</exception>
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
-            object oldValObj = ToObjectValue(comparisonValue);
-            object newValObj = ToObjectValue(newValue);
-            return _table.PutIfMatch(key, newValObj, ref oldValObj, ValueMatch.OldValue);
+            object oldValObj = DictionaryImpl.ToObjectValue(comparisonValue);
+            object newValObj = DictionaryImpl.ToObjectValue(newValue);
+            return _table.PutIfMatch(key, newValObj, ref oldValObj, DictionaryImpl.ValueMatch.OldValue);
         }
 
         /// <summary>
@@ -595,8 +594,8 @@ namespace NonBlocking
         public TValue GetOrAdd(TKey key, TValue value)
         {
             object oldValObj = null;
-            object newValObj = ToObjectValue(value);
-            if (_table.PutIfMatch(key, newValObj, ref oldValObj, ValueMatch.NullOrDead))
+            object newValObj = DictionaryImpl.ToObjectValue(value);
+            if (_table.PutIfMatch(key, newValObj, ref oldValObj, DictionaryImpl.ValueMatch.NullOrDead))
             {
                 return value;
             }
@@ -612,7 +611,7 @@ namespace NonBlocking
 
             TValue ret;
             // null
-            if (oldValObj == NULLVALUE)
+            if (oldValObj == DictionaryImpl.NULLVALUE)
             {
                 ret = default(TValue);
             }
@@ -658,8 +657,8 @@ namespace NonBlocking
         /// name="keyValuePair"/> is a null reference (Nothing in Visual Basic).</exception>
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> keyValuePair)
         {
-            object oldValObj = ToObjectValue(keyValuePair.Value);
-            return _table.PutIfMatch(keyValuePair.Key, TOMBSTONE, ref oldValObj, ValueMatch.OldValue);
+            object oldValObj = DictionaryImpl.ToObjectValue(keyValuePair.Value);
+            return _table.PutIfMatch(keyValuePair.Key, DictionaryImpl.TOMBSTONE, ref oldValObj, DictionaryImpl.ValueMatch.OldValue);
         }
 
         bool IDictionary.IsReadOnly => false;

@@ -9,12 +9,11 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using Jbta.SearchEngine.Vendor.NonBlocking.Counter;
 
-namespace NonBlocking
+namespace Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary
 {
     internal abstract partial class DictionaryImpl<TKey, TKeyStore, TValue>
         : DictionaryImpl<TKey, TValue>

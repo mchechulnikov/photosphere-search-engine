@@ -2,7 +2,9 @@
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileIndexing.Services;
 using Jbta.SearchEngine.FileParsing;
-using Jbta.SearchEngine.FileWatching;
+using Jbta.SearchEngine.FileSupervision;
+using Jbta.SearchEngine.FileVersioning;
+using Jbta.SearchEngine.FileVersioning.Services;
 
 namespace Jbta.SearchEngine
 {
@@ -23,8 +25,14 @@ namespace Jbta.SearchEngine
             var indexer = new FileIndexer(eventReactor, fileParserProvider, index, filesVersionsRegistry, settings);
             var indexEjector = new IndexEjector(eventReactor, index, filesVersionsRegistry, settings);
             var indexUpdater = new IndexUpdater(indexer, index, filesVersionsRegistry);
-            var watcher = new FileWatcher(indexer, indexUpdater, indexEjector, filesVersionsRegistry);
-            return new WordsSearchEngine(eventReactor, index, indexer, indexEjector, watcher);
+            var fileWatcherFactory = new FileSystemWatcherFactory(
+                indexer,
+                indexUpdater,
+                indexEjector,
+                new FilePathActualizer(filesVersionsRegistry)
+            );
+            var fileSupervisor = new FileSupervisor(fileWatcherFactory);
+            return new SearchEngine(eventReactor, index, indexer, indexEjector, fileSupervisor);
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Jbta.SearchEngine.DemoApp.Model;
 using Jbta.SearchEngine.DemoApp.Utils;
-using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel

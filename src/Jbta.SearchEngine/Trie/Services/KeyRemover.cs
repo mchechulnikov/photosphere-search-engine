@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using Jbta.SearchEngine.Trie.ValueObjects;
 using Jbta.SearchEngine.Utils;
 

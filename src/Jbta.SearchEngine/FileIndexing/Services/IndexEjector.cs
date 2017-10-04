@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
+using Jbta.SearchEngine.FileVersioning;
 
 namespace Jbta.SearchEngine.FileIndexing.Services
 {

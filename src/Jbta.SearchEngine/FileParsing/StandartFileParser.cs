@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Jbta.SearchEngine.FileIndexing;
+using Jbta.SearchEngine.FileVersioning;
 
 namespace Jbta.SearchEngine.FileParsing
 {

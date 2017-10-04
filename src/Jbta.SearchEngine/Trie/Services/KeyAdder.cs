@@ -2,6 +2,7 @@
 using Jbta.SearchEngine.Trie.Services.Adding;
 using Jbta.SearchEngine.Trie.Services.Adding.ValueObjects;
 using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
 namespace Jbta.SearchEngine.Trie.Services
 {
@@ -59,7 +60,7 @@ namespace Jbta.SearchEngine.Trie.Services
 
             node.Values = new List<T> {value};
             node.Key = zippedSlices.Head;
-            node.Children = new NonBlocking.ConcurrentDictionary<char, Node<T>>
+            node.Children = new ConcurrentDictionary<char, Node<T>>
             {
                 { zippedSlices.FirstTail[0], leftChild }
             };
@@ -67,7 +68,7 @@ namespace Jbta.SearchEngine.Trie.Services
 
         private static void AddBothTails(Node<T> node, ZippedSlices zippedSlices, T value)
         {
-            node.Children = new NonBlocking.ConcurrentDictionary<char, Node<T>>
+            node.Children = new ConcurrentDictionary<char, Node<T>>
             {
                 { zippedSlices.FirstTail[0], new Node<T>(zippedSlices.FirstTail, node.Values, node.Children) },
                 { zippedSlices.SecondTail[0], new Node<T>(zippedSlices.SecondTail, value) }

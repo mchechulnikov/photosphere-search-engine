@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Jbta.SearchEngine.FileParsing;
+using Jbta.SearchEngine.FileVersioning;
 
 namespace Jbta.SearchEngine.FileIndexing
 {

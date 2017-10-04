@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Jbta.SearchEngine.FileVersioning;
 
 namespace Jbta.SearchEngine.FileIndexing.Services
 {

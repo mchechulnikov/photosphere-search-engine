@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileParsing;
+using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileIndexing.Services

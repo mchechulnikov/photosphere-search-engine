@@ -4,26 +4,23 @@ using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.Events
 {
-    /// <summary>
-    /// Event mediator between engine object and internal components
-    /// </summary>
     internal class EventReactor : IEventReactor
     {
-        private readonly IDictionary<EngineEvent, SearchEngineEventHandler> _registry;
+        private readonly IDictionary<EngineEvent, SearchEngineEventHandler> _eventHandlers;
 
         public EventReactor()
         {
-            _registry = new Dictionary<EngineEvent, SearchEngineEventHandler>();
+            _eventHandlers = new Dictionary<EngineEvent, SearchEngineEventHandler>();
         }
 
         public void Register(EngineEvent e, SearchEngineEventHandler handler)
         {
-            _registry.Add(e, handler);
+            _eventHandlers.Add(e, handler);
         }
 
         public void React(EngineEvent e, params object[] args)
         {
-            if (!_registry.TryGetValue(e, out var handler))
+            if (!_eventHandlers.TryGetValue(e, out var handler))
             {
                 return;
             }
