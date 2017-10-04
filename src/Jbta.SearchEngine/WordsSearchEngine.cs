@@ -2,31 +2,29 @@
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileIndexing.Services;
-using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileWatching;
 using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine
 {
-    public class WordsSearchEngine : ISearchEngine
+    internal class WordsSearchEngine : ISearchEngine
     {
         private readonly IIndex _index;
         private readonly IFileIndexer _indexer;
-        private readonly IFileWatcher _watcher;
         private readonly IIndexEjector _indexEjector;
+        private readonly IFileWatcher _watcher;
 
-        public WordsSearchEngine() : this(new Settings()) { }
-
-        public WordsSearchEngine(Settings settings)
+        public WordsSearchEngine(
+            EventReactor eventReactor,
+            IIndex index,
+            IFileIndexer indexer,
+            IIndexEjector indexEjector,
+            IFileWatcher watcher)
         {
-            var eventReactor = new EventReactor();
-            var fileParserProvider = new FileParserProvider(settings);
-            var filesVersionsRegistry = new FilesVersionsRegistry(eventReactor);
-            _index = new Index();
-            _indexer = new FileIndexer(eventReactor, fileParserProvider, _index, filesVersionsRegistry, settings);
-            _indexEjector = new IndexEjector(eventReactor, _index, filesVersionsRegistry, settings);
-            var indexUpdater = new IndexUpdater(_indexer, _index, filesVersionsRegistry);
-            _watcher = new FileWatcher(_indexer, indexUpdater, _indexEjector, filesVersionsRegistry);
+            _index = index;
+            _indexer = indexer;
+            _indexEjector = indexEjector;
+            _watcher = watcher;
 
             eventReactor.Register(EngineEvent.FileIndexing, a => FileIndexing?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexed, a => FileIndexed?.Invoke(a));

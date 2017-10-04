@@ -2,6 +2,6 @@
 {
     public static class SearchSystem
     {
-        public static readonly ISearchEngine EngineInstance = new WordsSearchEngine();
+        public static readonly ISearchEngine EngineInstance = SearchEngineFactory.New();
     }
 }

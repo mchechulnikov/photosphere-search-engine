@@ -64,6 +64,7 @@
     <Compile Include="FileWatching\FileWatcher.cs" />
     <Compile Include="FileWatching\IFileWatcher.cs" />
     <Compile Include="FileIndexing\IFileVersion.cs" />
+    <Compile Include="SearchEngineFactory.cs" />
     <Compile Include="Trie\ITrie.cs" />
     <Compile Include="FileIndexing\Services\IFileIndexer.cs" />
     <Compile Include="FileIndexing\Services\FileIndexer.cs" />
