@@ -5,7 +5,7 @@ using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileSupervision
 {
-    internal class FileSystemWatcherFactory : IFileSystemWatcherFactory
+    internal class FileSystemWatcherFactory
     {
         private const NotifyFilters WatcherNotifyFilters =
             NotifyFilters.LastWrite
