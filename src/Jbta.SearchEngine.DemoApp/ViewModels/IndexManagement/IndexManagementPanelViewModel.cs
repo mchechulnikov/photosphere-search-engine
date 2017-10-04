@@ -11,12 +11,14 @@ using System.Windows.Input;
 using Jbta.SearchEngine.DemoApp.Model;
 using Jbta.SearchEngine.DemoApp.Utils;
 using Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement.TreeView;
+using Jbta.SearchEngine.Events;
+using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 {
     internal class IndexManagementPanelViewModel : ViewModelBase
     {
-        private int _indexingFilesCount;
+        private int _processingFilesCount;
         private bool _isIndexing;
         private Visibility _indexingStatusLabelVisibility = Visibility.Hidden;
         private RelayCommand _addFolderCommand;
@@ -54,23 +56,29 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         private void SubscribeOnIndexStateChange()
         {
-            SearchSystem.EngineInstance.FileIndexing += a => DispatchService.Invoke(() =>
+            SearchSystem.EngineInstance.FileIndexing += OnStartFileProcessing;
+            SearchSystem.EngineInstance.FileIndexed += OnStopFileProcessing;
+            SearchSystem.EngineInstance.FileRemoving += OnStartFileProcessing;
+            SearchSystem.EngineInstance.FileRemoved += OnStopFileProcessing;
+            SearchSystem.EngineInstance.FilePathChanged += a => DispatchService.Invoke(RefreshTree);
+
+            void OnStartFileProcessing(SearchEngineEventArgs a) => DispatchService.Invoke(() =>
             {
-                Interlocked.Increment(ref _indexingFilesCount);
-                if (_indexingFilesCount >= 1)
+                Interlocked.Increment(ref _processingFilesCount);
+                if (_processingFilesCount >= 1)
                 {
                     IndexingStatusLabelVisibility = Visibility.Visible;
                 }
             });
-            SearchSystem.EngineInstance.FileIndexed += a => DispatchService.Invoke(() =>
+
+            void OnStopFileProcessing(SearchEngineEventArgs a) => DispatchService.Invoke(() =>
             {
-                Interlocked.Decrement(ref _indexingFilesCount);
-                if (_indexingFilesCount < 1)
+                Interlocked.Decrement(ref _processingFilesCount);
+                if (_processingFilesCount < 1)
                 {
                     IndexingStatusLabelVisibility = Visibility.Hidden;
                 }
             });
-            SearchSystem.EngineInstance.FilePathChanged += a => DispatchService.Invoke(RefreshTree);
         }
 
         private async Task OnAddFolderButtonClick(object sender)

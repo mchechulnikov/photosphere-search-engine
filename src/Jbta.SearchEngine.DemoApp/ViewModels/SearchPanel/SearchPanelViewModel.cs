@@ -44,7 +44,9 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 
         private void SubscribeOnIndexStateChange()
         {
+            SearchSystem.EngineInstance.FileIndexing += OnIndexStateChange;
             SearchSystem.EngineInstance.FileIndexed += OnIndexStateChange;
+            SearchSystem.EngineInstance.FileRemoving += OnIndexStateChange;
             SearchSystem.EngineInstance.FileRemoved += OnIndexStateChange;
             SearchSystem.EngineInstance.FilePathChanged += OnIndexStateChange;
 

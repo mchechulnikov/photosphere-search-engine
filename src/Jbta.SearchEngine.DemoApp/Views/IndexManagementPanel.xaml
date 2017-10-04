@@ -43,7 +43,7 @@
             IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
             Width="75" />
         <Label
-            Content="Indexing..."
+            Content="Processing..."
             HorizontalAlignment="Center"
             Margin="250,10,10,10"
             VerticalAlignment="Top"
