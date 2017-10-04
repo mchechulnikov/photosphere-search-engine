@@ -4,6 +4,9 @@ using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.Events
 {
+    /// <summary>
+    /// Event mediator between engine object and internal components
+    /// </summary>
     internal class EventReactor : IEventReactor
     {
         private readonly IDictionary<EngineEvent, SearchEngineEventHandler> _eventHandlers;
