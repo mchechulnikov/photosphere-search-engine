@@ -51,7 +51,7 @@
             Visibility="{Binding IndexingStatusLabelVisibility}"/>
         <TreeView
             Grid.Row="1"
-            Margin="10"
+            Margin="10,0,10,10"
             IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
             ItemsSource="{Binding TreeViewItems}"
         >

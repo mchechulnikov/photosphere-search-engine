@@ -34,7 +34,7 @@
             IsChecked="{Binding IsWholeWord}" />
         <ListBox
             Grid.Row="1"
-            Margin="10,10,10,10"
+            Margin="10,0,10,10"
             ItemsSource="{Binding ListBoxItems}" />
         
     </Grid>
