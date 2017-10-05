@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileParsing\StandartFileParserTests.cs" />
+    <Compile Include="SearchEngineTests\SearchTests.cs" />
     <Compile Include="TrieTests\ParallelAccessPatriciaTrieTests.cs" />
     <Compile Include="TrieTests\PatriciaTrieTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,10 +79,10 @@
     <Content Include="test-texts\one-line-file.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="test-texts\Толстой Л. - Война и Мир ч.1.txt">
+    <Content Include="test-texts\war-and-peace-1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="test-texts\Толстой Л. - Война и Мир ч.2.txt">
+    <Content Include="test-texts\war-and-peace-2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

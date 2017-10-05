@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileParsing
 {
@@ -44,29 +45,31 @@ namespace Jbta.SearchEngine.FileParsing
             {
                 foreach (var character in buffer)
                 {
-                    position++;
                     if (char.IsWhiteSpace(character))
                     {
                         if (character == '\n')
                         {
                             lineNumber++;
-                            position = 1;
+                            position = 0;
                         }
                         if (word.Length < 1)
                         {
+                            position++;
                             continue;
                         }
 
-                        var wordString = word.ToString();
+                        var wordPosition = position - word.Length;
+                        var wordString = word.TrimEndingPunctuationChars().ToString();
                         yield return new ParsedWord(
                             wordString,
-                            new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber)
+                            new WordEntry(fileVersion, wordPosition, lineNumber)
                         );
                         word.Clear();
                     }
                     else if (character == '\0')
                     {
-                        var wordString = word.ToString();
+                        var wordPosition = position - word.Length;
+                        var wordString = word.TrimEndingPunctuationChars().ToString();
                         if (string.IsNullOrWhiteSpace(wordString))
                         {
                             break;
@@ -74,15 +77,23 @@ namespace Jbta.SearchEngine.FileParsing
 
                         yield return new ParsedWord(
                             wordString,
-                            new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber)
+                            new WordEntry(fileVersion, wordPosition, lineNumber)
                         );
                         word.Clear();
                         break;
                     }
-                    else if (!char.IsPunctuation(character))
+                    else if (char.IsPunctuation(character))
+                    {
+                        if (word.Length > 0)
+                        {
+                            word.Append(character);
+                        }
+                    }
+                    else
                     {
                         word.Append(character);
                     }
+                    position++;
                 }
             }
         }

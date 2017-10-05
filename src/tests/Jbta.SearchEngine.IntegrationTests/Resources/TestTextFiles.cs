@@ -8,8 +8,8 @@
         // Common
         public static readonly string OneLineFile = $"{RootDirectory}one-line-file.txt";
         public static readonly string TwoLinesFile = $"{RootDirectory}two-lines-file.txt";
-        public static readonly string WarAndPeace1 = $"{RootDirectory}Толстой Л. - Война и Мир ч.1.txt";
-        public static readonly string WarAndPeace2 = $"{RootDirectory}Толстой Л. - Война и Мир ч.2.txt";
+        public static readonly string WarAndPeace1 = $"{RootDirectory}war-and-peace-1.txt";
+        public static readonly string WarAndPeace2 = $"{RootDirectory}war-and-peace-2.txt";
 
         // Encoding
         public static readonly string Utf8 = $"{TextsDirectoryPath}UTF-8.txt";
