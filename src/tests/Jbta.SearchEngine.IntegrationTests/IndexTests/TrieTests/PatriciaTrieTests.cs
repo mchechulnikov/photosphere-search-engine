@@ -4,12 +4,12 @@ using System.Linq;
 using Jbta.SearchEngine.Index.Trie;
 using Xunit;
 
-namespace Jbta.SearchEngine.IntegrationTests.IndexTests
+namespace Jbta.SearchEngine.IntegrationTests.IndexTests.TrieTests
 {
     public class PatriciaTrieTests
     {
         [Fact]
-        public void Get_SimpleWordsWithNumbers_SuccessedRetrieved()
+        public void Get_SimpleWordsWithNumbers_SuccessedRetrieveValues()
         {
             var (trie, map) = GetTrieWithData();
 
@@ -20,7 +20,7 @@ namespace Jbta.SearchEngine.IntegrationTests.IndexTests
         }
 
         [Fact]
-        public void Get_NotWholeWord_SuccessedRetrieved()
+        public void Get_NotWholeWord_SuccessedRetrieveValue()
         {
             var (trie, map) = GetTrieWithData();
             var result = trie.Get("арбуз");
