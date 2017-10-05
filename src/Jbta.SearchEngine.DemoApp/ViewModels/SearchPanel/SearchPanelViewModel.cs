@@ -11,6 +11,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
     {
         private string _searchString = string.Empty;
         private bool _isWholeWord;
+        private bool _onlyFilesSearch;
 
         public SearchPanelViewModel()
         {
@@ -26,7 +27,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
             {
                 var val = value?.Trim();
                 SetField(ref _searchString, val, nameof(SearchText));
-                Search(val, IsWholeWord);
+                Search(val, OnlyFilesSearch, IsWholeWord);
             }
         }
 
@@ -36,7 +37,17 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
             set
             {
                 SetField(ref _isWholeWord, value, nameof(IsWholeWord));
-                Search(SearchText, value);
+                Search(SearchText, OnlyFilesSearch, value);
+            }
+        }
+
+        public bool OnlyFilesSearch
+        {
+            get => _onlyFilesSearch;
+            set
+            {
+                SetField(ref _onlyFilesSearch, value, nameof(OnlyFilesSearch));
+                Search(SearchText, value, IsWholeWord);
             }
         }
 
@@ -52,11 +63,11 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 
             void OnIndexStateChange(SearchEngineEventArgs a)
             {
-                DispatchService.Invoke(() => Search(_searchString, _isWholeWord));
+                DispatchService.Invoke(() => Search(_searchString, _onlyFilesSearch, _isWholeWord));
             }
         }
 
-        private void Search(string value, bool isWholeWord)
+        private void Search(string value, bool onlyFilesSearch, bool isWholeWord)
         {
             ListBoxItems.Clear();
             if (value.Length < 3)
@@ -64,13 +75,40 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
                 return;
             }
 
-            var serchResult = SearchSystem.EngineInstance.Search(value, isWholeWord);
-            if (serchResult == null)
+            if (onlyFilesSearch)
             {
-                return;
-            }
+                var serchResult = SearchSystem.EngineInstance.SearchFiles(value, isWholeWord);
+                if (serchResult == null)
+                {
+                    return;
+                }
 
-            AddResultsToList(serchResult);
+                AddResultsToList(serchResult);
+            }
+            else
+            {
+                var serchResult = SearchSystem.EngineInstance.Search(value, isWholeWord);
+                if (serchResult == null)
+                {
+                    return;
+                }
+
+                AddResultsToList(serchResult);
+            }
+        }
+
+        private void AddResultsToList(IEnumerable<string> result)
+        {
+            var orderedResult = result
+                .OrderBy(r => r)
+                .Take(500)
+                .ToList();
+
+            foreach (var path in orderedResult)
+            {
+                var item = new ListBoxItemViewModel(path);
+                ListBoxItems.Add(item);
+            }
         }
 
         private void AddResultsToList(IEnumerable<WordEntry> result)

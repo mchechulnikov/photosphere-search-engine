@@ -13,8 +13,16 @@
             _position = position;
         }
 
-        private string EntryPosition => $"({_lineNumber}:{_position})";
+        public ListBoxItemViewModel(string path)
+        {
+            _path = path;
+        }
 
-        public override string ToString() => $"{_path} {EntryPosition}";
+        private string EntryPosition =>
+            _lineNumber == 0 && _position == 0
+                ? string.Empty
+                : $" ({_lineNumber}:{_position})";
+
+        public override string ToString() => $"{_path}{EntryPosition}";
     }
 }

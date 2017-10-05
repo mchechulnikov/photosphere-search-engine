@@ -19,9 +19,14 @@
             HorizontalAlignment="Left"
             Margin="10,10,0,10"
             TextWrapping="Wrap"
-            Width="350"
+            Width="290"
             Tag="Enter search query"
             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+        <CheckBox
+            Content="Only files"
+            Grid.Row="0"
+            Margin="310,13,0,12"
+            IsChecked="{Binding OnlyFilesSearch}" />
         <CheckBox
             Content="Whole word"
             Grid.Row="0"

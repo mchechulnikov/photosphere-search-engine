@@ -81,6 +81,11 @@ namespace Jbta.SearchEngine
             return _searcher.Search(query, wholeWord);
         }
 
+        public IEnumerable<string> SearchFiles(string query, bool wholeWord = false)
+        {
+            return _searcher.SearchFiles(query, wholeWord);
+        }
+
         public void Dispose()
         {
             _supervisor?.Dispose();
