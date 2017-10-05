@@ -58,8 +58,10 @@ namespace Jbta.SearchEngine.FileParsing
                         }
 
                         var wordString = word.ToString();
-                        yield return new ParsedWord(wordString,
-                            new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
+                        yield return new ParsedWord(
+                            wordString,
+                            new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber)
+                        );
                         word.Clear();
                     }
                     else if (character == '\0')
@@ -70,8 +72,10 @@ namespace Jbta.SearchEngine.FileParsing
                             break;
                         }
 
-                        yield return new ParsedWord(wordString,
-                            new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
+                        yield return new ParsedWord(
+                            wordString,
+                            new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber)
+                        );
                         word.Clear();
                         break;
                     }

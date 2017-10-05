@@ -46,8 +46,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PatriciaTrieTests.cs" />
+    <Compile Include="FileParsing\StandartFileParserTests.cs" />
+    <Compile Include="IndexTests\PatriciaTrieTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\TestTextFiles.cs" />
     <Compile Include="SearchEngineTests\EncodingsTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,7 +71,10 @@
     <Content Include="test-texts\EncodingTests\UTF-8.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="test-texts\small-number-of-words.txt">
+    <Content Include="test-texts\two-lines-file.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="test-texts\one-line-file.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="test-texts\Толстой Л. - Война и Мир ч.1.txt">

@@ -4,7 +4,7 @@ using System.Linq;
 using Jbta.SearchEngine.Index.Trie;
 using Xunit;
 
-namespace Jbta.SearchEngine.IntegrationTests
+namespace Jbta.SearchEngine.IntegrationTests.IndexTests
 {
     public class PatriciaTrieTests
     {
