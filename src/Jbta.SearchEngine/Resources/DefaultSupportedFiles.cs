@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Jbta.SearchEngine.Resources
 {
@@ -16,6 +17,16 @@ namespace Jbta.SearchEngine.Resources
             "js",
             "css",
             "sql"
+        };
+
+        public static readonly IEnumerable<Encoding> Encodings = new[]
+        {
+            Encoding.UTF7,
+            Encoding.UTF8,
+            Encoding.Unicode,
+            Encoding.BigEndianUnicode,
+            Encoding.UTF32,
+            Encoding.ASCII
         };
     }
 }

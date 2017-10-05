@@ -31,16 +31,16 @@ namespace Jbta.SearchEngine.Utils
             }
         }
 
-        public static bool IsValidPath(string path)
+        public static string GetFullPath(string path)
         {
             try
             {
                 var fullPath = Path.GetFullPath(path);
-                return !string.IsNullOrWhiteSpace(fullPath);
+                return string.IsNullOrWhiteSpace(fullPath) ? null : fullPath;
             }
             catch
             {
-                return false;
+                return null;
             }
         }
     }

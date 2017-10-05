@@ -51,7 +51,7 @@ namespace Jbta.SearchEngine
         bool Remove(string path);
 
         /// <summary>
-        /// Get indexed files that contains searched word
+        /// Gets query entries in indexed files
         /// </summary>
         IEnumerable<WordEntry> Search(string query, bool wholeWord = false);
     }

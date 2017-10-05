@@ -53,13 +53,14 @@ namespace Jbta.SearchEngine
             {
                 return false;
             }
-            if (!FileSystem.IsExistingPath(path))
+            var fullPath = FileSystem.GetFullPath(path);
+            if (!FileSystem.IsExistingPath(fullPath))
             {
                 return false;
             }
 
-            _indexer.Index(path);
-            _supervisor.Watch(path);
+            _indexer.Index(fullPath);
+            _supervisor.Watch(fullPath);
             return true;
         }
 

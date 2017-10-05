@@ -2,6 +2,9 @@
 
 namespace Jbta.SearchEngine
 { 
+    /// <summary>
+    /// Word entry in indexed file
+    /// </summary>
     public class WordEntry : IComparable<WordEntry>
     {
         public WordEntry(IFileVersion fileVersion, int position, int lineNumber)
@@ -11,10 +14,19 @@ namespace Jbta.SearchEngine
             LineNumber = lineNumber;
         }
 
+        /// <summary>
+        /// Version of file that contains this entry
+        /// </summary>
         public IFileVersion FileVersion { get; }
 
+        /// <summary>
+        /// Position of entry in line
+        /// </summary>
         public int Position { get; }
 
+        /// <summary>
+        /// Line number of entry
+        /// </summary>
         public int LineNumber { get; }
 
         public int CompareTo(WordEntry other)

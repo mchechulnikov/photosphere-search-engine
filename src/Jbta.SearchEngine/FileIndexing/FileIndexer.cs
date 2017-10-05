@@ -6,6 +6,7 @@ using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.Index;
 using Jbta.SearchEngine.Utils;
+using Jbta.SearchEngine.Vendor.SimpleHelpers;
 
 namespace Jbta.SearchEngine.FileIndexing
 {
@@ -64,7 +65,8 @@ namespace Jbta.SearchEngine.FileIndexing
         {
             _eventReactor.React(EngineEvent.FileIndexing, filePath);
 
-            var words = _parserProvider.Provide(filePath).Parse(version);
+            var encoding = FileEncoding.DetectFileEncoding(filePath);
+            var words = _parserProvider.Provide(filePath).Parse(version, encoding);
             _index.Add(version, words);
 
             _eventReactor.React(EngineEvent.FileIndexed, filePath);
