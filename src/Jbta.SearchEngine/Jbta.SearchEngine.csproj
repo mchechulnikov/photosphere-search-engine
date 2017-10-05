@@ -94,7 +94,6 @@
     <Compile Include="Utils\CharExtensions.cs" />
     <Compile Include="Utils\EnumerableExtensions.cs" />
     <Compile Include="Utils\FileSystem.cs" />
-    <Compile Include="Utils\FileHashing.cs" />
     <Compile Include="Utils\ReaderWriterLockSlimExtensions.cs" />
     <Compile Include="Utils\Text.cs" />
     <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\ConcurrentDictionary.cs" />

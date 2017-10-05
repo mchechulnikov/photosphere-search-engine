@@ -47,12 +47,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileParsing\StandartFileParserTests.cs" />
+    <Compile Include="SearchEngineTests\EventsTests.cs" />
+    <Compile Include="SearchEngineTests\RemoveTests.cs" />
+    <Compile Include="SearchEngineTests\AddTests.cs" />
     <Compile Include="SearchEngineTests\SearchTests.cs" />
     <Compile Include="TrieTests\ParallelAccessPatriciaTrieTests.cs" />
     <Compile Include="TrieTests\PatriciaTrieTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\TestTextFiles.cs" />
     <Compile Include="SearchEngineTests\EncodingsTest.cs" />
+    <Compile Include="Utils\TestFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

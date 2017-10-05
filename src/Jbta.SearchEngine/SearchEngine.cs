@@ -55,12 +55,16 @@ namespace Jbta.SearchEngine
 
         public bool Add(string path)
         {
-            if (_supervisor.IsUnderWatching(path))
+            var fullPath = FileSystem.GetFullPath(path);
+            if (string.IsNullOrWhiteSpace(fullPath))
             {
                 return false;
             }
-            var fullPath = FileSystem.GetFullPath(path);
             if (!FileSystem.IsExistingPath(fullPath))
+            {
+                return false;
+            }
+            if (_supervisor.IsUnderWatching(fullPath))
             {
                 return false;
             }
@@ -72,13 +76,22 @@ namespace Jbta.SearchEngine
 
         public bool Remove(string path)
         {
-            if (!_supervisor.IsUnderWatching(path))
+            var fullPath = FileSystem.GetFullPath(path);
+            if (string.IsNullOrWhiteSpace(fullPath))
+            {
+                return false;
+            }
+            if (!FileSystem.IsExistingPath(fullPath))
+            {
+                return false;
+            }
+            if (!_supervisor.IsUnderWatching(fullPath))
             {
                 return false;
             }
 
-            _supervisor.Unwatch(path);
-            _indexEjector.Eject(path);
+            _supervisor.Unwatch(fullPath);
+            _indexEjector.Eject(fullPath);
             return true;
         }
 

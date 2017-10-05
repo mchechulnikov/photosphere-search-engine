@@ -64,9 +64,9 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests
         {
             IndexFileAndDoAction(TestTextFiles.WarAndPeace1, (engine, filePath) =>
             {
-                var wordEntries = engine.SearchFiles(query).ToList();
+                var files = engine.SearchFiles(query).ToList();
 
-                Assert.Equal(cout, wordEntries.Count);
+                Assert.Equal(cout, files.Count);
             });
         }
 
@@ -80,9 +80,9 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests
         {
             IndexFileAndDoAction(TestTextFiles.WarAndPeace1, (engine, filePath) =>
             {
-                var wordEntries = engine.SearchFiles(query, true).ToList();
+                var files = engine.SearchFiles(query, true).ToList();
 
-                Assert.Equal(cout, wordEntries.Count);
+                Assert.Equal(cout, files.Count);
             });
         }
 

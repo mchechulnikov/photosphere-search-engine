@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileVersioning;
@@ -38,9 +39,16 @@ namespace Jbta.SearchEngine.FileIndexing
         {
             Task.Run(() =>
             {
-                _eventReactor.React(EngineEvent.FileRemovingStarted, filePath);
-                _filesVersionsRegistry.KillAllVersions(filePath);
-                _eventReactor.React(EngineEvent.FileRemovingEnded, filePath);
+                try
+                {
+                    _eventReactor.React(EngineEvent.FileRemovingStarted, filePath);
+                    _filesVersionsRegistry.KillAllVersions(filePath);
+                    _eventReactor.React(EngineEvent.FileRemovingEnded, filePath);
+                }
+                catch (Exception exception)
+                {
+                    _eventReactor.React(EngineEvent.FileRemovingEnded, filePath, exception);
+                }
             });
         }
     }
