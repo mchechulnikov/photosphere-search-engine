@@ -23,7 +23,6 @@
             Margin="10,10,0,10" 
             Width="75"
             Command="{Binding AddFilesButtonClick}"
-            IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
             ForceCursor="True"/>
         <Button
             Grid.Row="0"
@@ -31,8 +30,7 @@
             HorizontalAlignment="Left" 
             Margin="90,10,0,10" 
             Width="75"
-            Command="{Binding AddFolderButtonClick}"
-            IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
+            Command="{Binding AddFolderButtonClick}"            
             ForceCursor="True"/>
         <Button
             Grid.Row="0"
@@ -40,7 +38,7 @@
             HorizontalAlignment="Left"
             Margin="170,10,0,10"
             Command="{Binding RemoveButtonClick}"
-            IsEnabled="{Binding Path=IsIndexing, Converter={StaticResource InverseBooleanConverter}}"
+            IsEnabled="{Binding Path=IsRemoveButtonEnabled}"
             Width="75" />
         <Label
             Content="Processing..."

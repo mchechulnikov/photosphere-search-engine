@@ -30,5 +30,18 @@ namespace Jbta.SearchEngine.Utils
                 }
             }
         }
+
+        public static bool IsValidPath(string path)
+        {
+            try
+            {
+                var fullPath = Path.GetFullPath(path);
+                return !string.IsNullOrWhiteSpace(fullPath);
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

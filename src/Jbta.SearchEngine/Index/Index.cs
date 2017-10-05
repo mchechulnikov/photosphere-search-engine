@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Jbta.SearchEngine.FileParsing;
@@ -24,7 +24,7 @@ namespace Jbta.SearchEngine.Index
         public void Add(IFileVersion fileVersion, IEnumerable<ParsedWord> words)
         {
             var setOfWords = new HashSet<string>();
-            using (_lock.HoldWrite())
+            using (_lock.Exclusive())
             {
                 _directIndex.Add(fileVersion, setOfWords);
             }
@@ -43,7 +43,7 @@ namespace Jbta.SearchEngine.Index
                 return;
             }
 
-            using (_lock.HoldUpgradableRead())
+            using (_lock.SharedIntentExclusive())
             {
                 foreach (var fileVersion in fileVersions)
                 {
@@ -54,7 +54,7 @@ namespace Jbta.SearchEngine.Index
                     }
                 }
 
-                using (_lock.HoldWrite())
+                using (_lock.Exclusive())
                 {
                     foreach (var fileVersion in fileVersions)
                     {

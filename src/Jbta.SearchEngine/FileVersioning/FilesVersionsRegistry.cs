@@ -21,7 +21,7 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public bool Contains(string filePath)
         {
-            using (_lock.HoldRead())
+            using (_lock.Shared())
             {
                 return _fileVersions.ContainsKey(filePath);
             }
@@ -31,7 +31,7 @@ namespace Jbta.SearchEngine.FileVersioning
         {
             get
             {
-                using (_lock.HoldRead())
+                using (_lock.Shared())
                 {
                     return _fileVersions.Keys;
                 }
@@ -41,7 +41,7 @@ namespace Jbta.SearchEngine.FileVersioning
         public IReadOnlyCollection<FileVersion> RemoveDeadVersions()
         {
             var result = new HashSet<FileVersion>();
-            using (_lock.HoldRead())
+            using (_lock.Shared())
             {
                 foreach (var collection in _fileVersions.Values)
                 {
@@ -61,12 +61,12 @@ namespace Jbta.SearchEngine.FileVersioning
             var creationTimeUtc = File.GetCreationTimeUtc(filePath);
             var fileVersion = new FileVersion(filePath, lastWriteTimeUtc, creationTimeUtc);
 
-            using (_lock.HoldUpgradableRead())
+            using (_lock.SharedIntentExclusive())
             {
                 if (!_fileVersions.TryGetValue(fileVersion.Path, out var fileVersionsCollection))
                 {
                     fileVersionsCollection = new FileVersionsCollection();
-                    using (_lock.HoldWrite())
+                    using (_lock.Exclusive())
                     {
                         _fileVersions.Add(fileVersion.Path, fileVersionsCollection);
                     }
@@ -92,7 +92,7 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public void KillAllVersions(string filePath)
         {
-            using (_lock.HoldRead())
+            using (_lock.Shared())
             {
                 if (_fileVersions.TryGetValue(filePath, out var versions))
                 {
@@ -104,7 +104,7 @@ namespace Jbta.SearchEngine.FileVersioning
         public bool IsFileUpdatable(string filePath)
         {
             FileVersionsCollection fileVersions;
-            using (_lock.HoldRead())
+            using (_lock.Shared())
             {
                 if (!_fileVersions.TryGetValue(filePath, out fileVersions))
                 {
@@ -118,14 +118,14 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public void ChangeFilePath(string oldPath, string newPath)
         {
-            using (_lock.HoldUpgradableRead())
+            using (_lock.SharedIntentExclusive())
             {
                 if (!_fileVersions.TryGetValue(oldPath, out var fileVersions))
                 {
                     return;
                 }
 
-                using (_lock.HoldWrite())
+                using (_lock.Exclusive())
                 {
                     _fileVersions.Add(newPath, fileVersions);
                     fileVersions.UpdateFilePath(newPath);

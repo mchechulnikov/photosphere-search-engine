@@ -9,14 +9,26 @@ using Jbta.SearchEngine.Searching;
 
 namespace Jbta.SearchEngine
 {
+    /// <summary>
+    /// Factory for creating search engine instance
+    /// </summary>
     public static class SearchEngineFactory
     {
+        /// <summary>
+        /// Creates new search engine instance
+        /// </summary>
+        /// <returns>New search engine instance</returns>
         public static ISearchEngine New()
         {
             var settings = new SearchEngineSettings();
             return New(settings);
         }
 
+        /// <summary>
+        /// Creates new search engine instance
+        /// </summary>
+        /// <param name="settings">Engine settings object</param>
+        /// <returns>New search engine instance</returns>
         public static ISearchEngine New(SearchEngineSettings settings)
         {
             var eventReactor = new EventReactor();

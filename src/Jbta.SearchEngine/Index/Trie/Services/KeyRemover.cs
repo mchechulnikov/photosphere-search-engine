@@ -58,7 +58,7 @@ namespace Jbta.SearchEngine.Index.Trie.Services
                 parent.Children.TryRemove(node.Key[0], out var _);
                 if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
                 {
-                    using (parent.Lock.HoldWrite())
+                    using (parent.Lock.Exclusive())
                     {
                         MergeParentWithAloneChild(parent);
                     }

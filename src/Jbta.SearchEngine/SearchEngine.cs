@@ -69,10 +69,6 @@ namespace Jbta.SearchEngine
             {
                 return false;
             }
-            if (!FileSystem.IsExistingPath(path))
-            {
-                return false;
-            }
 
             _supervisor.Unwatch(path);
             _indexEjector.Eject(path);
@@ -88,11 +84,6 @@ namespace Jbta.SearchEngine
         {
             _supervisor?.Dispose();
             _sheduller?.Dispose();
-        }
-
-        ~SearchEngine()
-        {
-            Dispose();
         }
     }
 }

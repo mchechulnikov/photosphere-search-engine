@@ -31,7 +31,6 @@ namespace Jbta.SearchEngine.FileSupervision
 
         public FileSystemWatcher New(string path)
         {
-            // TODO check path for already added
             var watcher = new FileSystemWatcher { NotifyFilter = WatcherNotifyFilters };
             if (FileSystem.IsDirectory(path))
             {

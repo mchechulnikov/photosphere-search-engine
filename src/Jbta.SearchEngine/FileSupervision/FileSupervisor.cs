@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
 namespace Jbta.SearchEngine.FileSupervision
@@ -17,15 +18,8 @@ namespace Jbta.SearchEngine.FileSupervision
 
         public IEnumerable<string> WatchedPathes => _watchers.Keys;
 
-        public bool IsUnderWatching(string path) => _watchers.ContainsKey(path);
-
         public void Watch(string path)
         {
-            if (_watchers.ContainsKey(path))
-            {
-                return;
-            }
-
             var watcher = _watcherFactory.New(path);
             _watchers.AddOrUpdate(path, watcher, (k, v) => v);
             watcher.EnableRaisingEvents = true;
@@ -37,9 +31,15 @@ namespace Jbta.SearchEngine.FileSupervision
             {
                 return;
             }
+
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();
             _watchers.Remove(path);
+        }
+
+        public bool IsUnderWatching(string path)
+        {
+            return _watchers.ContainsKey(path) || _watchers.Keys.Any(path.StartsWith);
         }
 
         public void Dispose()

@@ -19,7 +19,7 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public void Add(FileVersion fileVersion)
         {
-            using (_lock.HoldWrite())
+            using (_lock.Exclusive())
             {
                 Items.Add(fileVersion);
             }
@@ -27,7 +27,7 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public IReadOnlyCollection<FileVersion> GetList()
         {
-            using (_lock.HoldRead())
+            using (_lock.Shared())
             {
                 return Items.ToList();
             }
@@ -35,11 +35,11 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public void UpdateFilePath(string newPath)
         {
-            using (_lock.HoldUpgradableRead())
+            using (_lock.SharedIntentExclusive())
             {
                 foreach (var fileVersion in Items)
                 {
-                    using (_lock.HoldWrite())
+                    using (_lock.Exclusive())
                     {
                         fileVersion.Path = newPath;
                     }
@@ -49,12 +49,12 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public IEnumerable<FileVersion> RemoveDeadVersions()
         {
-            using (_lock.HoldUpgradableRead())
+            using (_lock.SharedIntentExclusive())
             {
                 var deadVersions = Items.Where(i => i.IsDead).ToList();
                 foreach (var deadVersion in deadVersions)
                 {
-                    using (_lock.HoldWrite())
+                    using (_lock.Exclusive())
                     {
                         Items.Remove(deadVersion);
                     }
@@ -65,7 +65,7 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public void KillVersions()
         {
-            using (_lock.HoldWrite())
+            using (_lock.Exclusive())
             {
                 foreach (var version in Items)
                 {
@@ -76,7 +76,7 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public bool All(Func<FileVersion, bool> predicate)
         {
-            using (_lock.HoldRead())
+            using (_lock.Shared())
             {
                 return Items.All(predicate);
             }

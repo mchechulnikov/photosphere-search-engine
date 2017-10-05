@@ -17,6 +17,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 {
     internal class IndexManagementPanelViewModel : ViewModelBase
     {
+        private bool _isRemoveButtonEnabled;
         private int _processingFilesCount;
         private bool _isIndexing;
         private Visibility _indexingStatusLabelVisibility = Visibility.Hidden;
@@ -40,6 +41,12 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
         {
             get => _indexingStatusLabelVisibility;
             set => SetField(ref _indexingStatusLabelVisibility, value, nameof(IndexingStatusLabelVisibility));
+        }
+
+        public bool IsRemoveButtonEnabled
+        {
+            get => _isRemoveButtonEnabled;
+            set => SetField(ref _isRemoveButtonEnabled, value, nameof(IsRemoveButtonEnabled));
         }
 
         public ObservableCollection<ITreeViewItemViewModel> TreeViewItems { get; }
@@ -165,6 +172,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             }
 
             await RemoveAction(TreeViewItems);
+            CheckRemoveButtonAvailability();
         }
 
         private static void RemoveFromSearchSystem(ITreeViewItemViewModel item)
@@ -178,15 +186,29 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             TreeViewItems.Clear();
             foreach (var path in indexedPathes.OrderBy(p => p))
             {
+                TreeViewItemViewModelBase viewModel;
                 if (FileSystem.IsDirectory(path))
                 {
-                    TreeViewItems.Add(new FolderTreeViewItemViewModel(path));
+                    viewModel = new FolderTreeViewItemViewModel(path);
                 }
                 else
                 {
-                    TreeViewItems.Add(new FileTreeViewItemViewModel(path));
+                    viewModel = new FileTreeViewItemViewModel(path);
                 }
+                viewModel.PropertyChanged += (o, a) =>
+                {
+                    if (a.PropertyName == nameof(TreeViewItemViewModelBase.IsSelected))
+                    {
+                        CheckRemoveButtonAvailability();
+                    }
+                };
+                TreeViewItems.Add(viewModel);
             }
+        }
+
+        private void CheckRemoveButtonAvailability()
+        {
+            IsRemoveButtonEnabled = TreeViewItems.Any(vm => vm.IsSelected);
         }
     }
 }
