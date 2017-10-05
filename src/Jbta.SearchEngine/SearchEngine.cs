@@ -3,6 +3,7 @@ using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing.Services;
 using Jbta.SearchEngine.FileSupervision;
 using Jbta.SearchEngine.Searching;
+using Jbta.SearchEngine.Shedulling;
 using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine
@@ -13,24 +14,29 @@ namespace Jbta.SearchEngine
         private readonly IIndexEjector _indexEjector;
         private readonly IFileSupervisor _supervisor;
         private readonly ISearcher _searcher;
+        private readonly ISheduller _sheduller;
 
         public SearchEngine(
             EventReactor eventReactor,
             IFileIndexer indexer,
             IIndexEjector indexEjector,
             IFileSupervisor supervisor,
-            ISearcher searcher)
+            ISearcher searcher,
+            ISheduller sheduller)
         {
             _indexer = indexer;
             _indexEjector = indexEjector;
             _supervisor = supervisor;
             _searcher = searcher;
+            _sheduller = sheduller;
 
             eventReactor.Register(EngineEvent.FileIndexing, a => FileIndexing?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexed, a => FileIndexed?.Invoke(a));
             eventReactor.Register(EngineEvent.FileRemoving, a => FileRemoving?.Invoke(a));
             eventReactor.Register(EngineEvent.FileRemoved, a => FileRemoved?.Invoke(a));
             eventReactor.Register(EngineEvent.FilePathChanged, a => FilePathChanged?.Invoke(a));
+
+            _sheduller.Start();
         }
 
         public event SearchEngineEventHandler FileIndexing;
@@ -78,6 +84,15 @@ namespace Jbta.SearchEngine
             return _searcher.Search(query, wholeWord);
         }
 
-        public void Dispose() => _supervisor?.Dispose();
+        public void Dispose()
+        {
+            _supervisor?.Dispose();
+            _sheduller?.Dispose();
+        }
+
+        ~SearchEngine()
+        {
+            Dispose();
+        }
     }
 }

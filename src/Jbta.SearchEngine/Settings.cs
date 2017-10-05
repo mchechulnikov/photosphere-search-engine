@@ -11,5 +11,7 @@ namespace Jbta.SearchEngine
         public IEnumerable<IFileParser> FileParsers { get; set; }
 
         public bool GcCollect { get; set; }
+
+        public double CleaUpIntervalMs { get; set; } = 1000;
     }
 }

@@ -39,6 +39,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileIndexing\Services\IndexCleaner.cs" />
+    <Compile Include="FileIndexing\Services\IIndexCleaner.cs" />
     <Compile Include="Events\EngineEvent.cs" />
     <Compile Include="Events\Args\FilePathChangedEventArgs.cs" />
     <Compile Include="Events\Args\SearchEngineEventArgs.cs" />
@@ -57,6 +59,7 @@
     <Compile Include="FileParsing\ParsedWord.cs" />
     <Compile Include="FileVersioning\FileVersion.cs" />
     <Compile Include="FileParsing\StandartFileParser.cs" />
+    <Compile Include="FileVersioning\FileVersionsCollection.cs" />
     <Compile Include="FileVersioning\Services\FilePathActualizer.cs" />
     <Compile Include="FileVersioning\Services\IFilePathActualizer.cs" />
     <Compile Include="FileSupervision\FileSupervisor.cs" />
@@ -65,6 +68,8 @@
     <Compile Include="SearchEngineFactory.cs" />
     <Compile Include="Searching\ISearcher.cs" />
     <Compile Include="Searching\Searcher.cs" />
+    <Compile Include="Shedulling\ISheduller.cs" />
+    <Compile Include="Shedulling\Scheduler.cs" />
     <Compile Include="Trie\ITrie.cs" />
     <Compile Include="FileIndexing\Services\IFileIndexer.cs" />
     <Compile Include="FileIndexing\Services\FileIndexer.cs" />
@@ -84,6 +89,7 @@
     <Compile Include="Utils\CharExtensions.cs" />
     <Compile Include="Utils\EnumerableExtensions.cs" />
     <Compile Include="Utils\FileSystem.cs" />
+    <Compile Include="Utils\FileHashing.cs" />
     <Compile Include="Utils\ReaderWriterLockSlimExtensions.cs" />
     <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\ConcurrentDictionary.cs" />
     <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImpl.cs" />
@@ -105,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Vendor\vendor.md" />
+    <None Include="Vendor\README.md" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

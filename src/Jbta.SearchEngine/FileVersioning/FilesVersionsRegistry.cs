@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,19 +11,19 @@ namespace Jbta.SearchEngine.FileVersioning
     internal class FilesVersionsRegistry
     {
         private readonly IEventReactor _eventReactor;
-        private readonly IDictionary<string, ISet<FileVersion>> _fileVersions;
+        private readonly IDictionary<string, FileVersionsCollection> _fileVersions;
         private readonly ReaderWriterLockSlim _lock;
 
         public FilesVersionsRegistry(IEventReactor eventReactor)
         {
             _eventReactor = eventReactor;
-            _fileVersions = new Dictionary<string, ISet<FileVersion>>();
+            _fileVersions = new Dictionary<string, FileVersionsCollection>();
             _lock = new ReaderWriterLockSlim();
         }
 
         public bool Contains(string filePath)
         {
-            using (_lock.ForReading())
+            using (_lock.Reading())
             {
                 return _fileVersions.ContainsKey(filePath);
             }
@@ -32,87 +33,123 @@ namespace Jbta.SearchEngine.FileVersioning
         {
             get
             {
-                using (_lock.ForReading())
+                using (_lock.Reading())
                 {
                     return _fileVersions.Keys;
                 }
             }
         }
 
+        public IReadOnlyCollection<FileVersion> RemoveDeadVersions()
+        {
+            var result = new List<FileVersion>();
+            using (_lock.Reading())
+            {
+                foreach (var collection in _fileVersions.Values)
+                {
+                    var deadVersions = collection.RemoveDeadVersions();
+                    result.AddRange(deadVersions);
+                }
+                return result;
+            }
+        }
+
         public FileVersion RegisterFileVersion(string filePath)
         {
             var lastWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
-            var fileVersion = new FileVersion(filePath, lastWriteTimeUtc);
+            var creationTimeUtc = File.GetCreationTimeUtc(filePath);
+            var fileVersion = new FileVersion(filePath, lastWriteTimeUtc, creationTimeUtc);
 
-            using (_lock.ForWriting())
+            using (_lock.UpgradableRead())
             {
-                if (!_fileVersions.TryGetValue(fileVersion.Path, out var setOfFileVersions))
+                if (!_fileVersions.TryGetValue(fileVersion.Path, out var fileVersionsCollection))
                 {
-                    setOfFileVersions = new SortedSet<FileVersion>();
-                    _fileVersions.Add(fileVersion.Path, setOfFileVersions);
+                    fileVersionsCollection = new FileVersionsCollection();
+                    using (_lock.Write())
+                    {
+                        _fileVersions.Add(fileVersion.Path, fileVersionsCollection);
+                    }
                 }
-                setOfFileVersions.Add(fileVersion);
+                fileVersionsCollection.Add(fileVersion);
             }
             return fileVersion;
         }
 
-        public IEnumerable<FileVersion> Get(string filePath)
+        public void RemoveAfterAction(string filePath, Action<IReadOnlyCollection<FileVersion>> action)
         {
-            using (_lock.ForReading())
-            {
-                return _fileVersions[filePath];
-            }
-        }
-
-        public void Remove(string filePath)
-        {
-            using (_lock.ForWriting())
-            {
-                _fileVersions.Remove(filePath);
-            }
-        }
-
-        public IReadOnlyCollection<FileVersion> RemoveIrrelevantFileVersions(string filePath)
-        {
-            using (_lock.ForWriting())
+            using (_lock.UpgradableRead())
             {
                 var fileVersions = _fileVersions[filePath];
-                var lastFileVersion = fileVersions.Last();
-                var irrelevantFileVersions = fileVersions.Where(fv => fv != lastFileVersion).ToList();
-                foreach (var fileVersion in irrelevantFileVersions)
+                action(fileVersions.Items.ToList());
+                using (_lock.Write())
                 {
-                    fileVersions.Remove(fileVersion);
+                    _fileVersions.Remove(filePath);
                 }
-                return irrelevantFileVersions;
             }
         }
 
-        public bool IsNeedToBeUpdated(string filePath)
+        public IReadOnlyCollection<FileVersion> Get(string filePath)
         {
-            using (_lock.ForWriting())
+            _fileVersions.TryGetValue(filePath, out var result);
+            return result?.Items.ToList();
+        }
+
+        public void KillVersions(IEnumerable<FileVersion> irrelevantVersions)
+        {
+            foreach (var version in irrelevantVersions)
             {
-                return _fileVersions.TryGetValue(filePath, out var fileVersions)
-                       && fileVersions.All(fv => fv.Version != File.GetLastWriteTimeUtc(filePath));
+                version.IsDead = true;
             }
+        }
+
+        public void KillVersions(string filePath)
+        {
+            using (_lock.Reading())
+            {
+                if (_fileVersions.TryGetValue(filePath, out var versions))
+                {
+                    versions.KillVersions();
+                }
+            }
+        }
+
+        public void DoActionIfFileUpdatable(string filePath, Action action)
+        {
+            FileVersionsCollection fileVersions;
+            using (_lock.Reading())
+            {
+                if (!_fileVersions.TryGetValue(filePath, out fileVersions))
+                {
+                    //action();
+                    return;
+                }
+            }
+            var lastWriteTimeUtc = File.GetLastWriteTimeUtc(filePath);
+            var creationTimeUtc = File.GetCreationTimeUtc(filePath);
+            if (fileVersions.Items.All(fv =>
+                fv.LastWriteDate != lastWriteTimeUtc || fv.CreationDate != creationTimeUtc))
+            {
+                action();
+            }
+            //fileVersions.IfAllThanDo(fv => fv.LastWriteDate != lastWriteTimeUtc && fv.CreationDate != creationTimeUtc, action);
+            
         }
 
         public void ChangeFilePath(string oldPath, string newPath)
         {
-            using (_lock.ForWriting())
+            using (_lock.UpgradableRead())
             {
                 if (!_fileVersions.TryGetValue(oldPath, out var fileVersions))
                 {
                     return;
                 }
 
-                _fileVersions.Add(newPath, fileVersions);
-
-                foreach (var fileVersion in fileVersions)
+                using (_lock.Write())
                 {
-                    fileVersion.Path = newPath;
+                    _fileVersions.Add(newPath, fileVersions);
+                    fileVersions.UpdateFilePath(newPath);
+                    _fileVersions.Remove(oldPath);
                 }
-
-                _fileVersions.Remove(oldPath);
             }
 
             _eventReactor.React(EngineEvent.FilePathChanged, oldPath, newPath);

@@ -45,7 +45,7 @@ namespace Jbta.SearchEngine.Trie.Services
             switch (zippedSlices.MatchKind)
             {
                 case ZippedSlices.Match.Match:
-                    using (node.Lock.ForWriting()) node.Values.Add(value);
+                    using (node.Lock.Write()) node.Values.Add(value);
                     break;
                 case ZippedSlices.Match.IsContained:
                     Add(node, zippedSlices.SecondTail, value);

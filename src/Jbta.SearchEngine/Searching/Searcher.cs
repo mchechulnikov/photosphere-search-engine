@@ -17,15 +17,15 @@ namespace Jbta.SearchEngine.Searching
         {
             return _index
                 .Get(query?.Trim(), wholeWord)
-                .Where(e => e.FileVersion != null)
+                .Where(e => e.FileVersion != null && !e.FileVersion.IsDead)
                 .GroupBy(e => e.FileVersion.Path)
                 .Select(g => new
                 {
                     Path = g.Key,
-                    ActualVersion = g.Max(e => e.FileVersion.Version),
+                    ActualVersion = g.Max(e => e.FileVersion.LastWriteDate),
                     Entry = g
                 })
-                .SelectMany(a => a.Entry.Where(e => e.FileVersion.Version == a.ActualVersion));
+                .SelectMany(a => a.Entry.Where(e => e.FileVersion.LastWriteDate == a.ActualVersion));
         }
     }
 }

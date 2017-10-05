@@ -68,6 +68,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                 {
                     IndexingStatusLabelVisibility = Visibility.Visible;
                 }
+                RefreshTree();
             });
 
             void OnStopFileProcessing(SearchEngineEventArgs a) => DispatchService.Invoke(() =>
@@ -77,10 +78,11 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                 {
                     IndexingStatusLabelVisibility = Visibility.Hidden;
                 }
+                RefreshTree();
             });
         }
 
-        private async Task OnAddFolderButtonClick(object sender)
+        private static async Task OnAddFolderButtonClick(object sender)
         {
             string selectedPath = null;
             using (var dialog = new FolderBrowserDialog())
@@ -98,14 +100,10 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
                 return;
             }
 
-            var willBeAdded = await Task.Run(() => SearchSystem.EngineInstance.Add(selectedPath));
-            if (willBeAdded)
-            {
-                TreeViewItems.Add(new FolderTreeViewItemViewModel(selectedPath));
-            }
+            await Task.Run(() => SearchSystem.EngineInstance.Add(selectedPath));
         }
 
-        private async Task OnAddFilesButtonClick(object sender)
+        private static async Task OnAddFilesButtonClick(object sender)
         {
             var selectedPathes = GetFilesFromDialog();
 
@@ -138,15 +136,11 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             return selectedPathes;
         }
 
-        private async Task AyncIndexing(IReadOnlyCollection<string> pathes)
+        private static async Task AyncIndexing(IEnumerable<string> pathes)
         {
             var tasks = pathes.Select(async path =>
             {
-                var willBeAdded = await Task.Run(() => SearchSystem.EngineInstance.Add(path));
-                if (willBeAdded)
-                {
-                    TreeViewItems.Add(new FileTreeViewItemViewModel(path));
-                }
+                await Task.Run(() => SearchSystem.EngineInstance.Add(path));
             });
             await Task.WhenAll(tasks);
         }

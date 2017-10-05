@@ -54,19 +54,17 @@ namespace Jbta.SearchEngine.FileIndexing.Services
                 return;
             }
 
-            Task.Run(() => IndexFile(filePath));
+            var fileVersion = _filesVersionsRegistry.RegisterFileVersion(filePath);
+
+            Task.Run(() => IndexFile(filePath, fileVersion));
         }
 
-        private void IndexFile(string filePath)
+        private void IndexFile(string filePath, IFileVersion version)
         {
             _eventReactor.React(EngineEvent.FileIndexing, filePath);
 
-            var fileVersion = _filesVersionsRegistry.RegisterFileVersion(filePath);
-
-            var fileParser = _parserProvider.Provide(filePath);
-            var words = fileParser.Parse(fileVersion);
-
-            _index.Add(fileVersion, words);
+            var words = _parserProvider.Provide(filePath).Parse(version);
+            _index.Add(version, words);
 
             _eventReactor.React(EngineEvent.FileIndexed, filePath);
         }

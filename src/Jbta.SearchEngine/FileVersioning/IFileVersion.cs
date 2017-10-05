@@ -6,6 +6,10 @@ namespace Jbta.SearchEngine.FileVersioning
     {
         string Path { get; }
 
-        DateTime Version { get; }
+        bool IsDead { get; set; }
+
+        DateTime LastWriteDate { get; }
+
+        DateTime CreationDate { get; }
     }
 }

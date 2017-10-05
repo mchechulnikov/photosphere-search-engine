@@ -1,44 +1,47 @@
-﻿using System.Linq;
+﻿using System.IO;
 using Jbta.SearchEngine.FileVersioning;
+using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileIndexing.Services
 {
     internal class IndexUpdater : IIndexUpdater
     {
         private readonly IFileIndexer _fileIndexer;
-        private readonly IIndex _index;
         private readonly FilesVersionsRegistry _filesVersionsRegistry;
 
         public IndexUpdater(
             IFileIndexer fileIndexer,
-            IIndex index,
             FilesVersionsRegistry filesVersionsRegistry)
         {
             _fileIndexer = fileIndexer;
-            _index = index;
             _filesVersionsRegistry = filesVersionsRegistry;
         }
 
         public void Update(string filePath)
         {
-            if (!_filesVersionsRegistry.IsNeedToBeUpdated(filePath))
+            if (!FileSystem.IsExistingPath(filePath))
+            {
+                return;
+            }
+            if (FileSystem.IsDirectory(filePath))
             {
                 return;
             }
 
-            _fileIndexer.Index(filePath);
-            RemoveIrrelevantFileVersions(filePath);
-        }
-
-        private void RemoveIrrelevantFileVersions(string filePath)
-        {
-            var irrelevantFileVersions = _filesVersionsRegistry.RemoveIrrelevantFileVersions(filePath);
-            if (!irrelevantFileVersions.Any())
+            _filesVersionsRegistry.DoActionIfFileUpdatable(filePath, () =>
             {
-                return;
-            }
+                var irrelevantVersions = _filesVersionsRegistry.Get(filePath);
 
-            _index.Remove(irrelevantFileVersions);
+                if (File.Exists(filePath))
+                {
+                    _fileIndexer.Index(filePath);
+                }
+
+                if (irrelevantVersions != null)
+                {
+                    _filesVersionsRegistry.KillVersions(irrelevantVersions);
+                }
+            });
         }
     }
 }

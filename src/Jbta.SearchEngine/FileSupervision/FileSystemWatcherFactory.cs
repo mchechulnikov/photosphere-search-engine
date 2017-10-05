@@ -49,10 +49,31 @@ namespace Jbta.SearchEngine.FileSupervision
 
         private void SubscribeOnFileEvents(FileSystemWatcher watcher)
         {
-            watcher.Created += (o, e) => _indexer.Index(e.FullPath);
-            watcher.Changed += (o, e) => _indexUpdater.Update(e.FullPath);
-            watcher.Deleted += (o, e) => _indexEjector.Eject(e.FullPath);
-            watcher.Renamed += (o, e) => _filePathActualizer.Actualize(e.OldFullPath, e.FullPath);
+            watcher.Created += (o, e) =>
+            {
+                _indexer.Index(e.FullPath);
+            };
+            watcher.Changed += (o, e) =>
+            {
+                if (e.ChangeType != WatcherChangeTypes.Changed)
+                {
+                    return;
+                }
+
+                _indexUpdater.Update(e.FullPath);
+            };
+            watcher.Deleted += (o, e) =>
+            {
+                if (e.ChangeType != WatcherChangeTypes.Deleted)
+                {
+                    return;
+                }
+                _indexEjector.Eject(e.FullPath);
+            };
+            watcher.Renamed += (o, e) =>
+            {
+                _filePathActualizer.Actualize(e.OldFullPath, e.FullPath);
+            };
         }
     }
 }

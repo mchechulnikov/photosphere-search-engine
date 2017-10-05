@@ -1,27 +1,33 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.Trie;
-using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
+using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileIndexing
 {
     internal class Index : IIndex
     {
         private readonly ITrie<WordEntry> _searchIndex;
-        private readonly ConcurrentDictionary<FileVersion, ISet<string>> _directIndex;
+        private readonly IDictionary<IFileVersion, ISet<string>> _directIndex;
+        private readonly ReaderWriterLockSlim _lock;
 
         public Index()
         {
             _searchIndex = new PatriciaTrie<WordEntry>();
-            _directIndex = new ConcurrentDictionary<FileVersion, ISet<string>>();
+            _directIndex = new Dictionary<IFileVersion, ISet<string>>();
+            _lock = new ReaderWriterLockSlim();
         }
 
-        public void Add(FileVersion fileVersion, IEnumerable<ParsedWord> words)
+        public void Add(IFileVersion fileVersion, IEnumerable<ParsedWord> words)
         {
             var setOfWords = new HashSet<string>();
-            _directIndex.AddOrUpdate(fileVersion, setOfWords, (k, v) => v);
+            using (_lock.Write())
+            {
+                _directIndex.Add(fileVersion, setOfWords);
+            }
 
             foreach (var word in words)
             {
@@ -32,15 +38,29 @@ namespace Jbta.SearchEngine.FileIndexing
 
         public void Remove(IReadOnlyCollection<FileVersion> fileVersions)
         {
-            var words = fileVersions.SelectMany(fv => _directIndex[fv]).Distinct().ToList();
-            foreach (var word in words)
+            if (!fileVersions.Any())
             {
-                _searchIndex.Remove(word, e => fileVersions.Contains(e.FileVersion));
+                return;
             }
 
-            foreach (var fileVersion in fileVersions)
+            using (_lock.UpgradableRead())
             {
-                _directIndex.TryRemove(fileVersion, out var _);
+                foreach (var fileVersion in fileVersions)
+                {
+                    var words = _directIndex[fileVersion].ToList();
+                    foreach (var word in words)
+                    {
+                        _searchIndex.Remove(word, e => fileVersions.Contains(e.FileVersion));
+                    }
+                }
+
+                using (_lock.Write())
+                {
+                    foreach (var fileVersion in fileVersions)
+                    {
+                        _directIndex.Remove(fileVersion);
+                    }
+                }
             }
         }
 

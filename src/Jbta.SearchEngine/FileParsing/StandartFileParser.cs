@@ -49,6 +49,11 @@ namespace Jbta.SearchEngine.FileParsing
                         else if (character == '\0')
                         {
                             var wordString = word.ToString();
+                            if (string.IsNullOrWhiteSpace(wordString))
+                            {
+                                break;
+                            }
+
                             yield return new ParsedWord(wordString, new WordEntry(fileVersion, position - wordString.Length - 1, lineNumber));
                             word.Clear();
                             break;

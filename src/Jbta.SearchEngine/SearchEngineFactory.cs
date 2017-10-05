@@ -6,6 +6,7 @@ using Jbta.SearchEngine.FileSupervision;
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.FileVersioning.Services;
 using Jbta.SearchEngine.Searching;
+using Jbta.SearchEngine.Shedulling;
 
 namespace Jbta.SearchEngine
 {
@@ -24,8 +25,8 @@ namespace Jbta.SearchEngine
             var filesVersionsRegistry = new FilesVersionsRegistry(eventReactor);
             var index = new Index();
             var indexer = new FileIndexer(eventReactor, fileParserProvider, index, filesVersionsRegistry, settings);
-            var indexEjector = new IndexEjector(eventReactor, index, filesVersionsRegistry, settings);
-            var indexUpdater = new IndexUpdater(indexer, index, filesVersionsRegistry);
+            var indexEjector = new IndexEjector(eventReactor, filesVersionsRegistry);
+            var indexUpdater = new IndexUpdater(indexer, filesVersionsRegistry);
             var fileWatcherFactory = new FileSystemWatcherFactory(
                 indexer,
                 indexUpdater,
@@ -34,7 +35,9 @@ namespace Jbta.SearchEngine
             );
             var fileSupervisor = new FileSupervisor(fileWatcherFactory);
             var searcher = new Searcher(index);
-            return new SearchEngine(eventReactor, indexer, indexEjector, fileSupervisor, searcher);
+            var indexCleaner = new IndexCleaner(index, filesVersionsRegistry, settings);
+            var scheduler = new Scheduler(indexCleaner, settings);
+            return new SearchEngine(eventReactor, indexer, indexEjector, fileSupervisor, searcher, scheduler);
         }
     }
 }

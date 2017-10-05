@@ -23,6 +23,12 @@ namespace Jbta.SearchEngine.Trie.Services
         {
             var (node, parent, nodesStack) = _nodeRetriever.RetrieveForWriting(key);
 
+            if (node == _rootNode || node == parent)
+            {
+                ReleaseLocks(nodesStack);
+                return;
+            }
+
             node.Lock.EnterWriteLock();
 
             RemoveValue(valueSelector, node);
@@ -52,7 +58,7 @@ namespace Jbta.SearchEngine.Trie.Services
                 parent.Children.TryRemove(node.Key[0], out var _);
                 if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
                 {
-                    using (parent.Lock.ForWriting())
+                    using (parent.Lock.Write())
                     {
                         MergeParentWithAloneChild(parent);
                     }
