@@ -12,7 +12,7 @@ namespace Jbta.SearchEngine.IntegrationTests.IndexTests.TrieTests
         [Fact]
         public void Get_ToOneNode_Success()
         {
-            var (trie, _) = GetTrieWithData();
+            var trie = GetTrieWithData();
 
             var sourceTasks = new []
             {
@@ -21,11 +21,6 @@ namespace Jbta.SearchEngine.IntegrationTests.IndexTests.TrieTests
                 new Task<int>(() => trie.Get("арбуз").First()),
                 new Task<int>(() => trie.Get("арбуз").First()),
                 new Task<int>(() => trie.Get("арбуз").First()),
-                new Task<int>(() => trie.Get("арбуз").First()),
-                new Task<int>(() => trie.Get("арбуз").First()),
-                new Task<int>(() => trie.Get("арбуз").First()),
-                new Task<int>(() => trie.Get("арбуз").First()),
-                new Task<int>(() => trie.Get("арбуз").First())
             };
             var tasks = sourceTasks.Cast<Task>().ToArray();
 
@@ -42,7 +37,7 @@ namespace Jbta.SearchEngine.IntegrationTests.IndexTests.TrieTests
         [Fact]
         public void Get_ToParentAndChildNode_Success()
         {
-            var (trie, _) = GetTrieWithData();
+            var trie = GetTrieWithData();
 
             var tasksToParent = new[]
             {
@@ -77,7 +72,112 @@ namespace Jbta.SearchEngine.IntegrationTests.IndexTests.TrieTests
             }
         }
 
-        private static (ITrie<int> trie, IDictionary<string, int> map) GetTrieWithData()
+        [Fact]
+        public void Add_WhileReading_Success()
+        {
+            var trie = GetTrieWithData();
+
+            var tasksGet = new[]
+            {
+                new Task<int>(() => trie.Get("ар").First()),
+                new Task<int>(() => trie.Get("ар").First()),
+                new Task<int>(() => trie.Get("ар").First()),
+                new Task<int>(() => trie.Get("ар").First()),
+                new Task<int>(() => trie.Get("ар").First()),
+            };
+
+            var randomizer = new Random();
+            var data = new Dictionary<string, int>()
+            {
+                {"арбузfoo", randomizer.Next()},
+                {"арбузbar", randomizer.Next()},
+                {"арбузbuz", randomizer.Next()},
+                {"арбузqiz", randomizer.Next()},
+                {"арбузfoobar", randomizer.Next()}
+            };
+            var tasksAdd = new[]
+            {
+                new Task(() => trie.Add("арбузfoo", data["арбузfoo"])),
+                new Task(() => trie.Add("арбузbar", data["арбузbar"])),
+                new Task(() => trie.Add("арбузbuz", data["арбузbuz"])),
+                new Task(() => trie.Add("арбузqiz", data["арбузqiz"])),
+                new Task(() => trie.Add("арбузfoobar", data["арбузfoobar"]))
+            };
+            var tasks = tasksGet.Union(tasksAdd).ToArray();
+
+            foreach (var task in tasks) task.Start();
+            Task.WaitAll(tasks);
+
+            // check get method
+            var result = tasksGet.First().Result;
+            foreach (var task in tasksGet)
+            {
+                Assert.Equal(result, task.Result);
+            }
+
+            // check add method
+            foreach (var kv in data)
+            {
+                Assert.Equal(kv.Value, trie.Get(kv.Key).First());
+            }
+        }
+
+        [Fact]
+        public void Remove_WhileAdding_Success()
+        {
+            var trie = GetTrieWithData();
+            var randomizer = new Random();
+
+            trie.Add("арбузfordel1", randomizer.Next());
+            trie.Add("арбузfordel2", randomizer.Next());
+            trie.Add("арбузfordel3", randomizer.Next());
+            trie.Add("арбузfordel4", randomizer.Next());
+            trie.Add("арбузfordel5", randomizer.Next());
+
+            var data = new Dictionary<string, int>
+            {
+                {"арбузfoo", randomizer.Next()},
+                {"арбузbar", randomizer.Next()},
+                {"арбузbuz", randomizer.Next()},
+                {"арбузqiz", randomizer.Next()},
+                {"арбузfoobar", randomizer.Next()}
+            };
+            var tasksAdd = new[]
+            {
+                new Task(() => trie.Add("арбузfoo", data["арбузfoo"])),
+                new Task(() => trie.Add("арбузbar", data["арбузbar"])),
+                new Task(() => trie.Add("арбузbuz", data["арбузbuz"])),
+                new Task(() => trie.Add("арбузqiz", data["арбузqiz"])),
+                new Task(() => trie.Add("арбузfoobar", data["арбузfoobar"]))
+            };
+            var taskRemove = new[]
+            {
+                new Task(() => trie.Remove("арбузfordel1", i => true)),
+                new Task(() => trie.Remove("арбузfordel2", i => true)),
+                new Task(() => trie.Remove("арбузfordel3", i => true)),
+                new Task(() => trie.Remove("арбузfordel4", i => true)),
+                new Task(() => trie.Remove("арбузfordel5", i => true))
+            };
+
+            var tasks = tasksAdd.Union(taskRemove).ToArray();
+
+            foreach (var task in tasks) task.Start();
+            Task.WaitAll(tasks);
+
+            // check remove method
+            foreach (var i in Enumerable.Range(1, 5))
+            {
+                Assert.Equal(0, trie.Get("арбузfordel" + i).Count());
+            }
+
+            // check add method
+            foreach (var kv in data)
+            {
+                Assert.Equal(kv.Value, trie.Get(kv.Key).First());
+            }
+        }
+
+        private static ITrie<int> GetTrieWithData()
         {
             var randomizer = new Random();
             var words = new Dictionary<string, int>
@@ -97,7 +197,7 @@ namespace Jbta.SearchEngine.IntegrationTests.IndexTests.TrieTests
                 trie.Add(kv.Key, kv.Value);
             }
 
-            return (trie, words);
+            return trie;
         }
     }
 }

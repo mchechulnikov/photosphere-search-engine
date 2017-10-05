@@ -76,6 +76,7 @@ namespace Jbta.SearchEngine.Index.Trie.Services
             parent.Key = new StringSlice(child.Key.Origin, parent.Key.StartIndex, parent.Key.Length + child.Key.Length);
             parent.Values = child.Values;
             parent.Children.Remove(child.Key[0]);
+            parent.Children = child.Children;
         }
 
         private static void ReleaseLocks(Stack<Node<T>> nodesStack)
