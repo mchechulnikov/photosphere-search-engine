@@ -1,4 +1,4 @@
-﻿namespace Jbta.SearchEngine.FileIndexing.Services
+﻿namespace Jbta.SearchEngine.FileIndexing
 {
     internal interface IIndexEjector
     {

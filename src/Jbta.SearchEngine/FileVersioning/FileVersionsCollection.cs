@@ -15,23 +15,31 @@ namespace Jbta.SearchEngine.FileVersioning
             _lock = new ReaderWriterLockSlim();
         }
 
-        public ISet<FileVersion> Items { get; } = new SortedSet<FileVersion>();
+        public ISet<FileVersion> Items { get; } = new HashSet<FileVersion>();
 
         public void Add(FileVersion fileVersion)
         {
-            using (_lock.Write())
+            using (_lock.HoldWrite())
             {
                 Items.Add(fileVersion);
             }
         }
 
+        public IReadOnlyCollection<FileVersion> GetList()
+        {
+            using (_lock.HoldRead())
+            {
+                return Items.ToList();
+            }
+        }
+
         public void UpdateFilePath(string newPath)
         {
-            using (_lock.UpgradableRead())
+            using (_lock.HoldUpgradableRead())
             {
                 foreach (var fileVersion in Items)
                 {
-                    using (_lock.Write())
+                    using (_lock.HoldWrite())
                     {
                         fileVersion.Path = newPath;
                     }
@@ -39,46 +47,14 @@ namespace Jbta.SearchEngine.FileVersioning
             }
         }
 
-        //public void RemoveAllExceptAfterAction(
-        //    DateTime exceptVersion,
-        //    Action<IReadOnlyCollection<FileVersion>> action)
-        //{
-        //    //using (_lock.UpgradableRead())
-        //    //{
-        //    var lastFileVersion = Items.Where(x => x.LastWriteDate == exceptVersion);
-        //    var irrelevantFileVersions = Items.Where(fv => fv != lastFileVersion).ToList();
-
-        //    action(irrelevantFileVersions);
-
-        //    foreach (var fileVersion in irrelevantFileVersions)
-        //    {
-        //        using (_lock.Write())
-        //        {
-        //            Items.Remove(fileVersion);
-        //        }
-        //    }
-        //    //}
-        //}
-
-        public void IfAllThanDo(Func<FileVersion, bool> predicte, Action action)
-        {
-            using (_lock.UpgradableRead())
-            {
-                if (Items.All(predicte))
-                {
-                    action();
-                }
-            }
-        }
-
         public IEnumerable<FileVersion> RemoveDeadVersions()
         {
-            using (_lock.UpgradableRead())
+            using (_lock.HoldUpgradableRead())
             {
                 var deadVersions = Items.Where(i => i.IsDead).ToList();
                 foreach (var deadVersion in deadVersions)
                 {
-                    using (_lock.Write())
+                    using (_lock.HoldWrite())
                     {
                         Items.Remove(deadVersion);
                     }
@@ -89,7 +65,7 @@ namespace Jbta.SearchEngine.FileVersioning
 
         public void KillVersions()
         {
-            using (_lock.Write())
+            using (_lock.HoldWrite())
             {
                 foreach (var version in Items)
                 {
@@ -98,11 +74,11 @@ namespace Jbta.SearchEngine.FileVersioning
             }
         }
 
-        public IReadOnlyCollection<FileVersion> ToList()
+        public bool All(Func<FileVersion, bool> predicate)
         {
-            using (_lock.Reading())
+            using (_lock.HoldRead())
             {
-                return Items.ToList();
+                return Items.All(predicate);
             }
         }
     }

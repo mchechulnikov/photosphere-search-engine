@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.ValueObjects;
 using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine.Trie.Services
+namespace Jbta.SearchEngine.Index.Trie.Services
 {
     internal class KeyRemover<T>
     {
@@ -58,7 +58,7 @@ namespace Jbta.SearchEngine.Trie.Services
                 parent.Children.TryRemove(node.Key[0], out var _);
                 if (parent.Children.Count == 1 && !parent.Values.Any() && parent != _rootNode)
                 {
-                    using (parent.Lock.Write())
+                    using (parent.Lock.HoldWrite())
                     {
                         MergeParentWithAloneChild(parent);
                     }

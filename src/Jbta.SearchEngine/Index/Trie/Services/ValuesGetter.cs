@@ -2,7 +2,7 @@
 using System.Linq;
 using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine.Trie.Services
+namespace Jbta.SearchEngine.Index.Trie.Services
 {
     internal class ValuesGetter<T>
     {

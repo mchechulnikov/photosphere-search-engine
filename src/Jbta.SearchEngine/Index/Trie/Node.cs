@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.ValueObjects;
 using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
-namespace Jbta.SearchEngine.Trie
+namespace Jbta.SearchEngine.Index.Trie
 {
     internal class Node<T>
     {

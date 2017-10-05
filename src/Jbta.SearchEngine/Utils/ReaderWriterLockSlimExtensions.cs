@@ -5,11 +5,11 @@ namespace Jbta.SearchEngine.Utils
 {
     internal static class ReaderWriterLockSlimExtensions
     {
-        public static IDisposable Reading(this ReaderWriterLockSlim l) => new ReadLock(l);
+        public static IDisposable HoldRead(this ReaderWriterLockSlim l) => new ReadLock(l);
 
-        public static IDisposable UpgradableRead(this ReaderWriterLockSlim l) => new UpgradableReadLock(l);
+        public static IDisposable HoldUpgradableRead(this ReaderWriterLockSlim l) => new UpgradableReadLock(l);
 
-        public static IDisposable Write(this ReaderWriterLockSlim l) => new WriteLock(l);
+        public static IDisposable HoldWrite(this ReaderWriterLockSlim l) => new WriteLock(l);
 
         private class ReadLock : IDisposable
         {

@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileVersioning;
+using Jbta.SearchEngine.Index;
 using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine.FileIndexing.Services
+namespace Jbta.SearchEngine.FileIndexing
 {
     internal class FileIndexer : IFileIndexer
     {
@@ -14,14 +15,14 @@ namespace Jbta.SearchEngine.FileIndexing.Services
         private readonly FileParserProvider _parserProvider;
         private readonly IIndex _index;
         private readonly FilesVersionsRegistry _filesVersionsRegistry;
-        private readonly Settings _settings;
+        private readonly SearchEngineSettings _settings;
 
         public FileIndexer(
             IEventReactor eventReactor,
             FileParserProvider parserProvider,
             IIndex index,
             FilesVersionsRegistry filesVersionsRegistry,
-            Settings settings)
+            SearchEngineSettings settings)
         {
             _eventReactor = eventReactor;
             _parserProvider = parserProvider;

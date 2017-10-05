@@ -1,14 +1,14 @@
 ﻿using System.Timers;
-using Jbta.SearchEngine.FileIndexing.Services;
+using Jbta.SearchEngine.FileIndexing;
 
-namespace Jbta.SearchEngine.Shedulling
+namespace Jbta.SearchEngine.Scheduling
 {
     internal class Scheduler : ISheduller
     {
         private readonly ICleaner _cleaner;
         private readonly Timer _timer;
 
-        public Scheduler(ICleaner cleaner, Settings settings)
+        public Scheduler(ICleaner cleaner, SearchEngineSettings settings)
         {
             _cleaner = cleaner;
             _timer = new Timer

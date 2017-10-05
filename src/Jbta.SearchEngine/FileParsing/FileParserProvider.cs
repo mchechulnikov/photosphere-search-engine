@@ -7,10 +7,10 @@ namespace Jbta.SearchEngine.FileParsing
 {
     internal class FileParserProvider
     {
-        private readonly Settings _settings;
+        private readonly SearchEngineSettings _settings;
         private readonly IFileParser _defaultParser;
 
-        public FileParserProvider(Settings settings)
+        public FileParserProvider(SearchEngineSettings settings)
         {
             _settings = settings;
             _defaultParser = new StandartFileParser(settings);
@@ -20,7 +20,7 @@ namespace Jbta.SearchEngine.FileParsing
         {
             if (FileSystem.IsDirectory(filePath))
             {
-                throw new ArgumentException("Expected path of file", nameof(filePath));
+                throw new ArgumentException("Expected path of file, not path of directory", nameof(filePath));
             }
             var extension = Path.GetExtension(filePath);
             if (_settings.FileParsers == null || !_settings.FileParsers.Any())

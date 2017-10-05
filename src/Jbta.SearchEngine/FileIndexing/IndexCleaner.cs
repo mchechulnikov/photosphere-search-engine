@@ -2,19 +2,20 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Jbta.SearchEngine.FileVersioning;
+using Jbta.SearchEngine.Index;
 
-namespace Jbta.SearchEngine.FileIndexing.Services
+namespace Jbta.SearchEngine.FileIndexing
 {
     internal class IndexCleaner : ICleaner
     {
         private readonly IIndex _index;
         private readonly FilesVersionsRegistry _filesVersionsRegistry;
-        private readonly Settings _settings;
+        private readonly SearchEngineSettings _settings;
 
         public IndexCleaner(
             IIndex index,
             FilesVersionsRegistry filesVersionsRegistry,
-            Settings settings)
+            SearchEngineSettings settings)
         {
             _index = index;
             _filesVersionsRegistry = filesVersionsRegistry;

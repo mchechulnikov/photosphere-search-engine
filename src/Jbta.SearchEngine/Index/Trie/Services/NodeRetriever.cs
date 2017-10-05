@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.ValueObjects;
 
-namespace Jbta.SearchEngine.Trie.Services
+namespace Jbta.SearchEngine.Index.Trie.Services
 {
     internal class NodeRetriever<T>
     {

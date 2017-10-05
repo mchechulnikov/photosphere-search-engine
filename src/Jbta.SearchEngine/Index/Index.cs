@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileVersioning;
-using Jbta.SearchEngine.Trie;
+using Jbta.SearchEngine.Index.Trie;
 using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine.FileIndexing
+namespace Jbta.SearchEngine.Index
 {
     internal class Index : IIndex
     {
@@ -24,7 +24,7 @@ namespace Jbta.SearchEngine.FileIndexing
         public void Add(IFileVersion fileVersion, IEnumerable<ParsedWord> words)
         {
             var setOfWords = new HashSet<string>();
-            using (_lock.Write())
+            using (_lock.HoldWrite())
             {
                 _directIndex.Add(fileVersion, setOfWords);
             }
@@ -43,7 +43,7 @@ namespace Jbta.SearchEngine.FileIndexing
                 return;
             }
 
-            using (_lock.UpgradableRead())
+            using (_lock.HoldUpgradableRead())
             {
                 foreach (var fileVersion in fileVersions)
                 {
@@ -54,7 +54,7 @@ namespace Jbta.SearchEngine.FileIndexing
                     }
                 }
 
-                using (_lock.Write())
+                using (_lock.HoldWrite())
                 {
                     foreach (var fileVersion in fileVersions)
                     {

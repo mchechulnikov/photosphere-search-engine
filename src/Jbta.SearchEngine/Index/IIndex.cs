@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileVersioning;
 
-namespace Jbta.SearchEngine.FileIndexing
+namespace Jbta.SearchEngine.Index
 {
     internal interface IIndex
     {

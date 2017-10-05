@@ -1,12 +1,11 @@
 ﻿using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
-using Jbta.SearchEngine.FileIndexing.Services;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileSupervision;
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.FileVersioning.Services;
+using Jbta.SearchEngine.Scheduling;
 using Jbta.SearchEngine.Searching;
-using Jbta.SearchEngine.Shedulling;
 
 namespace Jbta.SearchEngine
 {
@@ -14,16 +13,16 @@ namespace Jbta.SearchEngine
     {
         public static ISearchEngine New()
         {
-            var settings = new Settings();
+            var settings = new SearchEngineSettings();
             return New(settings);
         }
 
-        public static ISearchEngine New(Settings settings)
+        public static ISearchEngine New(SearchEngineSettings settings)
         {
             var eventReactor = new EventReactor();
             var fileParserProvider = new FileParserProvider(settings);
             var filesVersionsRegistry = new FilesVersionsRegistry(eventReactor);
-            var index = new Index();
+            var index = new Index.Index();
             var indexer = new FileIndexer(eventReactor, fileParserProvider, index, filesVersionsRegistry, settings);
             var indexEjector = new IndexEjector(eventReactor, filesVersionsRegistry);
             var indexUpdater = new IndexUpdater(indexer, filesVersionsRegistry);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Jbta.SearchEngine.Trie;
+using Jbta.SearchEngine.Index.Trie;
 using Xunit;
 
 namespace Jbta.SearchEngine.IntegrationTests

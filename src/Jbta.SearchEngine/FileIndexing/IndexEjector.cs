@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileVersioning;
 
-namespace Jbta.SearchEngine.FileIndexing.Services
+namespace Jbta.SearchEngine.FileIndexing
 {
     internal class IndexEjector : IIndexEjector
     {
@@ -39,7 +39,7 @@ namespace Jbta.SearchEngine.FileIndexing.Services
             Task.Run(() =>
             {
                 _eventReactor.React(EngineEvent.FileRemoving, filePath);
-                _filesVersionsRegistry.KillVersions(filePath);
+                _filesVersionsRegistry.KillAllVersions(filePath);
                 _eventReactor.React(EngineEvent.FileRemoved, filePath);
             });
         }

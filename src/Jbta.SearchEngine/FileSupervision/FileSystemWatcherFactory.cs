@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Jbta.SearchEngine.FileIndexing.Services;
+using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileVersioning.Services;
 using Jbta.SearchEngine.Utils;
 

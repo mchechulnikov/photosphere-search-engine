@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Jbta.SearchEngine.Events;
-using Jbta.SearchEngine.FileIndexing.Services;
+using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileSupervision;
+using Jbta.SearchEngine.Scheduling;
 using Jbta.SearchEngine.Searching;
-using Jbta.SearchEngine.Shedulling;
 using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine

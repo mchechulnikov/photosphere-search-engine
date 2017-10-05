@@ -1,6 +1,6 @@
-using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.ValueObjects;
 
-namespace Jbta.SearchEngine.Trie.Services.Adding.ValueObjects
+namespace Jbta.SearchEngine.Index.Trie.Services.Adding.ValueObjects
 {
     internal struct ZippedSlices
     {

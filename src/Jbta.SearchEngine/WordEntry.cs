@@ -1,5 +1,4 @@
 ﻿using System;
-using Jbta.SearchEngine.FileVersioning;
 
 namespace Jbta.SearchEngine
 { 

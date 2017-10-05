@@ -39,8 +39,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileIndexing\Services\IndexCleaner.cs" />
-    <Compile Include="FileIndexing\Services\IIndexCleaner.cs" />
+    <Compile Include="FileIndexing\IndexCleaner.cs" />
+    <Compile Include="FileIndexing\IIndexCleaner.cs" />
     <Compile Include="Events\EngineEvent.cs" />
     <Compile Include="Events\Args\FilePathChangedEventArgs.cs" />
     <Compile Include="Events\Args\SearchEngineEventArgs.cs" />
@@ -49,12 +49,12 @@
     <Compile Include="Events\IEventReactor.cs" />
     <Compile Include="FileSupervision\FileSystemWatcherFactory.cs" />
     <Compile Include="FileVersioning\FilesVersionsRegistry.cs" />
-    <Compile Include="FileIndexing\IIndex.cs" />
-    <Compile Include="FileIndexing\Services\IIndexEjector.cs" />
-    <Compile Include="FileIndexing\Services\IIndexUpdater.cs" />
-    <Compile Include="FileIndexing\Index.cs" />
-    <Compile Include="FileIndexing\Services\IndexEjector.cs" />
-    <Compile Include="FileIndexing\Services\IndexUpdater.cs" />
+    <Compile Include="Index\IIndex.cs" />
+    <Compile Include="FileIndexing\IIndexEjector.cs" />
+    <Compile Include="FileIndexing\IIndexUpdater.cs" />
+    <Compile Include="Index\Index.cs" />
+    <Compile Include="FileIndexing\IndexEjector.cs" />
+    <Compile Include="FileIndexing\IndexUpdater.cs" />
     <Compile Include="FileParsing\FileParserProvider.cs" />
     <Compile Include="FileParsing\ParsedWord.cs" />
     <Compile Include="FileVersioning\FileVersion.cs" />
@@ -64,24 +64,24 @@
     <Compile Include="FileVersioning\Services\IFilePathActualizer.cs" />
     <Compile Include="FileSupervision\FileSupervisor.cs" />
     <Compile Include="FileSupervision\IFileSupervisor.cs" />
-    <Compile Include="FileVersioning\IFileVersion.cs" />
+    <Compile Include="IFileVersion.cs" />
     <Compile Include="SearchEngineFactory.cs" />
     <Compile Include="Searching\ISearcher.cs" />
     <Compile Include="Searching\Searcher.cs" />
-    <Compile Include="Shedulling\ISheduller.cs" />
-    <Compile Include="Shedulling\Scheduler.cs" />
-    <Compile Include="Trie\ITrie.cs" />
-    <Compile Include="FileIndexing\Services\IFileIndexer.cs" />
-    <Compile Include="FileIndexing\Services\FileIndexer.cs" />
-    <Compile Include="Trie\PatriciaTrie.cs" />
-    <Compile Include="Trie\Node.cs" />
-    <Compile Include="Trie\Services\KeyRemover.cs" />
-    <Compile Include="Trie\Services\KeyAdder.cs" />
-    <Compile Include="Trie\Services\Adding\KeysZipper.cs" />
-    <Compile Include="Trie\Services\NodeRetriever.cs" />
-    <Compile Include="Trie\Services\ValuesGetter.cs" />
-    <Compile Include="Trie\ValueObjects\StringSlice.cs" />
-    <Compile Include="Trie\Services\Adding\ValueObjects\ZippedSlices.cs" />
+    <Compile Include="Scheduling\ISheduller.cs" />
+    <Compile Include="Scheduling\Scheduler.cs" />
+    <Compile Include="Index\Trie\ITrie.cs" />
+    <Compile Include="FileIndexing\IFileIndexer.cs" />
+    <Compile Include="FileIndexing\FileIndexer.cs" />
+    <Compile Include="Index\Trie\PatriciaTrie.cs" />
+    <Compile Include="Index\Trie\Node.cs" />
+    <Compile Include="Index\Trie\Services\KeyRemover.cs" />
+    <Compile Include="Index\Trie\Services\KeyAdder.cs" />
+    <Compile Include="Index\Trie\Services\Adding\KeysZipper.cs" />
+    <Compile Include="Index\Trie\Services\NodeRetriever.cs" />
+    <Compile Include="Index\Trie\Services\ValuesGetter.cs" />
+    <Compile Include="Index\Trie\ValueObjects\StringSlice.cs" />
+    <Compile Include="Index\Trie\Services\Adding\ValueObjects\ZippedSlices.cs" />
     <Compile Include="FileParsing\IFileParser.cs" />
     <Compile Include="ISearchEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,7 +106,7 @@
     <Compile Include="Vendor\NonBlocking\Counter\Counter32.cs" />
     <Compile Include="Vendor\NonBlocking\Counter\Counter64.cs" />
     <Compile Include="WordEntry.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="SearchEngineSettings.cs" />
     <Compile Include="SearchEngine.cs" />
   </ItemGroup>
   <ItemGroup>

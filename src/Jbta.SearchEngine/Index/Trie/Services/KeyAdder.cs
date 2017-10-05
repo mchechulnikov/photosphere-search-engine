@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Jbta.SearchEngine.Trie.Services.Adding;
-using Jbta.SearchEngine.Trie.Services.Adding.ValueObjects;
-using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.Services.Adding;
+using Jbta.SearchEngine.Index.Trie.Services.Adding.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.ValueObjects;
 using Jbta.SearchEngine.Utils;
 using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
-namespace Jbta.SearchEngine.Trie.Services
+namespace Jbta.SearchEngine.Index.Trie.Services
 {
     internal class KeyAdder<T>
     {
@@ -45,7 +45,7 @@ namespace Jbta.SearchEngine.Trie.Services
             switch (zippedSlices.MatchKind)
             {
                 case ZippedSlices.Match.Match:
-                    using (node.Lock.Write()) node.Values.Add(value);
+                    using (node.Lock.HoldWrite()) node.Values.Add(value);
                     break;
                 case ZippedSlices.Match.IsContained:
                     Add(node, zippedSlices.SecondTail, value);

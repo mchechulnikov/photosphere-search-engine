@@ -1,7 +1,7 @@
-using Jbta.SearchEngine.Trie.Services.Adding.ValueObjects;
-using Jbta.SearchEngine.Trie.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.Services.Adding.ValueObjects;
+using Jbta.SearchEngine.Index.Trie.ValueObjects;
 
-namespace Jbta.SearchEngine.Trie.Services.Adding
+namespace Jbta.SearchEngine.Index.Trie.Services.Adding
 {
     internal class KeysZipper
     {

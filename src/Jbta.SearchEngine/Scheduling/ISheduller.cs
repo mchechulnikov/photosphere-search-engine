@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Jbta.SearchEngine.Shedulling
+namespace Jbta.SearchEngine.Scheduling
 {
     internal interface ISheduller : IDisposable
     {

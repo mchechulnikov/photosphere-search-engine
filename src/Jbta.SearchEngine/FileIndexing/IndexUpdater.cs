@@ -2,7 +2,7 @@
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.Utils;
 
-namespace Jbta.SearchEngine.FileIndexing.Services
+namespace Jbta.SearchEngine.FileIndexing
 {
     internal class IndexUpdater : IIndexUpdater
     {
@@ -27,21 +27,22 @@ namespace Jbta.SearchEngine.FileIndexing.Services
             {
                 return;
             }
-
-            _filesVersionsRegistry.DoActionIfFileUpdatable(filePath, () =>
+            if (!_filesVersionsRegistry.IsFileUpdatable(filePath))
             {
-                var irrelevantVersions = _filesVersionsRegistry.Get(filePath);
+                return;
+            };
 
-                if (File.Exists(filePath))
-                {
-                    _fileIndexer.Index(filePath);
-                }
+            var irrelevantVersions = _filesVersionsRegistry.Get(filePath);
 
-                if (irrelevantVersions != null)
-                {
-                    _filesVersionsRegistry.KillVersions(irrelevantVersions);
-                }
-            });
+            if (File.Exists(filePath))
+            {
+                _fileIndexer.Index(filePath);
+            }
+
+            if (irrelevantVersions != null)
+            {
+                _filesVersionsRegistry.KillVersions(irrelevantVersions);
+            }
         }
     }
 }

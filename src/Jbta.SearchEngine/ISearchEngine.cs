@@ -44,14 +44,14 @@ namespace Jbta.SearchEngine
         bool Add(string path);
 
         /// <summary>
-        /// Remove file or directory from system
+        /// Remove file or directory from system. Can be removed only path that was added.
         /// </summary>
         /// <param name="path">Path to directory or file</param>
         /// <returns>Will be removed or not</returns>
         bool Remove(string path);
 
         /// <summary>
-        /// GetForWriting indexed files that contains searched word
+        /// Get indexed files that contains searched word
         /// </summary>
         IEnumerable<WordEntry> Search(string query, bool wholeWord = false);
     }
