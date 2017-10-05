@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Jbta.SearchEngine.Index.Trie;
 using Xunit;
 
-namespace Jbta.SearchEngine.IntegrationTests.IndexTests.TrieTests
+namespace Jbta.SearchEngine.IntegrationTests.TrieTests
 {
     public class ParallelAccessPatriciaTrieTests
     {

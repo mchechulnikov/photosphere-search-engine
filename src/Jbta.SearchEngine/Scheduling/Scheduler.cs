@@ -32,6 +32,7 @@ namespace Jbta.SearchEngine.Scheduling
         public void Dispose()
         {
             _timer.Elapsed -= OnElapsed;
+            _timer?.Stop();
             _timer?.Dispose();
         }
     }

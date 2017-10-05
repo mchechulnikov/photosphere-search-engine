@@ -37,7 +37,7 @@ namespace Jbta.SearchEngine
             var index = new Index.Index();
             var indexer = new FileIndexer(eventReactor, fileParserProvider, index, filesVersionsRegistry, settings);
             var indexEjector = new IndexEjector(eventReactor, filesVersionsRegistry);
-            var indexUpdater = new IndexUpdater(indexer, filesVersionsRegistry);
+            var indexUpdater = new IndexUpdater(eventReactor, indexer, filesVersionsRegistry);
             var fileWatcherFactory = new FileSystemWatcherFactory(
                 indexer,
                 indexUpdater,
@@ -46,7 +46,7 @@ namespace Jbta.SearchEngine
             );
             var fileSupervisor = new FileSupervisor(fileWatcherFactory);
             var searcher = new Searcher(index);
-            var indexCleaner = new IndexCleaner(index, filesVersionsRegistry, settings);
+            var indexCleaner = new IndexCleaner(eventReactor, index, filesVersionsRegistry, settings);
             var scheduler = new Scheduler(indexCleaner, settings);
             return new SearchEngine(eventReactor, indexer, indexEjector, fileSupervisor, searcher, scheduler);
         }

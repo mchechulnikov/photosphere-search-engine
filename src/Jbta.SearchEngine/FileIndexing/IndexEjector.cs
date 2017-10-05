@@ -38,9 +38,9 @@ namespace Jbta.SearchEngine.FileIndexing
         {
             Task.Run(() =>
             {
-                _eventReactor.React(EngineEvent.FileRemoving, filePath);
+                _eventReactor.React(EngineEvent.FileRemovingStarted, filePath);
                 _filesVersionsRegistry.KillAllVersions(filePath);
-                _eventReactor.React(EngineEvent.FileRemoved, filePath);
+                _eventReactor.React(EngineEvent.FileRemovingEnded, filePath);
             });
         }
     }

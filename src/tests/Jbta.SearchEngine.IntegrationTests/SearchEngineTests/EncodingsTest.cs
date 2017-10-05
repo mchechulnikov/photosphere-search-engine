@@ -43,7 +43,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests
 
             var tcs = new TaskCompletionSource<bool>();
 
-            engine.FileIndexed += args =>
+            engine.FileIndexingEnded += args =>
             {
                 var wordEntries = engine.Search(searchQuery).ToList();
 

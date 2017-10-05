@@ -2,10 +2,13 @@
 {
     internal enum EngineEvent
     {
-        FileIndexing,
-        FileIndexed,
-        FileRemoving,
-        FileRemoved,
-        FilePathChanged
+        FileIndexingStarted,
+        FileIndexingEnded,
+        FileRemovingStarted,
+        FileRemovingEnded,
+        FileUpdateInitiated,
+        FileUpdateFailed,
+        FilePathChanged,
+        IndexCleanUpFailed
     }
 }

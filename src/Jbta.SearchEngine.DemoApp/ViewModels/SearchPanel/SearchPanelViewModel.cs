@@ -55,10 +55,10 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.SearchPanel
 
         private void SubscribeOnIndexStateChange()
         {
-            SearchSystem.EngineInstance.FileIndexing += OnIndexStateChange;
-            SearchSystem.EngineInstance.FileIndexed += OnIndexStateChange;
-            SearchSystem.EngineInstance.FileRemoving += OnIndexStateChange;
-            SearchSystem.EngineInstance.FileRemoved += OnIndexStateChange;
+            SearchSystem.EngineInstance.FileIndexingStarted += OnIndexStateChange;
+            SearchSystem.EngineInstance.FileIndexingEnded += OnIndexStateChange;
+            SearchSystem.EngineInstance.FileRemovingStarted += OnIndexStateChange;
+            SearchSystem.EngineInstance.FileRemovingEnded += OnIndexStateChange;
             SearchSystem.EngineInstance.FilePathChanged += OnIndexStateChange;
 
             void OnIndexStateChange(SearchEngineEventArgs a)

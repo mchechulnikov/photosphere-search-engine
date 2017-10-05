@@ -14,7 +14,7 @@ namespace Jbta.SearchEngine.FileParsing
         /// Parse file by specific version
         /// </summary>
         /// <param name="fileVersion">Specific file version</param>
-        /// <param name="encoding">Recognized file encoding or zero if it was not recognized</param>
+        /// <param name="encoding">Recognized file encoding or null if it was not recognized</param>
         /// <returns></returns>
         IEnumerable<ParsedWord> Parse(IFileVersion fileVersion, Encoding encoding = null);
     }

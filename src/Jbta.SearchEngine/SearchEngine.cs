@@ -30,20 +30,26 @@ namespace Jbta.SearchEngine
             _searcher = searcher;
             _sheduller = sheduller;
 
-            eventReactor.Register(EngineEvent.FileIndexing, a => FileIndexing?.Invoke(a));
-            eventReactor.Register(EngineEvent.FileIndexed, a => FileIndexed?.Invoke(a));
-            eventReactor.Register(EngineEvent.FileRemoving, a => FileRemoving?.Invoke(a));
-            eventReactor.Register(EngineEvent.FileRemoved, a => FileRemoved?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileIndexingStarted, a => FileIndexingStarted?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileIndexingEnded, a => FileIndexingEnded?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileRemovingStarted, a => FileRemovingStarted?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileRemovingEnded, a => FileRemovingEnded?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileUpdateInitiated, a => FileUpdateInitiated?.Invoke(a));
+            eventReactor.Register(EngineEvent.FileUpdateFailed, a => FileUpdateFailed?.Invoke(a));
             eventReactor.Register(EngineEvent.FilePathChanged, a => FilePathChanged?.Invoke(a));
+            eventReactor.Register(EngineEvent.IndexCleanUpFailed, a => IndexCleanUpFailed?.Invoke(a));
 
             _sheduller.Start();
         }
 
-        public event SearchEngineEventHandler FileIndexing;
-        public event SearchEngineEventHandler FileIndexed;
-        public event SearchEngineEventHandler FileRemoving;
-        public event SearchEngineEventHandler FileRemoved;
+        public event SearchEngineEventHandler FileIndexingStarted;
+        public event SearchEngineEventHandler FileIndexingEnded;
+        public event SearchEngineEventHandler FileRemovingStarted;
+        public event SearchEngineEventHandler FileRemovingEnded;
+        public event SearchEngineEventHandler FileUpdateInitiated;
+        public event SearchEngineEventHandler FileUpdateFailed;
         public event SearchEngineEventHandler FilePathChanged;
+        public event SearchEngineEventHandler IndexCleanUpFailed;
 
         public IEnumerable<string> PathesUnderIndex => _supervisor.WatchedPathes;
 

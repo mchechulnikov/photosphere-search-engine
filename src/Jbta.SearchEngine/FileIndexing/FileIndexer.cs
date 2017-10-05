@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
@@ -63,13 +64,20 @@ namespace Jbta.SearchEngine.FileIndexing
 
         private void IndexFile(string filePath, IFileVersion version)
         {
-            _eventReactor.React(EngineEvent.FileIndexing, filePath);
+            try
+            {
+                _eventReactor.React(EngineEvent.FileIndexingStarted, filePath);
 
-            var encoding = FileEncoding.DetectFileEncoding(filePath);
-            var words = _parserProvider.Provide(filePath).Parse(version, encoding);
-            _index.Add(version, words);
+                var encoding = FileEncoding.DetectFileEncoding(filePath);
+                var words = _parserProvider.Provide(filePath).Parse(version, encoding);
+                _index.Add(version, words);
 
-            _eventReactor.React(EngineEvent.FileIndexed, filePath);
+                _eventReactor.React(EngineEvent.FileIndexingEnded, filePath);
+            }
+            catch(Exception exception)
+            {
+                _eventReactor.React(EngineEvent.FileIndexingEnded, filePath, exception);
+            }
         }
     }
 }
