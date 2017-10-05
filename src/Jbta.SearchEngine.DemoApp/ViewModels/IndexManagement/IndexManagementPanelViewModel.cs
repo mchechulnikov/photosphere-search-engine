@@ -64,7 +64,6 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
         {
             SearchSystem.EngineInstance.FileIndexing += OnStartFileProcessing;
             SearchSystem.EngineInstance.FileIndexed += OnStopFileProcessing;
-            SearchSystem.EngineInstance.FileRemoving += OnStartFileProcessing;
             SearchSystem.EngineInstance.FileRemoved += OnStopFileProcessing;
             SearchSystem.EngineInstance.FilePathChanged += a => DispatchService.Invoke(RefreshTree);
 

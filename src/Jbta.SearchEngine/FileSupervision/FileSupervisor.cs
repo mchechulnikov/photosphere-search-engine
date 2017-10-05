@@ -34,7 +34,7 @@ namespace Jbta.SearchEngine.FileSupervision
 
             watcher.EnableRaisingEvents = false;
             watcher.Dispose();
-            _watchers.Remove(path);
+            _watchers.TryRemove(path, out var _);
         }
 
         public bool IsUnderWatching(string path)
