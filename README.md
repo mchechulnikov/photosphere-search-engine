@@ -44,7 +44,8 @@
 
 Библиотека реализована на базе .NET Frameword 4.7. Содержит следующие зависимости:
 * `System.Runtime.CompilerServices.Unsafe` — требуется для `NonBlocking.ConcurrentDictionary`;
-* `UDE.CSharp` — порт Mozilla Universal Charset Detector на .NET: инструмент для определения кодировок файлов;
+* `UDE.CSharp` — порт Mozilla Universal Charset Detector на .NET: инструмент для определения кодировок файлов.
+
 Внедрённые исходники (vendored code), которые неудобно доставлять NuGet-пакетами:
 * https://github.com/VSadov/NonBlocking — lock-free реализация `ConcurrentDictionary`;
 * https://github.com/khalidsalomao/SimpleHelpers.Net — удобная обёртка над `UDE.CSharp`.
