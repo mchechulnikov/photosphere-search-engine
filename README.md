@@ -38,6 +38,7 @@
 * `Jbta.SearchEngine` — библиотека, реализующая поисковую систему.
 * `Jbta.SearchEngine.IntegrationTests` — набор тестов на библиотеку.
 * `Jbta.SearchEngine.DemoApp` — демо-приложение, позволяющее добавлять файлы и каталоги и осуществлять простые поисковые запросы.
+
 Библиотека содержит следующие зависимости. NuGet пакеты:
 * `System.Runtime.CompilerServices.Unsafe` — требуется для `NonBlocking.ConcurrentDictionary`;
 * `UDE.CSharp` — порт Mozilla Universal Charset Detector на .NET; инструмент для определения кодировок файлов;
