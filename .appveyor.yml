@@ -9,6 +9,8 @@ environment:
   sourcesFolder: src
   solutionName: jbta.sln
   projectName: JBTA
+  
+image: Visual Studio 2017
 
 assembly_info:
   patch: true
