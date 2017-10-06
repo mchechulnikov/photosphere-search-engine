@@ -47,13 +47,14 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests
             {
                 var wordEntries = engine.Search(searchQuery).ToList();
 
-                Assert.Equal(1, wordEntries.Count);
+                if (wordEntries.Count != 1)
+                {
+                    tcs.TrySetResult(false);
+                }
 
                 var entry = wordEntries.First();
-                Assert.Equal(expectedLineNumber, entry.LineNumber);
-                Assert.Equal(expectedPosition, entry.Position);
-
-                tcs.TrySetResult(true);
+                var result = expectedLineNumber == entry.LineNumber && expectedPosition == entry.Position;
+                tcs.TrySetResult(result);
             };
 
             var isAdded = engine.Add(filePath);
