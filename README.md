@@ -7,50 +7,6 @@
 * осуществляет мониторинг за изменениями добавленных в индекс файлов и каталогов и оперативно актуализирует индекс в соответствии с этими изменениями.
 Вместе с библиотекой поставляется небольшое десктопное приложение, позволяющее использовать все возможности библиотеки.
 
-## О реализации
-Репозиторий содержит 3 проекта:
-* `Jbta.SearchEngine` — библиотека, реализующая поисковую систему.
-* `Jbta.SearchEngine.IntegrationTests` — набор тестов на библиотеку.
-* `Jbta.SearchEngine.DemoApp` — демо-приложение, позволяющее добавлять файлы и каталоги и осуществлять простые поисковые запросы.
-
-### Библиотека
-Основным объектом является экземпляр класса `SearchEngine`, который предоставляет всю необходимую функциональность.
-
-#### Создание
-```
-var searchEngine = SearchEngineFactory.New();
-```
-или
-```
-var settings = new SearchEngineSettings();
-var searchEngine = SearchEngineFactory.New();
-```
-Объект настроек `SearchEngineSettings` имеет следующие опции:
-* `SupportedFilesExtensions` — набор расширений индексируемых файлов в lowecase'е; по умолчанию содержит значение массива строк "txt", "log", "cs", "js", "fs", "css", "sql";
-* `FileParsers` — набор парсеров, которые можно самостоятельно реализовать;
-* `GcCollect` — флаг, управляющий принудительной сборкой мусора после очистки индекса;
-* `CleaUpIntervalMs` — double число, задающее интервал в миллисекундах, через который будут запускаться процессы очистки индекса.
-
-#### Добавление в индекс
-```
-var isAdded = searchEngine.Add(pathToFolderOrFile);
-```
-
-#### Удаление из индекса
-```
-var isRemoved = searchEngine.Add(pathToFolderOrFile);
-```
-
-#### События
-```
-searchEngine.FileIndexingStarted += args => Console.WriteLine($"File {args.FilePath} indexing is started);
-searchEngine.FileIndexingEnded += args => Console.WriteLine($"File {args.FilePath} indexing is ended);
-searchEngine.FileRemovingStarted += args => Console.WriteLine($"File {args.FilePath} removing is started);
-searchEngine.FileRemovingEnded += args => Console.WriteLine($"File {args.FilePath} removing is ended);
-searchEngine.FileUpdateInitiated += args => Console.WriteLine($"File {args.FilePath} update is started);
-searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.FilePath} path is changed);
-```
-
 ## О решении
 Решение является объектом, предоставляющим следующую функциональность:
 * Метод добавления пути в индекс;
@@ -74,7 +30,82 @@ searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.FilePath}
 * Единицей индексации является файл.
 * Количество файлов для скорости поиска значения не имеет.
 
-### Куда можно двигаться дальше?
+## О реализации
+Репозиторий содержит 3 проекта:
+* `Jbta.SearchEngine` — библиотека, реализующая поисковую систему.
+* `Jbta.SearchEngine.IntegrationTests` — набор тестов на библиотеку.
+* `Jbta.SearchEngine.DemoApp` — демо-приложение, позволяющее добавлять файлы и каталоги и осуществлять простые поисковые запросы.
+
+### Библиотека
+Основным объектом является экземпляр класса `SearchEngine`, который предоставляет всю необходимую функциональность.
+
+#### Создание
+```
+var searchEngine = SearchEngineFactory.New();
+```
+или
+```
+var settings = new SearchEngineSettings();
+var searchEngine = SearchEngineFactory.New();
+```
+Объект настроек `SearchEngineSettings` имеет следующие опции:
+* `SupportedFilesExtensions` — набор расширений индексируемых файлов в lowecase'е; по умолчанию содержит значение массива строк `txt`, `log`, `cs`, `js`, `fs`, `css`, `sql`;
+* `FileParsers` — набор парсеров, которые можно самостоятельно реализовать;
+* `GcCollect` — флаг, управляющий принудительной сборкой мусора после очистки индекса;
+* `CleaUpIntervalMs` — double число, задающее интервал в миллисекундах, через который будут запускаться процессы очистки индекса.
+
+#### Добавление в индекс
+```
+var isAdded = searchEngine.Add(pathToFolderOrFile);
+```
+
+#### Удаление из индекса
+```
+var isRemoved = searchEngine.Remove(pathToFolderOrFile);
+```
+
+#### События
+```
+searchEngine.FileIndexingStarted += args => Console.WriteLine($"File {args.FilePath} indexing is started);
+searchEngine.FileIndexingEnded += args => Console.WriteLine($"File {args.FilePath} indexing is ended);
+searchEngine.FileRemovingStarted += args => Console.WriteLine($"File {args.FilePath} removing is started);
+searchEngine.FileRemovingEnded += args => Console.WriteLine($"File {args.FilePath} removing is ended);
+searchEngine.FileUpdateInitiated += args => Console.WriteLine($"File {args.FilePath} update is started);
+searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.FilePath} path is changed);
+```
+
+#### Поиск
+```
+searchEngine.Search("foo");                       // возвращает все вхождения префикса "foo"
+searchEngine.Search("foo", wholeWord: true);      // возвращает все вхождения слова "foo"
+searchEngine.SearchFiles("foo");                  // возвращает все файлы, содержащие префикс "foo"
+searchEngine.SearchFiles("foo", wholeWord: true); // возвращает все файлы, содержащие слово "foo"
+```
+
+#### Собственный файловый парсер
+Например, можно реализовать собственный разбор определённых типов файлов:
+```
+public class CsFileParser : IFileParser
+{
+    private static readonly string[] FilesExts = { "cs" };
+    public IEnumerable<string> FileExtensions => FilesExts;
+
+    public IEnumerable<ParsedWord> Parse(IFileVersion fileVersion, Encoding encoding = null)
+    {
+        // parse your file here; fileVersion.Path contains path to actual file
+    }
+}
+```
+и передать его в объект настроек фабрики 
+```
+var settings = new SearchEngineSettings 
+{
+  FileParsers = new [] {new CsFileParser()}
+}
+var searchEngine = SearchEngineFactory.New();
+```
+
+## Куда можно двигаться дальше?
 * Персистентность. Для быстрого сохранения индекса на диск и загрузки с диска может потребоваться реорганизация физического представляения префиксного дерева в памяти: перейти от space-spare структуры к хранению в двух массивах (т.н. double-array trie). Либо без реорганизации, с помощью рекурсивной сериализации узлов.
 * Построение прямого индекса можно отключить. Тогда удаление из индекса будет работать посредством практически полного сканирования поискового индекса. Это опция оптимальная для ситуаций, когда удаления из файлов не ожидаются.
 * В случае, если назначение предполагает индексацию больших и при этом меняющихся файлов (логов и т.п.), необходимо реализовать механизм отслеживания начала изменений в файле, чтобы переидексировать только часть файла. Как вариант, файл можно разбить на секции, вычислить дайджесты от секций и сохранить, например, бинарным деревом. Это позволит за логарифмическое время найти секцию, начиная с которой файл изменился. Однако, работать это будет только если файл меняется путём дописывания "в хвост" и не меняется в начале файла.
