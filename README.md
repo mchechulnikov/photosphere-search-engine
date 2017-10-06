@@ -43,11 +43,11 @@
 Основным объектом является экземпляр класса `SearchEngine`, который предоставляет всю необходимую функциональность.
 
 #### Создание
-```
+``` C#
 var searchEngine = SearchEngineFactory.New();
 ```
 или
-```
+``` C#
 var settings = new SearchEngineSettings();
 var searchEngine = SearchEngineFactory.New();
 ```
@@ -58,27 +58,27 @@ var searchEngine = SearchEngineFactory.New();
 * `CleaUpIntervalMs` — double число, задающее интервал в миллисекундах, через который будут запускаться процессы очистки индекса.
 
 #### Добавление в индекс
-```
+``` C#
 var isAdded = searchEngine.Add(pathToFolderOrFile);
 ```
 
 #### Удаление из индекса
-```
+``` C#
 var isRemoved = searchEngine.Remove(pathToFolderOrFile);
 ```
 
 #### События
-```
-searchEngine.FileIndexingStarted += args => Console.WriteLine($"File {args.FilePath} indexing is started);
-searchEngine.FileIndexingEnded += args => Console.WriteLine($"File {args.FilePath} indexing is ended);
-searchEngine.FileRemovingStarted += args => Console.WriteLine($"File {args.FilePath} removing is started);
-searchEngine.FileRemovingEnded += args => Console.WriteLine($"File {args.FilePath} removing is ended);
-searchEngine.FileUpdateInitiated += args => Console.WriteLine($"File {args.FilePath} update is started);
-searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.FilePath} path is changed);
+``` C#
+searchEngine.FileIndexingStarted += args => Console.WriteLine($"File {args.FilePath} indexing is started");
+searchEngine.FileIndexingEnded += args => Console.WriteLine($"File {args.FilePath} indexing is ended");
+searchEngine.FileRemovingStarted += args => Console.WriteLine($"File {args.FilePath} removing is started");
+searchEngine.FileRemovingEnded += args => Console.WriteLine($"File {args.FilePath} removing is ended");
+searchEngine.FileUpdateInitiated += args => Console.WriteLine($"File {args.FilePath} update is started");
+searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.FilePath} path is changed");
 ```
 
 #### Поиск
-```
+``` C#
 searchEngine.Search("foo");                       // возвращает все вхождения префикса "foo"
 searchEngine.Search("foo", wholeWord: true);      // возвращает все вхождения слова "foo"
 searchEngine.SearchFiles("foo");                  // возвращает все файлы, содержащие префикс "foo"
@@ -87,7 +87,7 @@ searchEngine.SearchFiles("foo", wholeWord: true); // возвращает все
 
 #### Собственный файловый парсер
 Например, можно реализовать собственный разбор определённых типов файлов:
-```
+``` C#
 public class CsFileParser : IFileParser
 {
     private static readonly string[] FilesExts = { "cs" };
@@ -100,13 +100,14 @@ public class CsFileParser : IFileParser
 }
 ```
 и передать его в объект настроек фабрики 
-```
+``` C#
 var settings = new SearchEngineSettings 
 {
   FileParsers = new [] {new CsFileParser()}
 }
 var searchEngine = SearchEngineFactory.New();
 ```
+При разборе `cs` файлов будет применяться `CsFileParser`, вместо стандартного.
 
 ## Куда можно двигаться дальше?
 * Персистентность. Для быстрого сохранения индекса на диск и загрузки с диска может потребоваться реорганизация физического представляения префиксного дерева в памяти: перейти от space-spare структуры к хранению в двух массивах (т.н. double-array trie). Либо без реорганизации, с помощью рекурсивной сериализации узлов.
