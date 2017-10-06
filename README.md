@@ -14,7 +14,42 @@
 * `Jbta.SearchEngine.DemoApp` — демо-приложение, позволяющее добавлять файлы и каталоги и осуществлять простые поисковые запросы.
 
 ### Библиотека
+Основным объектом является экземпляр класса `SearchEngine`, который предоставляет всю необходимую функциональность.
 
+#### Создание
+```
+var searchEngine = SearchEngineFactory.New();
+```
+или
+```
+var settings = new SearchEngineSettings();
+var searchEngine = SearchEngineFactory.New();
+```
+Объект настроек `SearchEngineSettings` имеет следующие опции:
+* `SupportedFilesExtensions` — набор расширений индексируемых файлов в lowecase'е; по умолчанию содержит значение массива строк "txt", "log", "cs", "js", "fs", "css", "sql";
+* `FileParsers` — набор парсеров, которые можно самостоятельно реализовать;
+* `GcCollect` — флаг, управляющий принудительной сборкой мусора после очистки индекса;
+* `CleaUpIntervalMs` — double число, задающее интервал в миллисекундах, через который будут запускаться процессы очистки индекса.
+
+#### Добавление в индекс
+```
+var isAdded = searchEngine.Add(pathToFolderOrFile);
+```
+
+#### Удаление из индекса
+```
+var isRemoved = searchEngine.Add(pathToFolderOrFile);
+```
+
+#### События
+```
+searchEngine.FileIndexingStarted += args => Console.WriteLine($"File {args.FilePath} indexing is started);
+searchEngine.FileIndexingEnded += args => Console.WriteLine($"File {args.FilePath} indexing is ended);
+searchEngine.FileRemovingStarted += args => Console.WriteLine($"File {args.FilePath} removing is started);
+searchEngine.FileRemovingEnded += args => Console.WriteLine($"File {args.FilePath} removing is ended);
+searchEngine.FileUpdateInitiated += args => Console.WriteLine($"File {args.FilePath} update is started);
+searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.FilePath} path is changed);
+```
 
 ## О решении
 Решение является объектом, предоставляющим следующую функциональность:
