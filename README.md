@@ -1,4 +1,4 @@
-# Тестовое задание (18.09.2017)
+# Тестовое задание (выдано 18.09.2017)
 Библиотека, реализующая средства индексации текстовых файлов по словам. <br/>
 Функционал решения:
 * строит поисковый индекс по заданным файлам и каталогам;
@@ -38,6 +38,13 @@
 * `Jbta.SearchEngine` — библиотека, реализующая поисковую систему.
 * `Jbta.SearchEngine.IntegrationTests` — набор тестов на библиотеку.
 * `Jbta.SearchEngine.DemoApp` — демо-приложение, позволяющее добавлять файлы и каталоги и осуществлять простые поисковые запросы.
+Библиотека содержит следующие зависимости. NuGet пакеты:
+* `System.Runtime.CompilerServices.Unsafe` — требуется для `NonBlocking.ConcurrentDictionary`;
+* `UDE.CSharp` — порт Mozilla Universal Charset Detector на .NET; инструмент для определения кодировок файлов;
+Внедрённые исходники (vendored code), которые неудобно доставлять NuGet-пакетами:
+* https://github.com/VSadov/NonBlocking — lock-free реализация `ConcurrentDictionary`;
+* https://github.com/khalidsalomao/SimpleHelpers.Net — удобная обёртка над `UDE.CSharp`.
+
 
 ### Библиотека
 Основным объектом является экземпляр класса `SearchEngine`, который предоставляет всю необходимую функциональность.
