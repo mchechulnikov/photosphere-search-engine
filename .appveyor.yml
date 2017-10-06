@@ -1,0 +1,27 @@
+skip_commits:
+  message: /((Create.*\.md)|(Update.*\.md))/
+
+version: 0.0.1.{build}
+
+configuration: Release
+
+environment:
+  sourcesFolder: src
+  solutionName: jbta.sln
+  projectName: JBTA
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
+
+before_build:
+  - cd %sourcesFolder%
+  - nuget restore
+  - cd ..
+
+build:
+  verbosity: minimal  
+  project: $(sourcesFolder)\$(solutionName)
