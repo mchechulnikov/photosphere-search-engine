@@ -52,7 +52,8 @@ namespace Jbta.SearchEngine.FileIndexing
         private void LoadFile(string filePath)
         {
             var extension = Path.GetExtension(filePath);
-            if (extension == null || !_settings.SupportedFilesExtensions.Contains(extension.Substring(1).ToLowerInvariant()))
+            if (string.IsNullOrWhiteSpace(extension)
+                || !_settings.SupportedFilesExtensions.Contains(extension.Substring(1).ToLowerInvariant()))
             {
                 return;
             }
