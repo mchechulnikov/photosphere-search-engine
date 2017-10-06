@@ -49,37 +49,29 @@ namespace Jbta.SearchEngine.FileParsing
                     {
                         if (character == '\n')
                         {
+                            if (word.Length > 0)
+                            {
+                                yield return NewParsedWord(fileVersion, word, position, lineNumber);
+                                word.Clear();
+                            }
+
                             lineNumber++;
-                            position = 0;
-                        }
-                        if (word.Length < 1)
-                        {
-                            position++;
+                            position = 1;
                             continue;
                         }
-
-                        var wordPosition = position - word.Length;
-                        var wordString = word.TrimEndingPunctuationChars().ToString();
-                        yield return new ParsedWord(
-                            wordString,
-                            new WordEntry(fileVersion, wordPosition, lineNumber)
-                        );
-                        word.Clear();
+                        if (word.Length > 0)
+                        {
+                            yield return NewParsedWord(fileVersion, word, position, lineNumber);
+                            word.Clear();
+                        }
                     }
                     else if (character == '\0')
                     {
-                        var wordPosition = position - word.Length;
-                        var wordString = word.TrimEndingPunctuationChars().ToString();
-                        if (string.IsNullOrWhiteSpace(wordString))
+                        if (word.Length > 0)
                         {
-                            break;
+                            yield return NewParsedWord(fileVersion, word, position, lineNumber);
+                            word.Clear();
                         }
-
-                        yield return new ParsedWord(
-                            wordString,
-                            new WordEntry(fileVersion, wordPosition, lineNumber)
-                        );
-                        word.Clear();
                         break;
                     }
                     else if (char.IsPunctuation(character))
@@ -96,6 +88,16 @@ namespace Jbta.SearchEngine.FileParsing
                     position++;
                 }
             }
+        }
+
+        private static ParsedWord NewParsedWord(IFileVersion fileVersion, StringBuilder word, int position, int lineNumber)
+        {
+            var wordPosition = position - word.Length;
+            var wordString = word.TrimEndingPunctuationChars().ToString();
+            return new ParsedWord(
+                wordString,
+                new WordEntry(fileVersion, wordPosition, lineNumber)
+            );
         }
     }
 }
