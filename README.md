@@ -42,9 +42,12 @@
 * `Jbta.SearchEngine.IntegrationTests` — набор тестов на библиотеку.
 * `Jbta.SearchEngine.DemoApp` — простейшее демо-приложение, позволяющее добавлять файлы и каталоги и осуществлять простые поисковые запросы.
 
-Библиотека реализована на базе .NET Frameword 4.7. Содержит следующие зависимости:
-* `System.Runtime.CompilerServices.Unsafe` — требуется для `NonBlocking.ConcurrentDictionary`;
-* `UDE.CSharp` — порт Mozilla Universal Charset Detector на .NET: инструмент для определения кодировок файлов.
+Библиотека реализована на базе .NET Frameword 4.7. 
+
+### Зависимости
+NuGet пакеты:
+* [`System.Runtime.CompilerServices.Unsafe`](https://www.nuget.org/packages/System.Runtime.CompilerServices.Unsafe/) — требуется для `NonBlocking.ConcurrentDictionary`;
+* [`UDE.CSharp`](https://www.nuget.org/packages/UDE.CSharp) — порт Mozilla Universal Charset Detector на .NET: инструмент для определения кодировок файлов.
 
 Внедрённые исходники (vendored code), которые неудобно доставлять NuGet-пакетами:
 * https://github.com/VSadov/NonBlocking — lock-free реализация `ConcurrentDictionary`;
