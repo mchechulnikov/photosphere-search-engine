@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/ny3vxn69eht1j00p?svg=true)](https://ci.appveyor.com/project/sunloving/jbta)
+
 # Тестовое задание (выдано 18.09.2017)
 Библиотека, реализующая средства индексации текстовых файлов по словам. <br/>
 Функционал решения:
