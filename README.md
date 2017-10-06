@@ -48,7 +48,7 @@
 * https://github.com/VSadov/NonBlocking — lock-free реализация `ConcurrentDictionary`;
 * https://github.com/khalidsalomao/SimpleHelpers.Net — удобная обёртка над `UDE.CSharp`.
 
-Писалось и собиралось в Visual Studio 2017, тест запускались через R# и xUnit Console Runner.
+Писалось и собиралось в Visual Studio 2017, тесты запускались через R# и xUnit Console Runner.
 
 ### Библиотека
 Основным объектом является экземпляр класса `SearchEngine`, который предоставляет всю необходимую функциональность.
