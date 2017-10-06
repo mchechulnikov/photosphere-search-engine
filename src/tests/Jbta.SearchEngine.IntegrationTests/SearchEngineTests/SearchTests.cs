@@ -8,6 +8,17 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests
 {
     public class SearchTests
     {
+
+        [Fact]
+        public void Search_ByPrefixNull_ExpectedEntriesCount()
+        {
+            IndexFileAndDoAction(TestTextFiles.WarAndPeace1, (engine, filePath) =>
+            {
+                var wordEntries = engine.Search(null).ToList();
+                Assert.Equal(0, wordEntries.Count);
+            });
+        }
+
         [Theory]
         [InlineData("Кутузов", 5)]
         [InlineData("князь", 40)]
@@ -52,6 +63,16 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests
                 var wordEntries = engine.Search(query, true).ToList();
 
                 Assert.Equal(cout, wordEntries.Count);
+            });
+        }
+
+        [Fact]
+        public void SearchFiles_ByPrefixNull_ExpectedEntriesCount()
+        {
+            IndexFileAndDoAction(TestTextFiles.WarAndPeace1, (engine, filePath) =>
+            {
+                var wordEntries = engine.SearchFiles(null).ToList();
+                Assert.Equal(0, wordEntries.Count);
             });
         }
 

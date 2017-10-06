@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileSupervision;
@@ -97,12 +98,16 @@ namespace Jbta.SearchEngine
 
         public IEnumerable<WordEntry> Search(string query, bool wholeWord = false)
         {
-            return _searcher.Search(query, wholeWord);
+            return string.IsNullOrWhiteSpace(query)
+                ? Enumerable.Empty<WordEntry>()
+                : _searcher.Search(query, wholeWord);
         }
 
         public IEnumerable<string> SearchFiles(string query, bool wholeWord = false)
         {
-            return _searcher.SearchFiles(query, wholeWord);
+            return string.IsNullOrWhiteSpace(query)
+                ? Enumerable.Empty<string>()
+                : _searcher.SearchFiles(query, wholeWord);
         }
 
         public void Dispose()
