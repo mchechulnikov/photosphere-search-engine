@@ -61,7 +61,7 @@ var searchEngine = SearchEngineFactory.New();
 или
 ``` C#
 var settings = new SearchEngineSettings();
-var searchEngine = SearchEngineFactory.New();
+var searchEngine = SearchEngineFactory.New(settings);
 ```
 Объект настроек `SearchEngineSettings` имеет следующие опции:
 * `SupportedFilesExtensions` — набор расширений индексируемых файлов в lowecase'е; по умолчанию содержит значение массива строк `txt`, `log`, `cs`, `js`, `fs`, `css`, `sql`;
