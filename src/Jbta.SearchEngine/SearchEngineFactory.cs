@@ -1,4 +1,6 @@
-﻿using Jbta.SearchEngine.Events;
+﻿using System;
+using System.CodeDom;
+using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileSupervision;
@@ -31,6 +33,11 @@ namespace Jbta.SearchEngine
         /// <returns>New search engine instance</returns>
         public static ISearchEngine New(SearchEngineSettings settings)
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
             var eventReactor = new EventReactor();
             var fileParserProvider = new FileParserProvider(settings);
             var filesVersionsRegistry = new FilesVersionsRegistry(eventReactor);
