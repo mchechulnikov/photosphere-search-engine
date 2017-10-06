@@ -26,7 +26,7 @@ namespace Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary
     /// All public and protected members of <see cref="ConcurrentDictionary{TKey,TValue}"/> are thread-safe and may be used
     /// concurrently from multiple threads.
     /// </remarks>
-    public class ConcurrentDictionary<TKey, TValue> :
+    internal class ConcurrentDictionary<TKey, TValue> :
         IDictionary<TKey, TValue>,
         IReadOnlyDictionary<TKey, TValue>,
         IDictionary,

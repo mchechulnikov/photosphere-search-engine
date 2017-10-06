@@ -12,7 +12,7 @@ namespace Jbta.SearchEngine.Vendor.NonBlocking.Counter
     /// Scalable 32bit counter that can be used from multiple threads.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public sealed class Counter32
+    internal sealed class Counter32
     {
         private static readonly int MAX_CELL_COUNT = Environment.ProcessorCount * 2;
         private const int MAX_DRIFT = 1;

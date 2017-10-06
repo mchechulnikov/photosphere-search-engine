@@ -2,26 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Jbta.SearchEngine.Utils;
+using Jbta.SearchEngine.Utils.Extensions;
 
 namespace Jbta.SearchEngine.FileVersioning
 {
     internal class FileVersionsCollection
     {
+        private readonly ISet<FileVersion> _items;
         private readonly ReaderWriterLockSlim _lock;
 
         public FileVersionsCollection()
         {
+            _items = new HashSet<FileVersion>();
             _lock = new ReaderWriterLockSlim();
         }
-
-        public ISet<FileVersion> Items { get; } = new HashSet<FileVersion>();
 
         public void Add(FileVersion fileVersion)
         {
             using (_lock.Exclusive())
             {
-                Items.Add(fileVersion);
+                _items.Add(fileVersion);
             }
         }
 
@@ -29,7 +29,7 @@ namespace Jbta.SearchEngine.FileVersioning
         {
             using (_lock.Shared())
             {
-                return Items.ToList();
+                return _items.ToList();
             }
         }
 
@@ -37,7 +37,7 @@ namespace Jbta.SearchEngine.FileVersioning
         {
             using (_lock.SharedIntentExclusive())
             {
-                foreach (var fileVersion in Items)
+                foreach (var fileVersion in _items)
                 {
                     using (_lock.Exclusive())
                     {
@@ -51,12 +51,12 @@ namespace Jbta.SearchEngine.FileVersioning
         {
             using (_lock.SharedIntentExclusive())
             {
-                var deadVersions = Items.Where(i => i.IsDead).ToList();
+                var deadVersions = _items.Where(i => i.IsDead).ToList();
                 foreach (var deadVersion in deadVersions)
                 {
                     using (_lock.Exclusive())
                     {
-                        Items.Remove(deadVersion);
+                        _items.Remove(deadVersion);
                     }
                 }
                 return deadVersions;
@@ -67,7 +67,7 @@ namespace Jbta.SearchEngine.FileVersioning
         {
             using (_lock.Exclusive())
             {
-                foreach (var version in Items)
+                foreach (var version in _items)
                 {
                     version.IsDead = true;
                 }
@@ -78,7 +78,7 @@ namespace Jbta.SearchEngine.FileVersioning
         {
             using (_lock.Shared())
             {
-                return Items.All(predicate);
+                return _items.All(predicate);
             }
         }
     }

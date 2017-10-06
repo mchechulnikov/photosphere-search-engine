@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace Jbta.SearchEngine.DemoApp.Utils
 {
-    public class DispatchService
+    internal class DispatchService
     {
         public static void Invoke(Action action)
         {

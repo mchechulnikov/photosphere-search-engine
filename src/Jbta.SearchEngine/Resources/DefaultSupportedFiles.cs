@@ -8,9 +8,6 @@ namespace Jbta.SearchEngine.Resources
         {
             "txt",
             "log",
-            "xml",
-            "html",
-            "xaml",
             "cs",
             "fs",
             "js",

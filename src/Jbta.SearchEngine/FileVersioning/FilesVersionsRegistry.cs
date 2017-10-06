@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using Jbta.SearchEngine.Events;
-using Jbta.SearchEngine.Utils;
+using Jbta.SearchEngine.Utils.Extensions;
 
 namespace Jbta.SearchEngine.FileVersioning
 {

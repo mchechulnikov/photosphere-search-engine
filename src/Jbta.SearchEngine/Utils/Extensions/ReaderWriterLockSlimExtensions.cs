@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Jbta.SearchEngine.Utils
+namespace Jbta.SearchEngine.Utils.Extensions
 {
     internal static class ReaderWriterLockSlimExtensions
     {

@@ -54,6 +54,10 @@ namespace Jbta.SearchEngine.FileSupervision
             };
             watcher.Changed += (o, e) =>
             {
+                // Event occurs even on creations or deletions of files.
+                // Sometimes it can be raised twice or more times sequently.
+                // https://stackoverflow.com/a/1765094/4569169
+
                 if (e.ChangeType != WatcherChangeTypes.Changed)
                 {
                     return;

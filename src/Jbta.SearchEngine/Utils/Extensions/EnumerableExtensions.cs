@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Jbta.SearchEngine.Utils
+namespace Jbta.SearchEngine.Utils.Extensions
 {
     internal static class EnumerableExtensions
     {

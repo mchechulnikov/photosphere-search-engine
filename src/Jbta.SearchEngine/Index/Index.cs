@@ -4,7 +4,7 @@ using System.Threading;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.Index.Trie;
-using Jbta.SearchEngine.Utils;
+using Jbta.SearchEngine.Utils.Extensions;
 
 namespace Jbta.SearchEngine.Index
 {

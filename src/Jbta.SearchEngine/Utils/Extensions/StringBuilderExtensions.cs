@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Jbta.SearchEngine.Utils
+namespace Jbta.SearchEngine.Utils.Extensions
 {
     internal static class StringBuilderExtensions
     {

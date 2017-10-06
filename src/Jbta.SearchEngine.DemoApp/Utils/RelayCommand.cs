@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Jbta.SearchEngine.DemoApp.Utils
 {
-    public class RelayCommand : ICommand
+    internal class RelayCommand : ICommand
     {
         private readonly Predicate<object> _canExecute;
         private readonly Func<object, Task> _asyncExecute;

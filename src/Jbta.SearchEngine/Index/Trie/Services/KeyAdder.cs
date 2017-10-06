@@ -2,7 +2,7 @@
 using Jbta.SearchEngine.Index.Trie.Services.Adding;
 using Jbta.SearchEngine.Index.Trie.Services.Adding.ValueObjects;
 using Jbta.SearchEngine.Index.Trie.ValueObjects;
-using Jbta.SearchEngine.Utils;
+using Jbta.SearchEngine.Utils.Extensions;
 using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
 namespace Jbta.SearchEngine.Index.Trie.Services

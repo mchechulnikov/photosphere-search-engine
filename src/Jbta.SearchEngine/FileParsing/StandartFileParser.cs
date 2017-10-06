@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Jbta.SearchEngine.Utils;
+using Jbta.SearchEngine.Utils.Extensions;
 
 namespace Jbta.SearchEngine.FileParsing
 {
