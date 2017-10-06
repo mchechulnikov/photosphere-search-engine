@@ -3,7 +3,7 @@ skip_commits:
 
 version: 0.0.1.{build}
 
-configuration: Release
+configuration: Debug
 
 environment:
   sourcesFolder: src
