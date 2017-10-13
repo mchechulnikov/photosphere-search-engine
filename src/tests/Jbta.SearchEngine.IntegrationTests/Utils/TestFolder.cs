@@ -34,14 +34,26 @@ namespace Jbta.SearchEngine.IntegrationTests.Utils
             {
                 return;
             }
+            if (!Directory.Exists(Path))
+            {
+                return;
+            }
 
-            if (!Directory.Exists(Path)) { return; }
-
-            Directory.Delete(Path, true);
+            while (!_isDeleted)
+            {
+                try
+                {
+                    Directory.Delete(Path, true);
+                    _isDeleted = true;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            _isDeleted = true;
-            Thread.Sleep(100);
         }
 
         private string GetNewPath(string newName)

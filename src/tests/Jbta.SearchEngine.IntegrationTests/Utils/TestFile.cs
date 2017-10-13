@@ -30,8 +30,23 @@ namespace Jbta.SearchEngine.IntegrationTests.Utils
         public void ChangeContent(string newContent)
         {
             var text = File.ReadAllText(Path);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             text = text.Replace(text, newContent);
-            File.WriteAllText(Path, text);
+
+            var isChanged = false;
+            while (!isChanged)
+            {
+                try
+                {
+                    File.WriteAllText(Path, text);
+                    isChanged = true;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
         }
 
         public void Rename(string newName)
