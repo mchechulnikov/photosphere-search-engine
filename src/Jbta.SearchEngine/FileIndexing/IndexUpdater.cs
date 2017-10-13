@@ -2,7 +2,6 @@
 using System.IO;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileVersioning;
-using Jbta.SearchEngine.Utils;
 
 namespace Jbta.SearchEngine.FileIndexing
 {
@@ -26,14 +25,6 @@ namespace Jbta.SearchEngine.FileIndexing
         {
             try
             {
-                if (!FileSystem.IsExistingPath(filePath))
-                {
-                    return;
-                }
-                if (FileSystem.IsDirectory(filePath))
-                {
-                    return;
-                }
                 if (!_filesVersionsRegistry.IsFileUpdatable(filePath))
                 {
                     return;

@@ -115,7 +115,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests
 
             engine.FileIndexingEnded += args =>
             {
-                action(engine, args.FilePath);
+                action(engine, args.Path);
                 tcs.TrySetResult(true);
             };
 

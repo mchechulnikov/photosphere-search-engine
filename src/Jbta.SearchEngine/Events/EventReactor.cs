@@ -39,6 +39,7 @@ namespace Jbta.SearchEngine.Events
                 case EngineEvent.FileIndexingStarted:
                 case EngineEvent.FileRemovingStarted:
                 case EngineEvent.FileUpdateInitiated:
+                case EngineEvent.WatchedPathRemoved:
                     if (args.Length != 1)
                     {
                         throw new ArgumentOutOfRangeException(nameof(args), args, "Invalid args count");

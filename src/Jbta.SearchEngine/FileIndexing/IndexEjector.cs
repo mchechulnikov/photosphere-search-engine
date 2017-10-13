@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileVersioning;
@@ -27,11 +26,15 @@ namespace Jbta.SearchEngine.FileIndexing
             }
             else
             {
-                var filesPathes = _filesVersionsRegistry.Files.Where(p => p.StartsWith(path)).ToList();
-                foreach (var filePath in filesPathes)
-                {
-                    EjectFileFromIndex(filePath);
-                }
+                EjectDirectory(path);
+            }
+        }
+
+        public void EjectFile(string filePath)
+        {
+            if (_filesVersionsRegistry.Contains(filePath))
+            {
+                EjectFileFromIndex(filePath);
             }
         }
 
@@ -50,6 +53,15 @@ namespace Jbta.SearchEngine.FileIndexing
                     _eventReactor.React(EngineEvent.FileRemovingEnded, filePath, exception);
                 }
             });
+        }
+
+        private void EjectDirectory(string directoryPath)
+        {
+            var filesPathes = _filesVersionsRegistry.GetAliveFiles(directoryPath);
+            foreach (var filePath in filesPathes)
+            {
+                EjectFileFromIndex(filePath);
+            }
         }
     }
 }

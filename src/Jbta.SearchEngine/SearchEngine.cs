@@ -15,7 +15,7 @@ namespace Jbta.SearchEngine
         private readonly IIndexEjector _indexEjector;
         private readonly IFileSupervisor _supervisor;
         private readonly ISearcher _searcher;
-        private readonly ISheduller _sheduller;
+        private readonly IScheduler _scheduler;
 
         public SearchEngine(
             EventReactor eventReactor,
@@ -23,13 +23,13 @@ namespace Jbta.SearchEngine
             IIndexEjector indexEjector,
             IFileSupervisor supervisor,
             ISearcher searcher,
-            ISheduller sheduller)
+            IScheduler scheduler)
         {
             _indexer = indexer;
             _indexEjector = indexEjector;
             _supervisor = supervisor;
             _searcher = searcher;
-            _sheduller = sheduller;
+            _scheduler = scheduler;
 
             eventReactor.Register(EngineEvent.FileIndexingStarted, a => FileIndexingStarted?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexingEnded, a => FileIndexingEnded?.Invoke(a));
@@ -39,8 +39,9 @@ namespace Jbta.SearchEngine
             eventReactor.Register(EngineEvent.FileUpdateFailed, a => FileUpdateFailed?.Invoke(a));
             eventReactor.Register(EngineEvent.FilePathChanged, a => FilePathChanged?.Invoke(a));
             eventReactor.Register(EngineEvent.IndexCleanUpFailed, a => IndexCleanUpFailed?.Invoke(a));
+            eventReactor.Register(EngineEvent.WatchedPathRemoved, a => WatchedPathRemoved?.Invoke(a));
 
-            _sheduller.Start();
+            _scheduler.Start();
         }
 
         public event SearchEngineEventHandler FileIndexingStarted;
@@ -51,6 +52,7 @@ namespace Jbta.SearchEngine
         public event SearchEngineEventHandler FileUpdateFailed;
         public event SearchEngineEventHandler FilePathChanged;
         public event SearchEngineEventHandler IndexCleanUpFailed;
+        public event SearchEngineEventHandler WatchedPathRemoved;
 
         public IEnumerable<string> PathesUnderIndex => _supervisor.WatchedPathes;
 
@@ -113,7 +115,7 @@ namespace Jbta.SearchEngine
         public void Dispose()
         {
             _supervisor?.Dispose();
-            _sheduller?.Dispose();
+            _scheduler?.Dispose();
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class FilePathChangedEventArgs : SearchEngineEventArgs
     {
-        public FilePathChangedEventArgs(string oldFilePath, string filePath) : base(filePath)
+        public FilePathChangedEventArgs(string oldFilePath, string path) : base(path)
         {
             OldFilePath = oldFilePath;
         }

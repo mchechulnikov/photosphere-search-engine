@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileParsing;
@@ -45,13 +44,16 @@ namespace Jbta.SearchEngine
             var indexer = new FileIndexer(eventReactor, fileParserProvider, index, filesVersionsRegistry, settings);
             var indexEjector = new IndexEjector(eventReactor, filesVersionsRegistry);
             var indexUpdater = new IndexUpdater(eventReactor, indexer, filesVersionsRegistry);
-            var fileWatcherFactory = new FileSystemWatcherFactory(
+            var watchersCollection = new WatchersCollection();
+            var fileWatcherFactory = new PathWatcherFactory(
+                eventReactor,
                 indexer,
                 indexUpdater,
                 indexEjector,
-                new FilePathActualizer(filesVersionsRegistry)
+                new FilePathActualizer(filesVersionsRegistry),
+                watchersCollection
             );
-            var fileSupervisor = new FileSupervisor(fileWatcherFactory);
+            var fileSupervisor = new FileSupervisor(fileWatcherFactory, watchersCollection);
             var searcher = new Searcher(index);
             var indexCleaner = new IndexCleaner(eventReactor, index, filesVersionsRegistry, settings);
             var scheduler = new Scheduler(indexCleaner, settings);

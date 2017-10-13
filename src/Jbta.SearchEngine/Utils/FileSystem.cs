@@ -14,6 +14,9 @@ namespace Jbta.SearchEngine.Utils
         public static string GetDirectoryPathByFilePath(string filePath) =>
             new FileInfo(filePath).DirectoryName;
 
+        public static string GetParentDirectoryPathByDirectoryPath(string directoryPath) =>
+            new DirectoryInfo(directoryPath).Parent?.FullName;
+
         public static IEnumerable<string> GetFilesPathesByDirectory(string directoryPath)
         {
             var directoryInfo = new DirectoryInfo(directoryPath);

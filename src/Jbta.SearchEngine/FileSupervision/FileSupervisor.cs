@@ -1,54 +1,50 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Jbta.SearchEngine.Vendor.NonBlocking.ConcurrentDictionary;
 
 namespace Jbta.SearchEngine.FileSupervision
 {
     internal class FileSupervisor : IFileSupervisor
     {
-        private readonly FileSystemWatcherFactory _watcherFactory;
-        private readonly ConcurrentDictionary<string, FileSystemWatcher> _watchers;
+        private readonly PathWatcherFactory _pathWatcherFactory;
+        private readonly WatchersCollection _watchers;
 
-        public FileSupervisor(FileSystemWatcherFactory watcherFactory)
+        public FileSupervisor(
+            PathWatcherFactory pathWatcherFactory,
+            WatchersCollection watchers)
         {
-            _watcherFactory = watcherFactory;
-            _watchers = new ConcurrentDictionary<string, FileSystemWatcher>();
+            _pathWatcherFactory = pathWatcherFactory;
+            _watchers = watchers;
         }
 
-        public IEnumerable<string> WatchedPathes => _watchers.Keys;
+        public IEnumerable<string> WatchedPathes => _watchers.Pathes;
 
         public void Watch(string path)
         {
-            var watcher = _watcherFactory.New(path);
-            _watchers.AddOrUpdate(path, watcher, (k, v) => v);
-            watcher.EnableRaisingEvents = true;
+            var watchersSquad = _pathWatcherFactory.New(path);
+            _watchers.Add(path, watchersSquad);
+            watchersSquad.Enable();
         }
 
         public void Unwatch(string path)
         {
-            if (!_watchers.TryGetValue(path, out var watcher))
+            var watchersSquad = _watchers.Get(path);
+            if (watchersSquad == null)
             {
                 return;
             }
 
-            watcher.EnableRaisingEvents = false;
-            watcher.Dispose();
-            _watchers.TryRemove(path, out var _);
+            watchersSquad.Dispose();
+            _watchers.Remove(path);
         }
 
         public bool IsUnderWatching(string path)
         {
-            return _watchers.ContainsKey(path) || _watchers.Keys.Any(path.StartsWith);
+            return _watchers.Contains(path) || _watchers.Pathes.Any(path.StartsWith);
         }
 
         public void Dispose()
         {
-            foreach (var watcher in _watchers.Values)
-            {
-                watcher.EnableRaisingEvents = false;
-                watcher.Dispose();
-            }
+            _watchers?.Dispose();
         }
     }
 }

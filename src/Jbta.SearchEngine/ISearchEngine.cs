@@ -80,5 +80,10 @@ namespace Jbta.SearchEngine
         /// Raised when index clean up failed
         /// </summary>
         event SearchEngineEventHandler IndexCleanUpFailed;
+
+        /// <summary>
+        /// Raises when the watched path was removed form file system
+        /// </summary>
+        event SearchEngineEventHandler WatchedPathRemoved;
     }
 }

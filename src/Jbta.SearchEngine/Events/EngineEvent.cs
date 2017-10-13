@@ -9,6 +9,7 @@
         FileUpdateInitiated,
         FileUpdateFailed,
         FilePathChanged,
-        IndexCleanUpFailed
+        IndexCleanUpFailed,
+        WatchedPathRemoved
     }
 }
