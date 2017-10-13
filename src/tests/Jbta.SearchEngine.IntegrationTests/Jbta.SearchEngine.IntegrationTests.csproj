@@ -47,13 +47,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileParsing\StandartFileParserTests.cs" />
-    <Compile Include="SearchEngineTests\EventsTests\FileIndexingEndedEventTests.cs" />
-    <Compile Include="SearchEngineTests\EventsTests\FileIndexingStartedEventTests.cs" />
+    <Compile Include="SearchEngineTests\EventsTests\FileIndexingEventsTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FilePathChangedEventTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FileRemovingEndedEventTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FileRemovingStartedEventTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FileUpdateInitiatedEventTests.cs" />
-    <Compile Include="SearchEngineTests\EventsTests\WatchedPathRemovedEventTests.cs" />
+    <Compile Include="SearchEngineTests\EventsTests\PathWatchingEndedEventTests.cs" />
+    <Compile Include="SearchEngineTests\EventsTests\PathWatchingStartedEventTests.cs" />
     <Compile Include="SearchEngineTests\RemoveTests.cs" />
     <Compile Include="SearchEngineTests\AddTests.cs" />
     <Compile Include="SearchEngineTests\SearchTests.cs" />

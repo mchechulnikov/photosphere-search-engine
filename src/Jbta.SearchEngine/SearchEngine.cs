@@ -31,6 +31,8 @@ namespace Jbta.SearchEngine
             _searcher = searcher;
             _scheduler = scheduler;
 
+            eventReactor.Register(EngineEvent.PathWatchingStarted, a => PathWatchingStarted?.Invoke(a));
+            eventReactor.Register(EngineEvent.PathWatchingEnded, a => PathWatchingEnded?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexingStarted, a => FileIndexingStarted?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexingEnded, a => FileIndexingEnded?.Invoke(a));
             eventReactor.Register(EngineEvent.FileRemovingStarted, a => FileRemovingStarted?.Invoke(a));
@@ -39,11 +41,12 @@ namespace Jbta.SearchEngine
             eventReactor.Register(EngineEvent.FileUpdateFailed, a => FileUpdateFailed?.Invoke(a));
             eventReactor.Register(EngineEvent.FilePathChanged, a => FilePathChanged?.Invoke(a));
             eventReactor.Register(EngineEvent.IndexCleanUpFailed, a => IndexCleanUpFailed?.Invoke(a));
-            eventReactor.Register(EngineEvent.WatchedPathRemoved, a => WatchedPathRemoved?.Invoke(a));
 
             _scheduler.Start();
         }
 
+        public event SearchEngineEventHandler PathWatchingStarted;
+        public event SearchEngineEventHandler PathWatchingEnded;
         public event SearchEngineEventHandler FileIndexingStarted;
         public event SearchEngineEventHandler FileIndexingEnded;
         public event SearchEngineEventHandler FileRemovingStarted;
@@ -52,7 +55,6 @@ namespace Jbta.SearchEngine
         public event SearchEngineEventHandler FileUpdateFailed;
         public event SearchEngineEventHandler FilePathChanged;
         public event SearchEngineEventHandler IndexCleanUpFailed;
-        public event SearchEngineEventHandler WatchedPathRemoved;
 
         public IEnumerable<string> PathesUnderIndex => _supervisor.WatchedPathes;
 

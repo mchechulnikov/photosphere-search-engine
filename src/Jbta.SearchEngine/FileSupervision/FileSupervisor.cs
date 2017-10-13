@@ -1,17 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Jbta.SearchEngine.Events;
 
 namespace Jbta.SearchEngine.FileSupervision
 {
     internal class FileSupervisor : IFileSupervisor
     {
+        private readonly IEventReactor _eventReactor;
         private readonly PathWatcherFactory _pathWatcherFactory;
         private readonly WatchersCollection _watchers;
 
         public FileSupervisor(
+            IEventReactor eventReactor,
             PathWatcherFactory pathWatcherFactory,
             WatchersCollection watchers)
         {
+            _eventReactor = eventReactor;
             _pathWatcherFactory = pathWatcherFactory;
             _watchers = watchers;
         }
@@ -20,9 +24,11 @@ namespace Jbta.SearchEngine.FileSupervision
 
         public void Watch(string path)
         {
-            var watchersSquad = _pathWatcherFactory.New(path);
-            _watchers.Add(path, watchersSquad);
-            watchersSquad.Enable();
+            var pathWatcher = _pathWatcherFactory.New(path);
+            _watchers.Add(path, pathWatcher);
+            pathWatcher.Enable();
+
+            _eventReactor.React(EngineEvent.PathWatchingStarted, path);
         }
 
         public void Unwatch(string path)
@@ -35,6 +41,8 @@ namespace Jbta.SearchEngine.FileSupervision
 
             watchersSquad.Dispose();
             _watchers.Remove(path);
+
+            _eventReactor.React(EngineEvent.PathWatchingEnded, path);
         }
 
         public bool IsUnderWatching(string path)

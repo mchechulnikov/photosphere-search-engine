@@ -53,7 +53,7 @@ namespace Jbta.SearchEngine
                 new FilePathActualizer(filesVersionsRegistry),
                 watchersCollection
             );
-            var fileSupervisor = new FileSupervisor(fileWatcherFactory, watchersCollection);
+            var fileSupervisor = new FileSupervisor(eventReactor, fileWatcherFactory, watchersCollection);
             var searcher = new Searcher(index);
             var indexCleaner = new IndexCleaner(eventReactor, index, filesVersionsRegistry, settings);
             var scheduler = new Scheduler(indexCleaner, settings);

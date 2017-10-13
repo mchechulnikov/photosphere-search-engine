@@ -2,6 +2,8 @@
 {
     internal enum EngineEvent
     {
+        PathWatchingStarted,
+        PathWatchingEnded,
         FileIndexingStarted,
         FileIndexingEnded,
         FileRemovingStarted,
@@ -9,7 +11,6 @@
         FileUpdateInitiated,
         FileUpdateFailed,
         FilePathChanged,
-        IndexCleanUpFailed,
-        WatchedPathRemoved
+        IndexCleanUpFailed
     }
 }

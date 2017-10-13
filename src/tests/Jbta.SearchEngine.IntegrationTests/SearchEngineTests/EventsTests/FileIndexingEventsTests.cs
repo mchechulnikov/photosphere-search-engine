@@ -1,31 +1,38 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Jbta.SearchEngine.Events;
+using Jbta.SearchEngine.Events.Args;
 using Jbta.SearchEngine.IntegrationTests.Resources;
 using Jbta.SearchEngine.IntegrationTests.Utils;
 using Xunit;
 
 namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
 {
-    public class FileIndexingStartedEventTests
+    public class FileIndexingEventsTests
     {
-        [Fact]
-        public async void FileIndexingStarted_FileAdded_Raised()
+        [Theory]
+        [InlineData(nameof(ISearchEngine.FileIndexingStarted))]
+        [InlineData(nameof(ISearchEngine.FileIndexingEnded))]
+        public async void FileIndexingEvents_FileAdded_Raised(string eventName)
         {
             var filePath = TestTextFiles.OneLineFile;
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
 
-            engine.FileIndexingStarted += args =>
+            AddHandler(engine, eventName, args =>
             {
                 tcs.TrySetResult(Path.GetFullPath(filePath) == args.Path);
-            };
+            });
 
             Assert.True(engine.Add(filePath));
             Assert.True(await tcs.Task);
         }
 
-        [Fact]
-        public async void FileIndexingStarted_FileChanged_Raised()
+        [Theory]
+        [InlineData(nameof(ISearchEngine.FileIndexingStarted))]
+        [InlineData(nameof(ISearchEngine.FileIndexingEnded))]
+        public async void FileIndexingEvents_FileChanged_Raised(string eventName)
         {
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
@@ -37,10 +44,10 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 engine.Add(filePath);
                 await Task.Delay(100);
 
-                engine.FileIndexingStarted += args =>
+                AddHandler(engine, eventName, args =>
                 {
                     tcs.TrySetResult(Path.GetFullPath(filePath) == args.Path);
-                };
+                });
 
                 file.ChangeContent("bar");
 
@@ -48,8 +55,10 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
             }
         }
 
-        [Fact]
-        public async void FileIndexingStarted_EmptyFolderIndexed_NotRaised()
+        [Theory]
+        [InlineData(nameof(ISearchEngine.FileIndexingStarted))]
+        [InlineData(nameof(ISearchEngine.FileIndexingEnded))]
+        public async void FileIndexingEvents_EmptyFolderIndexed_NotRaised(string eventName)
         {
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
@@ -69,17 +78,19 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 engine.Add(folderPath);
                 await Task.Delay(100);
 
-                engine.FileIndexingStarted += args =>
+                AddHandler(engine, eventName, args =>
                 {
                     tcs.TrySetResult(false);
-                };
+                });
 
                 Assert.True(await tcs.Task);
             }
         }
 
-        [Fact]
-        public async void FileIndexingStarted_FileCreatedToWatchedDirectory_Raised()
+        [Theory]
+        [InlineData(nameof(ISearchEngine.FileIndexingStarted))]
+        [InlineData(nameof(ISearchEngine.FileIndexingEnded))]
+        public async void FileIndexingEvents_FileCreatedToWatchedDirectory_Raised(string eventName)
         {
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
@@ -92,20 +103,23 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 engine.Add(folderPath);
                 await Task.Delay(100);
 
-                engine.FileIndexingStarted += args =>
+                AddHandler(engine, eventName, args =>
                 {
                     tcs.TrySetResult(Path.GetFullPath($"{folderPath}\\{fileName}") == args.Path);
-                };
+                });
 
                 using (new TestFile("foo", folderPath, fileName))
                 {
                     Assert.True(await tcs.Task);
                 }
+                await Task.Delay(100);
             }
         }
 
-        [Fact]
-        public async void FileIndexingStarted_FileMovedToWatchedDirectory_Raised()
+        [Theory]
+        [InlineData(nameof(ISearchEngine.FileIndexingStarted))]
+        [InlineData(nameof(ISearchEngine.FileIndexingEnded))]
+        public async void FileIndexingEvents_FileMovedToWatchedDirectory_Raised(string eventName)
         {
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
@@ -123,10 +137,10 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                             engine.Add(destFolderPath);
                             await Task.Delay(100);
 
-                            engine.FileIndexingStarted += args =>
+                            AddHandler(engine, eventName, args =>
                             {
                                 tcs.TrySetResult(Path.GetFullPath($"{destFolderPath}\\{fileName}") == args.Path);
-                            };
+                            });
 
                             file.Move(destFolderPath);
 
@@ -135,6 +149,15 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                     }
                 }
             }
+        }
+
+        private static void AddHandler(ISearchEngine engine, string eventName, Action<SearchEngineEventArgs> action)
+        {
+            var eventInfo = engine.GetType().GetEvent(eventName);
+            eventInfo.AddEventHandler(engine, (SearchEngineEventHandler)(args =>
+            {
+                action(args);
+            }));
         }
     }
 }

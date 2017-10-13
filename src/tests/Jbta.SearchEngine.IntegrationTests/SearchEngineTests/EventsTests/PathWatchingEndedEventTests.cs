@@ -5,10 +5,10 @@ using Xunit;
 
 namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
 {
-    public class WatchedPathRemovedEventTests
+    public class PathWatchingEndedEventTests
     {
         [Fact]
-        public async void WatchedPathRemoved_WatchedFileRemoved_Raised()
+        public async void PathWatchingEnded_WatchedFileRemoved_Raised()
         {
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
@@ -19,7 +19,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 engine.Add(filePath);
                 await Task.Delay(100);
 
-                engine.WatchedPathRemoved += args =>
+                engine.PathWatchingEnded += args =>
                 {
                     tcs.TrySetResult(Path.GetFullPath(filePath) == args.Path);
                 };
@@ -31,7 +31,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
         }
 
         [Fact]
-        public async void WatchedPathRemoved_NotEmptyWatchedFolderRemoved_Raised()
+        public async void PathWatchingEnded_NotEmptyWatchedFolderRemoved_Raised()
         {
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
@@ -44,7 +44,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                     engine.Add(folder.Path);
                     await Task.Delay(300);
 
-                    engine.WatchedPathRemoved += args =>
+                    engine.PathWatchingEnded += args =>
                     {
                         tcs.TrySetResult(Path.GetFullPath(folderPath) == args.Path);
                     };
@@ -57,7 +57,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
         }
 
         [Fact]
-        public async void WatchedPathRemoved_EmptyWatchedFolderRemoved_Raised()
+        public async void PathWatchingEnded_EmptyWatchedFolderRemoved_Raised()
         {
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
@@ -70,7 +70,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                     engine.Add(folder.Path);
                     await Task.Delay(100);
 
-                    engine.WatchedPathRemoved += args =>
+                    engine.PathWatchingEnded += args =>
                     {
                         tcs.TrySetResult(Path.GetFullPath(folderPath) == args.Path);
                     };

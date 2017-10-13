@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 
 namespace Jbta.SearchEngine.IntegrationTests.Utils
 {
     internal class TestFile : IDisposable
     {
+        private bool _isDeleted;
+
         public TestFile(string content, string folderPath = ".", string fileName = null)
         {
             fileName = fileName ?? GenerateFileName();
@@ -57,15 +58,29 @@ namespace Jbta.SearchEngine.IntegrationTests.Utils
 
         public void Delete()
         {
+            if (_isDeleted)
+            {
+                return;
+            }
             if (!File.Exists(Path))
             {
                 return;
             }
-
-            File.Delete(Path);
+            while (!_isDeleted)
+            {
+                try
+                {
+                    File.Delete(Path);
+                    _isDeleted = true;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+            
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            Thread.Sleep(100);
         }
     }
 }

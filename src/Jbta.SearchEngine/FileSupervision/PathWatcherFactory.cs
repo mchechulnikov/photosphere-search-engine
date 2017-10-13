@@ -31,7 +31,8 @@ namespace Jbta.SearchEngine.FileSupervision
             _watchers = watchers;
         }
 
-        public PathWatcher New(string path) => new PathWatcher(path, SubscribeOnFileEvents, SubscribeOnParentDirectoryEvents);
+        public PathWatcher New(string path) => 
+            new PathWatcher(path, SubscribeOnFileEvents, SubscribeOnParentDirectoryEvents);
 
         private void SubscribeOnFileEvents(FileSystemWatcher watcher)
         {
@@ -72,7 +73,7 @@ namespace Jbta.SearchEngine.FileSupervision
                     watcher.EnableRaisingEvents = false;
                     watcher.Dispose();
                     _watchers.Remove(e.FullPath);
-                    _eventReactor.React(EngineEvent.WatchedPathRemoved, e.FullPath);
+                    _eventReactor.React(EngineEvent.PathWatchingEnded, e.FullPath);
                 }
                 _indexEjector.EjectFile(e.FullPath);
             };
@@ -104,7 +105,22 @@ namespace Jbta.SearchEngine.FileSupervision
                     watcher.EnableRaisingEvents = false;
                     watcher.Dispose();
                     _watchers.Remove(e.FullPath);
-                    _eventReactor.React(EngineEvent.WatchedPathRemoved, e.FullPath);
+                    _eventReactor.React(EngineEvent.PathWatchingEnded, e.FullPath);
+                }
+            };
+            watcher.Deleted += (o, e) =>
+            {
+                if (e.ChangeType != WatcherChangeTypes.Deleted)
+                {
+                    return;
+                }
+
+                if (_watchers.Contains(e.FullPath))
+                {
+                    watcher.EnableRaisingEvents = false;
+                    watcher.Dispose();
+                    _watchers.Remove(e.FullPath);
+                    _eventReactor.React(EngineEvent.PathWatchingEnded, e.FullPath);
                 }
             };
             watcher.Renamed += (o, e) =>

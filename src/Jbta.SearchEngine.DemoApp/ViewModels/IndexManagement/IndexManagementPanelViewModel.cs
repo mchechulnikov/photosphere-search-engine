@@ -62,8 +62,11 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         private void SubscribeOnIndexStateChange()
         {
+            SearchSystem.EngineInstance.PathWatchingStarted += a => DispatchService.Invoke(RefreshTree);
+            SearchSystem.EngineInstance.PathWatchingEnded += a => DispatchService.Invoke(RefreshTree);
             SearchSystem.EngineInstance.FileIndexingStarted += OnStartFileProcessing;
             SearchSystem.EngineInstance.FileIndexingEnded += OnStopFileProcessing;
+            SearchSystem.EngineInstance.FileRemovingStarted += OnStartFileProcessing;
             SearchSystem.EngineInstance.FileRemovingEnded += OnStopFileProcessing;
             SearchSystem.EngineInstance.FilePathChanged += a => DispatchService.Invoke(RefreshTree);
 
