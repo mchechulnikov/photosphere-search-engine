@@ -31,6 +31,7 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
                 {
                     _internalProcessor.ProcessEvent(e);
                 }
+                Thread.Sleep(50);
             }
         }
     }
