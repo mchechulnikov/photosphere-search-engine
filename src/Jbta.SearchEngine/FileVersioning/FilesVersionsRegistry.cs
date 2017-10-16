@@ -61,7 +61,8 @@ namespace Jbta.SearchEngine.FileVersioning
             var result = new HashSet<FileVersion>();
             using (_lock.SharedIntentExclusive())
             {
-                foreach (var kv in _fileVersions)
+                var versions = _fileVersions.ToDictionary(k => k.Key, v => v.Value);
+                foreach (var kv in versions)
                 {
                     var collection = kv.Value;
                     var deadVersions = collection.RemoveDeadVersions();
@@ -70,14 +71,12 @@ namespace Jbta.SearchEngine.FileVersioning
                         result.Add(deadVersion);
                     }
 
-                    // TODO this is thread unsafe
-                    if (collection.Any())
-                    {
-                        continue;
-                    }
-
                     using (_lock.Exclusive())
                     {
+                        if (collection.Any())
+                        {
+                            continue;
+                        }
                         _fileVersions.Remove(kv.Key);
                     }
                 }
