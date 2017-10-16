@@ -96,7 +96,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             SearchSystem.EngineInstance.FilePathChanged += a =>
             {
                 var args = (FilePathChangedEventArgs) a;
-                Trace.WriteLine($@"{DateTime.Now} | File path changed:\n\told: {args.OldFilePath}\n\tnew: {args.Path}");
+                Trace.WriteLine($@"{DateTime.Now} | File path changed: old: {args.OldFilePath} new: {args.Path}");
                 DispatchService.Invoke(RefreshTree);
             };
             SearchSystem.EngineInstance.FileUpdateInitiated += a =>
@@ -105,7 +105,7 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
             };
             SearchSystem.EngineInstance.FileUpdateFailed += a =>
             {
-                Trace.WriteLine($@"{DateTime.Now} | File update failed:\n\tpath: {a.Path}\n\terror: {a.Error.Message}");
+                Trace.WriteLine($@"{DateTime.Now} | File update failed: path: {a.Path} error: {a.Error.Message}");
             };
             SearchSystem.EngineInstance.IndexCleanUpFailed += a =>
             {

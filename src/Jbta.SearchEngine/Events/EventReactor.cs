@@ -67,7 +67,7 @@ namespace Jbta.SearchEngine.Events
                     }
                     return new SearchEngineEventArgs((string)args[0], (Exception)args[1]);
 
-                case EngineEvent.FilePathChanged:
+                case EngineEvent.PathChanged:
                     if (args.Length != 2)
                     {
                         throw new ArgumentOutOfRangeException(nameof(args), args, "Invalid args count");

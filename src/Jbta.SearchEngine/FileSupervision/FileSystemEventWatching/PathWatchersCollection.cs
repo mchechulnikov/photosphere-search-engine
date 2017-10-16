@@ -36,24 +36,27 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
             }
         }
 
-        //public PathWatcher Get(string path)
-        //{
-        //    using (_lock.Shared())
-        //    {
-        //        return _watchers.TryGetValue(path, out var watcher) ? watcher : null;
-        //    }
-        //}
-
         public bool Contains(string path) => _watchers.ContainsKey(path);
-
-        //public bool TryGet(string path, out PathWatcher watcher) =>
-        //    _watchers.TryGetValue(path, out watcher);
 
         public void ReadPathes(Action<IEnumerable<string>> readAction)
         {
             using (_lock.Shared())
             {
                 readAction(_watchers.Keys);
+            }
+        }
+
+        public void ChangePath(string oldPath, string newPath)
+        {
+            using (_lock.Exclusive())
+            {
+                if (!_watchers.TryGetValue(oldPath, out var watcher))
+                {
+                    return;
+                }
+                watcher.Reset(newPath);
+                _watchers.Add(newPath, watcher);
+                _watchers.Remove(oldPath);
             }
         }
 
@@ -73,26 +76,6 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
                 }
             }
             return true;
-        }
-
-        public IEnumerable<string> GetAncestorsPathes(string path)
-        {
-            var normalizedPath = path.EndsWith("\\") ? path : path + "\\";
-            using (_lock.Shared())
-            {
-                return _watchers
-                    .Where(fv =>
-                    {
-                        var versionPath = fv.Key;
-                        var isPathMatched =
-                            versionPath.Equals(path)
-                            || versionPath.Equals(normalizedPath)
-                            || versionPath.StartsWith(normalizedPath);
-                        return isPathMatched;
-                    })
-                    .Select(fv => fv.Key)
-                    .ToList();
-            }
         }
 
         public void Dispose()

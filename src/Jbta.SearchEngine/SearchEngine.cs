@@ -39,7 +39,7 @@ namespace Jbta.SearchEngine
             eventReactor.Register(EngineEvent.FileRemovingEnded, a => FileRemovingEnded?.Invoke(a));
             eventReactor.Register(EngineEvent.FileUpdateInitiated, a => FileUpdateInitiated?.Invoke(a));
             eventReactor.Register(EngineEvent.FileUpdateFailed, a => FileUpdateFailed?.Invoke(a));
-            eventReactor.Register(EngineEvent.FilePathChanged, a => FilePathChanged?.Invoke(a));
+            eventReactor.Register(EngineEvent.PathChanged, a => FilePathChanged?.Invoke(a));
             eventReactor.Register(EngineEvent.IndexCleanUpFailed, a => IndexCleanUpFailed?.Invoke(a));
 
             _scheduler.Start();

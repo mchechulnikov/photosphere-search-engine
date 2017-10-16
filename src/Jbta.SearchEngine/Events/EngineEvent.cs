@@ -10,7 +10,7 @@
         FileRemovingEnded,
         FileUpdateInitiated,
         FileUpdateFailed,
-        FilePathChanged,
+        PathChanged,
         IndexCleanUpFailed
     }
 }

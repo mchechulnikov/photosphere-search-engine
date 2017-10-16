@@ -8,7 +8,7 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemPolling
 {
     internal class PathPoller : IDisposable
     {
-        private const int PoolingIntervalMs = 1000;
+        private const int PoolingIntervalMs = 3000;
         private readonly DeadPathDetector _deadPathCleaner;
         private readonly PathWatchersCollection _watchers;
         private readonly Timer _timer;

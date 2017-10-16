@@ -57,7 +57,9 @@ namespace Jbta.SearchEngine
                         new ChangeEventHandler(indexUpdater),
                         new DeleteEventHandler(eventReactor, indexEjector, watchersCollection),
                         new RenameEventHandler(
-                            new FilePathActualizer(eventReactor, filesVersionsRegistry)
+                            eventReactor,
+                            new FilePathActualizer(filesVersionsRegistry),
+                            watchersCollection
                         )
                     )
                 ),
