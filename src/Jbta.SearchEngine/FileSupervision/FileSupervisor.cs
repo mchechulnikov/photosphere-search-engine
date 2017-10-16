@@ -1,47 +1,49 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Jbta.SearchEngine.Events;
+using Jbta.SearchEngine.FileSupervision.FileSystemEventWatching;
+using Jbta.SearchEngine.FileSupervision.FileSystemPolling;
 
 namespace Jbta.SearchEngine.FileSupervision
 {
     internal class FileSupervisor : IFileSupervisor
     {
         private readonly IEventReactor _eventReactor;
-        private readonly PathWatcherFactory _pathWatcherFactory;
-        private readonly WatchersCollection _watchers;
+        private readonly FileSystemEventsProcessor _eventsProcessor;
+        private readonly PathWatchersCollection _watchers;
+        private readonly PathPoller _pathPoller;
 
         public FileSupervisor(
             IEventReactor eventReactor,
-            PathWatcherFactory pathWatcherFactory,
-            WatchersCollection watchers)
+            FileSystemEventsProcessor eventsProcessor,
+            PathWatchersCollection watchers,
+            PathPoller pathPoller)
         {
             _eventReactor = eventReactor;
-            _pathWatcherFactory = pathWatcherFactory;
+            _eventsProcessor = eventsProcessor;
             _watchers = watchers;
+            _pathPoller = pathPoller;
         }
 
         public IEnumerable<string> WatchedPathes => _watchers.Pathes;
 
         public void Watch(string path)
         {
-            var pathWatcher = _pathWatcherFactory.New(path);
+            var pathWatcher = new PathWatcher(path, _eventsProcessor.Add);
             _watchers.Add(path, pathWatcher);
             pathWatcher.Enable();
+            _pathPoller.TryStart();
 
             _eventReactor.React(EngineEvent.PathWatchingStarted, path);
         }
 
         public void Unwatch(string path)
         {
-            var watchersSquad = _watchers.Get(path);
-            if (watchersSquad == null)
+            if (!_watchers.TryRemove(path))
             {
                 return;
             }
-
-            watchersSquad.Dispose();
-            _watchers.Remove(path);
-
+            _pathPoller.TryStop();
             _eventReactor.React(EngineEvent.PathWatchingEnded, path);
         }
 
@@ -53,6 +55,8 @@ namespace Jbta.SearchEngine.FileSupervision
         public void Dispose()
         {
             _watchers?.Dispose();
+            _eventsProcessor?.Dispose();
+            _pathPoller?.Dispose();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.Events
@@ -29,7 +30,7 @@ namespace Jbta.SearchEngine.Events
             }
 
             var eventArgs = CastParams(e, args);
-            handler.Invoke(eventArgs);
+            Task.Run(() => handler.Invoke(eventArgs));
         }
 
         private SearchEngineEventArgs CastParams(EngineEvent e, object[] args)

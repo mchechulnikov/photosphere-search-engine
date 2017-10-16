@@ -8,13 +8,15 @@ namespace Jbta.SearchEngine.IntegrationTests.Utils
     {
         private bool _isDeleted;
 
-        public TestFolder()
+        public TestFolder(string folder = ".")
         {
-            Path = $".\\test-{Guid.NewGuid()}";
+            Path = $"{folder}\\test-{Guid.NewGuid()}";
             Directory.CreateDirectory(Path);
         }
 
         public string Path { get; private set; }
+
+        public DateTime LastWriteTimeUtc => new DirectoryInfo(Path).LastWriteTimeUtc;
 
         public void Rename(string newName)
         {
@@ -51,9 +53,6 @@ namespace Jbta.SearchEngine.IntegrationTests.Utils
                     // ignored
                 }
             }
-            
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
         }
 
         private string GetNewPath(string newName)

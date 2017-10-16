@@ -42,7 +42,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 using (new TestFile("foo", folderPath))
                 {
                     engine.Add(folder.Path);
-                    await Task.Delay(300);
+                    await Task.Delay(100);
 
                     engine.PathWatchingEnded += args =>
                     {
@@ -76,7 +76,6 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                     };
 
                     file.Delete();
-
                     folder.Delete();
 
                     Assert.True(await tcs.Task);

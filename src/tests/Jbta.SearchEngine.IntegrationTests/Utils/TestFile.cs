@@ -53,7 +53,21 @@ namespace Jbta.SearchEngine.IntegrationTests.Utils
         {
             var newPath = new FileInfo(Path).DirectoryName;
             newPath += newPath.EndsWith("\\") ? newName : "\\" + newName;
-            File.Move(Path, newPath);
+
+            var isRenamed = false;
+            while (!isRenamed)
+            {
+                try
+                {
+                    File.Move(Path, newPath);
+                    isRenamed = true;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
             Path = newPath;
         }
 
@@ -62,7 +76,20 @@ namespace Jbta.SearchEngine.IntegrationTests.Utils
             folderPath = folderPath.Replace(".\\", string.Empty);
             var directoryPath = new FileInfo(Path).Directory.Name;
             var newFilePath = Path.Replace(directoryPath, folderPath);
-            File.Move(Path, newFilePath);
+
+            var isMoved = false;
+            while (!isMoved)
+            {
+                try
+                {
+                    File.Move(Path, newFilePath);
+                    isMoved = true;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
             Path = newFilePath;
         }
 

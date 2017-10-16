@@ -2,20 +2,17 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.Utils.Extensions;
 
 namespace Jbta.SearchEngine.FileVersioning
 {
     internal class FilesVersionsRegistry
     {
-        private readonly IEventReactor _eventReactor;
         private readonly IDictionary<string, FileVersionsCollection> _fileVersions;
         private readonly ReaderWriterLockSlim _lock;
 
-        public FilesVersionsRegistry(IEventReactor eventReactor)
+        public FilesVersionsRegistry()
         {
-            _eventReactor = eventReactor;
             _fileVersions = new Dictionary<string, FileVersionsCollection>();
             _lock = new ReaderWriterLockSlim();
         }
@@ -165,8 +162,6 @@ namespace Jbta.SearchEngine.FileVersioning
                     _fileVersions.Remove(oldPath);
                 }
             }
-
-            _eventReactor.React(EngineEvent.FilePathChanged, oldPath, newPath);
         }
     }
 }

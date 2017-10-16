@@ -30,13 +30,13 @@ namespace Jbta.SearchEngine.FileIndexing
             }
         }
 
-        public void EjectFile(string filePath)
-        {
-            if (_filesVersionsRegistry.Contains(filePath))
-            {
-                EjectFileFromIndex(filePath);
-            }
-        }
+        //public void EjectFile(string filePath)
+        //{
+        //    if (_filesVersionsRegistry.Contains(filePath))
+        //    {
+        //        EjectFileFromIndex(filePath);
+        //    }
+        //}
 
         private void EjectFileFromIndex(string filePath)
         {
@@ -55,7 +55,7 @@ namespace Jbta.SearchEngine.FileIndexing
             });
         }
 
-        private void EjectDirectory(string directoryPath)
+        public void EjectDirectory(string directoryPath)
         {
             var filesPathes = _filesVersionsRegistry.GetAliveFiles(directoryPath);
             foreach (var filePath in filesPathes)

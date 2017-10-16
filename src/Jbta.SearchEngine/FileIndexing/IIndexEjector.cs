@@ -3,6 +3,5 @@
     internal interface IIndexEjector
     {
         void Eject(string path);
-        void EjectFile(string filePath);
     }
 }

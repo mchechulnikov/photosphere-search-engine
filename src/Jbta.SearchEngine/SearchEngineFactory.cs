@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileIndexing;
 using Jbta.SearchEngine.FileParsing;
 using Jbta.SearchEngine.FileSupervision;
+using Jbta.SearchEngine.FileSupervision.FileSystemEventWatching;
+using Jbta.SearchEngine.FileSupervision.FileSystemEventWatching.FileSystemEventsHandlers;
+using Jbta.SearchEngine.FileSupervision.FileSystemPolling;
 using Jbta.SearchEngine.FileVersioning;
 using Jbta.SearchEngine.FileVersioning.Services;
 using Jbta.SearchEngine.Scheduling;
@@ -39,21 +43,33 @@ namespace Jbta.SearchEngine
 
             var eventReactor = new EventReactor();
             var fileParserProvider = new FileParserProvider(settings);
-            var filesVersionsRegistry = new FilesVersionsRegistry(eventReactor);
+            var filesVersionsRegistry = new FilesVersionsRegistry();
             var index = new Index.Index();
             var indexer = new FileIndexer(eventReactor, fileParserProvider, index, filesVersionsRegistry, settings);
             var indexEjector = new IndexEjector(eventReactor, filesVersionsRegistry);
             var indexUpdater = new IndexUpdater(eventReactor, indexer, filesVersionsRegistry);
-            var watchersCollection = new WatchersCollection();
-            var fileWatcherFactory = new PathWatcherFactory(
+            var watchersCollection = new PathWatchersCollection();
+            var fileSupervisor = new FileSupervisor(
                 eventReactor,
-                indexer,
-                indexUpdater,
-                indexEjector,
-                new FilePathActualizer(filesVersionsRegistry),
-                watchersCollection
+                new FileSystemEventsProcessor(
+                    new FileSystemEventHandler(
+                        new CreateEventHandler(indexer),
+                        new ChangeEventHandler(indexUpdater),
+                        new DeleteEventHandler(eventReactor, indexEjector, watchersCollection),
+                        new RenameEventHandler(
+                            new FilePathActualizer(eventReactor, filesVersionsRegistry)
+                        )
+                    )
+                ),
+                watchersCollection,
+                new PathPoller(
+                    new DeadPathDetector(
+                        watchersCollection,
+                        new PathRemover(eventReactor, watchersCollection, indexEjector)
+                    ),
+                    watchersCollection
+                )
             );
-            var fileSupervisor = new FileSupervisor(eventReactor, fileWatcherFactory, watchersCollection);
             var searcher = new Searcher(index);
             var indexCleaner = new IndexCleaner(eventReactor, index, filesVersionsRegistry, settings);
             var scheduler = new Scheduler(indexCleaner, settings);
