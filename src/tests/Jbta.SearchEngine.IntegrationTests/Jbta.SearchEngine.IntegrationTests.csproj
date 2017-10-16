@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileParsing\StandartFileParserTests.cs" />
-    <Compile Include="FileSupervision\WatcherTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FileIndexingEventsTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FilePathChangedEventTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FileRemovingEndedEventTests.cs" />
