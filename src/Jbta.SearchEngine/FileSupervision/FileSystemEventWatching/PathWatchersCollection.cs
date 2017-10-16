@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Jbta.SearchEngine.Utils.Extensions;
@@ -50,13 +51,20 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
         {
             using (_lock.Exclusive())
             {
-                if (!_watchers.TryGetValue(oldPath, out var watcher))
+                var kvs = _watchers.Where(w => w.Key.StartsWith(oldPath)).ToList();
+                if (!kvs.Any())
                 {
                     return;
                 }
-                watcher.Reset(newPath);
-                _watchers.Add(newPath, watcher);
-                _watchers.Remove(oldPath);
+                foreach (var kv in kvs)
+                {
+                    var (oldWatcherPath, watcher) = (kv.Key, kv.Value);
+                    var newWatcherPath = newPath + oldWatcherPath.Replace(oldPath, string.Empty);
+
+                    watcher.Reset(newWatcherPath);
+                    _watchers.Add(newWatcherPath, watcher);
+                    _watchers.Remove(oldWatcherPath);
+                }
             }
         }
 
@@ -64,15 +72,19 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
         {
             using (_lock.SharedIntentExclusive())
             {
-                if (!_watchers.TryGetValue(path, out var watcher))
+                var kvs = _watchers.Where(w => w.Key.StartsWith(path)).ToList();
+                if (!kvs.Any())
                 {
                     return false;
                 }
-
-                using (_lock.Exclusive())
+                foreach (var kv in kvs)
                 {
-                    watcher.Dispose();
-                    _watchers.Remove(path);
+                    var (watcherPath, watcher) = (kv.Key, kv.Value);
+                    using (_lock.Exclusive())
+                    {
+                        watcher.Dispose();
+                        _watchers.Remove(watcherPath);
+                    }
                 }
             }
             return true;

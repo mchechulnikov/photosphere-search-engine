@@ -41,15 +41,26 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
 
         private void Initialize(string path)
         {
+            string parentDirectoryPath, directoryName;
             if (FileSystem.IsDirectory(path))
             {
                 _mainWatcher = NewDirectoryContentWatcher(path);
-                _additionalWatcher = NewDirectoryWatcher(path);
+                var directoryInfo = new DirectoryInfo(path);
+                parentDirectoryPath = directoryInfo.Parent?.FullName;
+                directoryName = directoryInfo.Name;
             }
             else
             {
                 _mainWatcher = NewFileWatcher(path);
+                var fileInfo = new FileInfo(path);
+                parentDirectoryPath = fileInfo.Directory.Parent?.FullName;
+                directoryName = fileInfo.Directory.Name;
             }
+            if (string.IsNullOrWhiteSpace(parentDirectoryPath) || string.IsNullOrWhiteSpace(directoryName))
+            {
+                return;
+            }
+            _additionalWatcher = NewDirectoryWatcher(parentDirectoryPath, directoryName);
         }
 
         private FileSystemWatcher NewDirectoryContentWatcher(string path)
@@ -68,19 +79,13 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
             return watcher;
         }
 
-        private FileSystemWatcher NewDirectoryWatcher(string path)
+        private FileSystemWatcher NewDirectoryWatcher(string parentDirectoryPath, string directoryName)
         {
-            var parentDirectoryPath = FileSystem.GetParentDirectoryPathByDirectoryPath(path);
-            if (parentDirectoryPath == null)
-            {
-                return null;
-            }
-
             var watcher = new FileSystemWatcher
             {
                 InternalBufferSize = FileSystemWatcherBufferSize,
                 Path = parentDirectoryPath,
-                Filter = new DirectoryInfo(path).Name,
+                Filter = directoryName,
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName
             };
             watcher.Deleted += (source, e) => { ProcessEvent(e, ChangeType.Deleted); };
@@ -95,7 +100,7 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemEventWatching
                 InternalBufferSize = FileSystemWatcherBufferSize,
                 Path = FileSystem.GetDirectoryPathByFilePath(path),
                 Filter = new FileInfo(path).Name,
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName
             };
             watcher.Changed += (source, e) => { ProcessEvent(e, ChangeType.Changed); };
             watcher.Created += (source, e) => { ProcessEvent(e, ChangeType.Created); };

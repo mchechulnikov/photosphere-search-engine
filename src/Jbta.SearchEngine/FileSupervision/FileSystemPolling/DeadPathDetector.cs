@@ -20,7 +20,7 @@ namespace Jbta.SearchEngine.FileSupervision.FileSystemPolling
         {
             foreach (var path in _watchers.Pathes)
             {
-                if (FileSystem.IsExistingPath(path) && !FileSystem.IsAccessableDirectory(path))
+                if (FileSystem.IsRemovedButLocked(path))
                 {
                     _pathRemover.Remove(path);
                 }

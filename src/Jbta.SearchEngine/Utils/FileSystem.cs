@@ -13,6 +13,9 @@ namespace Jbta.SearchEngine.Utils
         public static bool IsDirectory(string path) =>
             File.GetAttributes(path).HasFlag(FileAttributes.Directory);
 
+        public static bool IsRemovedButLocked(string path) =>
+            IsExistingPath(path) && !IsAccessableDirectory(path);
+
         public static string GetDirectoryPathByFilePath(string filePath) =>
             new FileInfo(filePath).DirectoryName;
 
