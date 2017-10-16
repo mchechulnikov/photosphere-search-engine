@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
-using Jbta.SearchEngine.Events;
-using Jbta.SearchEngine.Events.Args;
 using Jbta.SearchEngine.IntegrationTests.Resources;
 using Jbta.SearchEngine.IntegrationTests.Utils;
+using Jbta.SearchEngine.IntegrationTests.Utils.Extensions;
 using Xunit;
 
 namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
@@ -20,7 +18,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
             var engine = SearchEngineFactory.New();
             var tcs = new TaskCompletionSource<bool>();
 
-            AddHandler(engine, eventName, args =>
+            engine.AddHandler(eventName, args =>
             {
                 tcs.TrySetResult(Path.GetFullPath(filePath) == args.Path);
             });
@@ -44,7 +42,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 engine.Add(filePath);
                 await Task.Delay(100);
 
-                AddHandler(engine, eventName, args =>
+                engine.AddHandler(eventName, args =>
                 {
                     tcs.TrySetResult(Path.GetFullPath(filePath) == args.Path);
                 });
@@ -78,7 +76,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 engine.Add(folderPath);
                 await Task.Delay(100);
 
-                AddHandler(engine, eventName, args =>
+                engine.AddHandler(eventName, args =>
                 {
                     tcs.TrySetResult(false);
                 });
@@ -103,7 +101,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                 engine.Add(folderPath);
                 await Task.Delay(100);
 
-                AddHandler(engine, eventName, args =>
+                engine.AddHandler(eventName, args =>
                 {
                     tcs.TrySetResult(Path.GetFullPath($"{folderPath}\\{fileName}") == args.Path);
                 });
@@ -137,7 +135,7 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
                             engine.Add(destFolderPath);
                             await Task.Delay(100);
 
-                            AddHandler(engine, eventName, args =>
+                            engine.AddHandler(eventName, args =>
                             {
                                 tcs.TrySetResult(Path.GetFullPath($"{destFolderPath}\\{fileName}") == args.Path);
                             });
@@ -151,13 +149,74 @@ namespace Jbta.SearchEngine.IntegrationTests.SearchEngineTests.EventsTests
             }
         }
 
-        private static void AddHandler(ISearchEngine engine, string eventName, Action<SearchEngineEventArgs> action)
+        [Theory]
+        [InlineData(nameof(ISearchEngine.FileIndexingStarted))]
+        [InlineData(nameof(ISearchEngine.FileIndexingEnded))]
+        public async void FileIndexingEvents_IndexedFileMovedToSubFolder_Raised(string eventName)
         {
-            var eventInfo = engine.GetType().GetEvent(eventName);
-            eventInfo.AddEventHandler(engine, (SearchEngineEventHandler)(args =>
+            var engine = SearchEngineFactory.New();
+            var tcs = new TaskCompletionSource<bool>();
+
+            using (var folder = new TestFolder())
             {
-                action(args);
-            }));
+                var folderPath = folder.Path;
+                using (var file = new TestFile("foo", folderPath))
+                {
+                    var fileName = file.Name;
+                    using (var subFolder = new TestFolder(folderPath))
+                    {
+                        var subFolderPath = subFolder.Path;
+
+                        engine.Add(folderPath);
+                        await Task.Delay(300);
+
+                        engine.AddHandler(eventName, args =>
+                        {
+                            var expectedPath = Path.GetFullPath($"{subFolderPath}\\{fileName}");
+                            tcs.TrySetResult(expectedPath == args.Path);
+                        });
+
+                        file.Move(subFolderPath);
+
+                        Assert.True(await tcs.Task);
+                    }
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(nameof(ISearchEngine.FileIndexingStarted))]
+        [InlineData(nameof(ISearchEngine.FileIndexingEnded))]
+        public async void FileIndexingEvents_NotIndexedFileMovedToSubFolder_Raised(string eventName)
+        {
+            var engine = SearchEngineFactory.New();
+            var tcs = new TaskCompletionSource<bool>();
+
+            using (var folder = new TestFolder())
+            {
+                var folderPath = folder.Path;
+                using (var file = new TestFile("foo", folderPath))
+                {
+                    var fileName = file.Name;
+                    using (var subFolder = new TestFolder(folderPath))
+                    {
+                        var subFolderPath = subFolder.Path;
+
+                        engine.Add(subFolderPath);
+                        await Task.Delay(300);
+
+                        engine.AddHandler(eventName, args =>
+                        {
+                            var expectedPath = Path.GetFullPath($"{subFolderPath}\\{fileName}");
+                            tcs.TrySetResult(expectedPath == args.Path);
+                        });
+
+                        file.Move(subFolderPath);
+
+                        Assert.True(await tcs.Task);
+                    }
+                }
+            }
         }
     }
 }

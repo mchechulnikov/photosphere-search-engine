@@ -49,8 +49,7 @@
     <Compile Include="FileParsing\StandartFileParserTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FileIndexingEventsTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FilePathChangedEventTests.cs" />
-    <Compile Include="SearchEngineTests\EventsTests\FileRemovingEndedEventTests.cs" />
-    <Compile Include="SearchEngineTests\EventsTests\FileRemovingStartedEventTests.cs" />
+    <Compile Include="SearchEngineTests\EventsTests\FileRemovingEventsTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\FileUpdateInitiatedEventTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\PathWatchingEndedEventTests.cs" />
     <Compile Include="SearchEngineTests\EventsTests\PathWatchingStartedEventTests.cs" />
@@ -62,6 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\TestTextFiles.cs" />
     <Compile Include="SearchEngineTests\EncodingsTest.cs" />
+    <Compile Include="Utils\Extensions\SearchEngineExtensions.cs" />
     <Compile Include="Utils\TestFile.cs" />
     <Compile Include="Utils\TestFolder.cs" />
   </ItemGroup>
