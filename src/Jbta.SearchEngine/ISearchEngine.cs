@@ -82,7 +82,7 @@ namespace Jbta.SearchEngine
         event SearchEngineEventHandler FileUpdateFailed;
 
         /// <summary>
-        /// Raises when file path was changed
+        /// Raises when path was changed
         /// </summary>
         event SearchEngineEventHandler FilePathChanged;
 
