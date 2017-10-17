@@ -33,6 +33,22 @@ namespace Jbta.SearchEngine.FileVersioning
             }
         }
 
+        public bool Any()
+        {
+            using (_lock.Shared())
+            {
+                return _items.Any();
+            }
+        }
+
+        public bool AnyAlive()
+        {
+            using (_lock.Shared())
+            {
+                return _items.Any(i => !i.IsDead);
+            }
+        }
+
         public void UpdateFilePath(string newPath)
         {
             using (_lock.SharedIntentExclusive())

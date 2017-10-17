@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.FileVersioning;
@@ -27,11 +26,16 @@ namespace Jbta.SearchEngine.FileIndexing
             }
             else
             {
-                var filesPathes = _filesVersionsRegistry.Files.Where(p => p.StartsWith(path)).ToList();
-                foreach (var filePath in filesPathes)
-                {
-                    EjectFileFromIndex(filePath);
-                }
+                EjectDirectory(path);
+            }
+        }
+
+        private void EjectDirectory(string directoryPath)
+        {
+            var filesPathes = _filesVersionsRegistry.GetAliveFiles(directoryPath);
+            foreach (var filePath in filesPathes)
+            {
+                EjectFileFromIndex(filePath);
             }
         }
 

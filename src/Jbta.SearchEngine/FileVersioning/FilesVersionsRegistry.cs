@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
-using Jbta.SearchEngine.Events;
 using Jbta.SearchEngine.Utils.Extensions;
 
 namespace Jbta.SearchEngine.FileVersioning
 {
     internal class FilesVersionsRegistry
     {
-        private readonly IEventReactor _eventReactor;
         private readonly IDictionary<string, FileVersionsCollection> _fileVersions;
         private readonly ReaderWriterLockSlim _lock;
 
-        public FilesVersionsRegistry(IEventReactor eventReactor)
+        public FilesVersionsRegistry()
         {
-            _eventReactor = eventReactor;
             _fileVersions = new Dictionary<string, FileVersionsCollection>();
             _lock = new ReaderWriterLockSlim();
         }
@@ -38,17 +36,48 @@ namespace Jbta.SearchEngine.FileVersioning
             }
         }
 
+        public IEnumerable<string> GetAliveFiles(string path)
+        {
+            var normalizedPath = path.EndsWith("\\") ? path : path + "\\";
+            using (_lock.Shared())
+            {
+                return _fileVersions
+                    .Where(fv =>
+                    {
+                        var versionPath = fv.Key;
+                        var isPathMatched =
+                            versionPath.Equals(path)
+                            || versionPath.Equals(normalizedPath)
+                            || versionPath.StartsWith(normalizedPath);
+                        return isPathMatched && fv.Value.AnyAlive();
+                    })
+                    .Select(fv => fv.Key)
+                    .ToList();
+            }
+        }
+
         public IReadOnlyCollection<FileVersion> RemoveDeadVersions()
         {
             var result = new HashSet<FileVersion>();
-            using (_lock.Shared())
+            using (_lock.SharedIntentExclusive())
             {
-                foreach (var collection in _fileVersions.Values)
+                var versions = _fileVersions.ToDictionary(k => k.Key, v => v.Value);
+                foreach (var kv in versions)
                 {
+                    var collection = kv.Value;
                     var deadVersions = collection.RemoveDeadVersions();
                     foreach (var deadVersion in deadVersions)
                     {
                         result.Add(deadVersion);
+                    }
+
+                    using (_lock.Exclusive())
+                    {
+                        if (collection.Any())
+                        {
+                            continue;
+                        }
+                        _fileVersions.Remove(kv.Key);
                     }
                 }
                 return result;
@@ -132,8 +161,6 @@ namespace Jbta.SearchEngine.FileVersioning
                     _fileVersions.Remove(oldPath);
                 }
             }
-
-            _eventReactor.React(EngineEvent.FilePathChanged, oldPath, newPath);
         }
     }
 }

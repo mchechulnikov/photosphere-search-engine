@@ -15,7 +15,7 @@ namespace Jbta.SearchEngine
         private readonly IIndexEjector _indexEjector;
         private readonly IFileSupervisor _supervisor;
         private readonly ISearcher _searcher;
-        private readonly ISheduller _sheduller;
+        private readonly IScheduler _scheduler;
 
         public SearchEngine(
             EventReactor eventReactor,
@@ -23,26 +23,30 @@ namespace Jbta.SearchEngine
             IIndexEjector indexEjector,
             IFileSupervisor supervisor,
             ISearcher searcher,
-            ISheduller sheduller)
+            IScheduler scheduler)
         {
             _indexer = indexer;
             _indexEjector = indexEjector;
             _supervisor = supervisor;
             _searcher = searcher;
-            _sheduller = sheduller;
+            _scheduler = scheduler;
 
+            eventReactor.Register(EngineEvent.PathWatchingStarted, a => PathWatchingStarted?.Invoke(a));
+            eventReactor.Register(EngineEvent.PathWatchingEnded, a => PathWatchingEnded?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexingStarted, a => FileIndexingStarted?.Invoke(a));
             eventReactor.Register(EngineEvent.FileIndexingEnded, a => FileIndexingEnded?.Invoke(a));
             eventReactor.Register(EngineEvent.FileRemovingStarted, a => FileRemovingStarted?.Invoke(a));
             eventReactor.Register(EngineEvent.FileRemovingEnded, a => FileRemovingEnded?.Invoke(a));
             eventReactor.Register(EngineEvent.FileUpdateInitiated, a => FileUpdateInitiated?.Invoke(a));
             eventReactor.Register(EngineEvent.FileUpdateFailed, a => FileUpdateFailed?.Invoke(a));
-            eventReactor.Register(EngineEvent.FilePathChanged, a => FilePathChanged?.Invoke(a));
+            eventReactor.Register(EngineEvent.PathChanged, a => FilePathChanged?.Invoke(a));
             eventReactor.Register(EngineEvent.IndexCleanUpFailed, a => IndexCleanUpFailed?.Invoke(a));
 
-            _sheduller.Start();
+            _scheduler.Start();
         }
 
+        public event SearchEngineEventHandler PathWatchingStarted;
+        public event SearchEngineEventHandler PathWatchingEnded;
         public event SearchEngineEventHandler FileIndexingStarted;
         public event SearchEngineEventHandler FileIndexingEnded;
         public event SearchEngineEventHandler FileRemovingStarted;
@@ -113,7 +117,7 @@ namespace Jbta.SearchEngine
         public void Dispose()
         {
             _supervisor?.Dispose();
-            _sheduller?.Dispose();
+            _scheduler?.Dispose();
         }
     }
 }

@@ -1,5 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/ny3vxn69eht1j00p?svg=true)](https://ci.appveyor.com/project/sunloving/jbta)
 
+Текущая версия [`0.0.2.x`](release-notes/0.0.2.x.md)
+
 # Тестовое задание (от 18.09.2017)
 Библиотека, реализующая средства индексации текстовых файлов по словам. <br/>
 Функционал решения:
@@ -42,7 +44,7 @@
 * `Jbta.SearchEngine.IntegrationTests` — набор тестов на библиотеку.
 * `Jbta.SearchEngine.DemoApp` — простейшее демо-приложение, позволяющее добавлять файлы и каталоги и осуществлять простые поисковые запросы.
 
-Библиотека реализована на базе .NET Framework 4.7. 
+Библиотека реализована на базе .NET Framework 4.7.
 
 ### Зависимости
 NuGet пакеты:
@@ -51,7 +53,8 @@ NuGet пакеты:
 
 Внедрённые исходники (vendored code), которые неудобно доставлять NuGet-пакетами:
 * https://github.com/VSadov/NonBlocking — lock-free реализация `ConcurrentDictionary`;
-* https://github.com/khalidsalomao/SimpleHelpers.Net — удобная обёртка над `UDE.CSharp`.
+* https://github.com/khalidsalomao/SimpleHelpers.Net — удобная обёртка над `UDE.CSharp`;
+* https://github.com/Microsoft/vscode-filewatcher-windows — механизм консолидации событий от `FileSystemWatcher` из Visual Studio Code (используется частично).
 
 Писалось и собиралось в Visual Studio 2017, тесты запускались через R# и xUnit Console Runner.
 
@@ -85,12 +88,16 @@ var isRemoved = searchEngine.Remove(pathToFolderOrFile);
 
 #### События
 ``` C#
-searchEngine.FileIndexingStarted += args => Console.WriteLine($"File {args.FilePath} indexing is started");
-searchEngine.FileIndexingEnded += args => Console.WriteLine($"File {args.FilePath} indexing is ended");
-searchEngine.FileRemovingStarted += args => Console.WriteLine($"File {args.FilePath} removing is started");
-searchEngine.FileRemovingEnded += args => Console.WriteLine($"File {args.FilePath} removing is ended");
-searchEngine.FileUpdateInitiated += args => Console.WriteLine($"File {args.FilePath} update is started");
-searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.FilePath} path is changed");
+searchEngine.FileIndexingStarted += args => Console.WriteLine($"File {args.Path} indexing is started");
+searchEngine.FileIndexingEnded += args => Console.WriteLine($"File {args.Path} indexing is ended");
+searchEngine.FileRemovingStarted += args => Console.WriteLine($"File {args.Path} removing is started");
+searchEngine.FileRemovingEnded += args => Console.WriteLine($"File {args.Path} removing is ended");
+searchEngine.FileUpdateInitiated += args => Console.WriteLine($"File {args.Path} update is started");
+searchEngine.FilePathChanged += args => Console.WriteLine($"File {args.Path} path is changed");
+searchEngine.PathWatchingStarted += args => Console.WriteLine($"Path {args.Path} added to watcher");
+searchEngine.PathWatchingEnded += args => Console.WriteLine($"Path {args.Path} removed from watcher");
+searchEngine.FileUpdateFailed += args => Console.WriteLine($"Update of {args.Path} failed: {args.Error.Message}");
+searchEngine.IndexCleanUpFailed += args => Console.WriteLine($"Index clean up failed: {args.Error.Message}");
 ```
 
 #### Поиск
@@ -115,9 +122,9 @@ public class CsFileParser : IFileParser
     }
 }
 ```
-и передать его в объект настроек фабрики 
+и передать его в объект настроек фабрики
 ``` C#
-var settings = new SearchEngineSettings 
+var settings = new SearchEngineSettings
 {
   FileParsers = new [] {new CsFileParser()}
 }
@@ -132,8 +139,9 @@ var searchEngine = SearchEngineFactory.New();
 * Only files — если отмечен, то осуществляется поиск только файлов; если не отмечен, то осуществляется поиск всех вхождений запроса в файл;
 * Whole word — если отмечен, то осуществляется поиск по полному вхождению слова, а не по префиксу.
 
-Список результатов лимитирован top 500, т.к. при очень большом количестве вхождений, добавление всех результатов в список становится медленным.
+Список результатов лимитирован top 500, т.к. при очень большом количестве вхождений, добавление всех результатов в список становится медленным. UI ищет только для строк длины >2 (в библиотеки на это нет ограничений).
 
 ## Куда можно двигаться дальше?
 * Персистентность. Для быстрого сохранения индекса на диск и загрузки с диска может потребоваться реорганизация физического представляения префиксного дерева в памяти: перейти от space-spare структуры к хранению в двух массивах (т.н. double-array trie). Либо без реорганизации, с помощью рекурсивной сериализации узлов.
 * В случае, если назначение предполагает индексацию больших и при этом меняющихся файлов (логов и т.п.), необходимо реализовать механизм отслеживания начала изменений в файле, чтобы переидексировать только часть файла. Как вариант, файл можно разбить на секции, вычислить дайджесты от секций и сохранить, например, бинарным деревом. Это позволит за логарифмическое время найти секцию, начиная с которой файл изменился. Однако, работать это будет только если файл меняется путём дописывания "в хвост" и не меняется в начале файла.
+* Отслеживание удалений в корзину. Потребует взаимодействия с COM-объектами из `Shell32.dll` (под STA тредом).

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Jbta.SearchEngine.Events.Args;
 
 namespace Jbta.SearchEngine.Events
@@ -29,7 +30,7 @@ namespace Jbta.SearchEngine.Events
             }
 
             var eventArgs = CastParams(e, args);
-            handler.Invoke(eventArgs);
+            Task.Run(() => handler.Invoke(eventArgs));
         }
 
         private SearchEngineEventArgs CastParams(EngineEvent e, object[] args)
@@ -39,6 +40,8 @@ namespace Jbta.SearchEngine.Events
                 case EngineEvent.FileIndexingStarted:
                 case EngineEvent.FileRemovingStarted:
                 case EngineEvent.FileUpdateInitiated:
+                case EngineEvent.PathWatchingStarted:
+                case EngineEvent.PathWatchingEnded:
                     if (args.Length != 1)
                     {
                         throw new ArgumentOutOfRangeException(nameof(args), args, "Invalid args count");
@@ -64,7 +67,7 @@ namespace Jbta.SearchEngine.Events
                     }
                     return new SearchEngineEventArgs((string)args[0], (Exception)args[1]);
 
-                case EngineEvent.FilePathChanged:
+                case EngineEvent.PathChanged:
                     if (args.Length != 2)
                     {
                         throw new ArgumentOutOfRangeException(nameof(args), args, "Invalid args count");

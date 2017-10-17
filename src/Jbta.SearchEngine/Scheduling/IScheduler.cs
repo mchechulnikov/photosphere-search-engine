@@ -2,7 +2,7 @@
 
 namespace Jbta.SearchEngine.Scheduling
 {
-    internal interface ISheduller : IDisposable
+    internal interface IScheduler : IDisposable
     {
         void Start();
     }

@@ -50,7 +50,17 @@
     <Compile Include="Events\EventHandlers.cs" />
     <Compile Include="Events\EventReactor.cs" />
     <Compile Include="Events\IEventReactor.cs" />
-    <Compile Include="FileSupervision\FileSystemWatcherFactory.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\FileSystemEventHandler.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\FileSystemEventsHandlers\CreateEventHandler.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\FileSystemEventsHandlers\ChangeEventHandler.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\FileSystemEventsHandlers\DeleteEventHandler.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\FileSystemEventsHandlers\RenameEventHandler.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\FileSystemEventsProcessor.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\PathWatcher.cs" />
+    <Compile Include="FileSupervision\FileSystemEventWatching\PathWatchersCollection.cs" />
+    <Compile Include="FileSupervision\FileSystemPolling\DeadPathDetector.cs" />
+    <Compile Include="FileSupervision\FileSystemPolling\PathPoller.cs" />
+    <Compile Include="FileSupervision\FileSystemPolling\PathRemover.cs" />
     <Compile Include="FileVersioning\FilesVersionsRegistry.cs" />
     <Compile Include="Index\IIndex.cs" />
     <Compile Include="FileIndexing\IIndexEjector.cs" />
@@ -71,7 +81,7 @@
     <Compile Include="SearchEngineFactory.cs" />
     <Compile Include="Searching\ISearcher.cs" />
     <Compile Include="Searching\Searcher.cs" />
-    <Compile Include="Scheduling\ISheduller.cs" />
+    <Compile Include="Scheduling\IScheduler.cs" />
     <Compile Include="Scheduling\Scheduler.cs" />
     <Compile Include="Index\Trie\ITrie.cs" />
     <Compile Include="FileIndexing\IFileIndexer.cs" />
@@ -109,6 +119,9 @@
     <Compile Include="Vendor\NonBlocking\ConcurrentDictionary\DictionaryImpl`3.cs" />
     <Compile Include="Vendor\NonBlocking\Counter\Counter32.cs" />
     <Compile Include="Vendor\NonBlocking\Counter\Counter64.cs" />
+    <Compile Include="Vendor\VsCodeFilewatcher\ChangeType.cs" />
+    <Compile Include="Vendor\VsCodeFilewatcher\EventProcessor.cs" />
+    <Compile Include="Vendor\VsCodeFilewatcher\FileSystemEvent.cs" />
     <Compile Include="WordEntry.cs" />
     <Compile Include="SearchEngineSettings.cs" />
     <Compile Include="SearchEngine.cs" />
@@ -119,6 +132,5 @@
     </None>
     <None Include="Vendor\README.md" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

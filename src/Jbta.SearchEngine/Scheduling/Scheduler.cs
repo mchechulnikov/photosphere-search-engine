@@ -3,7 +3,7 @@ using Jbta.SearchEngine.FileIndexing;
 
 namespace Jbta.SearchEngine.Scheduling
 {
-    internal class Scheduler : ISheduller
+    internal class Scheduler : IScheduler
     {
         private readonly ICleaner _cleaner;
         private readonly Timer _timer;

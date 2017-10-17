@@ -42,6 +42,16 @@ namespace Jbta.SearchEngine
         IEnumerable<string> SearchFiles(string query, bool wholeWord = false);
 
         /// <summary>
+        /// Raised when the watched path was added to engine
+        /// </summary>
+        event SearchEngineEventHandler PathWatchingStarted;
+
+        /// <summary>
+        /// Raises when the watched path was removed form engine
+        /// </summary>
+        event SearchEngineEventHandler PathWatchingEnded;
+
+        /// <summary>
         /// Raises when file starts indexing
         /// </summary>
         event SearchEngineEventHandler FileIndexingStarted;
@@ -72,7 +82,7 @@ namespace Jbta.SearchEngine
         event SearchEngineEventHandler FileUpdateFailed;
 
         /// <summary>
-        /// Raises when file path was changed
+        /// Raises when path was changed
         /// </summary>
         event SearchEngineEventHandler FilePathChanged;
 

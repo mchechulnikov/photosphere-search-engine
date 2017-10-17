@@ -4,9 +4,9 @@ namespace Jbta.SearchEngine.Events.Args
 {
     public class SearchEngineEventArgs : EventArgs
     {
-        public SearchEngineEventArgs(string filePath, Exception exception = null)
+        public SearchEngineEventArgs(string path, Exception exception = null)
         {
-            FilePath = filePath;
+            Path = path;
             Error = exception;
         }
 
@@ -15,7 +15,7 @@ namespace Jbta.SearchEngine.Events.Args
             Error = error;
         }
 
-        public string FilePath { get; }
+        public string Path { get; }
 
         public Exception Error { get; }
     }

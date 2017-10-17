@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -62,10 +63,54 @@ namespace Jbta.SearchEngine.DemoApp.ViewModels.IndexManagement
 
         private void SubscribeOnIndexStateChange()
         {
-            SearchSystem.EngineInstance.FileIndexingStarted += OnStartFileProcessing;
-            SearchSystem.EngineInstance.FileIndexingEnded += OnStopFileProcessing;
-            SearchSystem.EngineInstance.FileRemovingEnded += OnStopFileProcessing;
-            SearchSystem.EngineInstance.FilePathChanged += a => DispatchService.Invoke(RefreshTree);
+            SearchSystem.EngineInstance.PathWatchingStarted += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | Path watching started: {a.Path}");
+                DispatchService.Invoke(RefreshTree);
+            };
+            SearchSystem.EngineInstance.PathWatchingEnded += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | Path watching ended: {a.Path}");
+                DispatchService.Invoke(RefreshTree);
+            };
+            SearchSystem.EngineInstance.FileIndexingStarted += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | File indexing started: {a.Path}");
+                OnStartFileProcessing(a);
+            };
+            SearchSystem.EngineInstance.FileIndexingEnded += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | File indexing ended: {a.Path}");
+                OnStopFileProcessing(a);
+            };
+            SearchSystem.EngineInstance.FileRemovingStarted += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | File removing started: {a.Path}");
+                OnStartFileProcessing(a);
+            };
+            SearchSystem.EngineInstance.FileRemovingEnded += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | File removing ended: {a.Path}");
+                OnStopFileProcessing(a);
+            };
+            SearchSystem.EngineInstance.FilePathChanged += a =>
+            {
+                var args = (FilePathChangedEventArgs) a;
+                Trace.WriteLine($@"{DateTime.Now} | File path changed: old: {args.OldFilePath} new: {args.Path}");
+                DispatchService.Invoke(RefreshTree);
+            };
+            SearchSystem.EngineInstance.FileUpdateInitiated += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | File update initiated: {a.Path}");
+            };
+            SearchSystem.EngineInstance.FileUpdateFailed += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | File update failed: path: {a.Path} error: {a.Error.Message}");
+            };
+            SearchSystem.EngineInstance.IndexCleanUpFailed += a =>
+            {
+                Trace.WriteLine($@"{DateTime.Now} | Index clean up failed: {a.Error.Message}");
+            };
 
             void OnStartFileProcessing(SearchEngineEventArgs a) => DispatchService.Invoke(() =>
             {
