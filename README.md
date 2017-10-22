@@ -128,7 +128,7 @@ var settings = new SearchEngineSettings
 {
   FileParsers = new [] {new CsFileParser()}
 }
-var searchEngine = SearchEngineFactory.New();
+var searchEngine = SearchEngineFactory.New(settings);
 ```
 При разборе `cs` файлов будет применяться `CsFileParser`, вместо стандартного.
 
