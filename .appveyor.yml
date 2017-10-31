@@ -7,9 +7,9 @@ configuration: Debug
 
 environment:
   sourcesFolder: src
-  solutionName: jbta.sln
-  projectName: JBTA
-  
+  solutionName: photosphere-search-engine.sln
+  projectName: Photosphere.SearchEngine
+
 image: Visual Studio 2017
 
 assembly_info:
@@ -25,5 +25,5 @@ before_build:
   - cd ..
 
 build:
-  verbosity: minimal  
+  verbosity: minimal
   project: $(sourcesFolder)\$(solutionName)
