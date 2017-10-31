@@ -1,6 +1,11 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/ny3vxn69eht1j00p?svg=true)](https://ci.appveyor.com/project/sunloving/jbta)
-
 # Photosphere.SearchEngine
+Simple text file indexing library
+
+## Status
+[![Build status](https://ci.appveyor.com/api/projects/status/ny3vxn69eht1j00p?svg=true)](https://ci.appveyor.com/project/sunloving/jbta)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/sunloving/photosphere-di/blob/master/LICENSE)
+
+## About
 The library implements means for text file indexing by words.<br/>
 Features:
 * build search index by files and directories;
