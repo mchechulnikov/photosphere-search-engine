@@ -3,7 +3,13 @@ Simple text file indexing library
 
 ## Status
 [![Build status](https://ci.appveyor.com/api/projects/status/ny3vxn69eht1j00p?svg=true)](https://ci.appveyor.com/project/sunloving/jbta)
+[![NuGet](https://img.shields.io/nuget/v/Photosphere.SearchEngine.svg)](https://www.nuget.org/packages/Photosphere.SearchEngine/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/sunloving/photosphere-di/blob/master/LICENSE)
+
+## Install via NuGet
+```
+PM> Install-Package Photosphere.SearchEngine
+```
 
 ## About
 The library implements means for text file indexing by words.<br/>
