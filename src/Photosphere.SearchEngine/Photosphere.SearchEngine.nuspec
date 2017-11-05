@@ -9,8 +9,8 @@
     <projectUrl>https://github.com/sunloving/photosphere-search-engine</projectUrl>
     <licenseUrl>https://github.com/sunloving/photosphere-search-engine/blob/master/LICENSE</licenseUrl>
     <dependencies>
-      <dependency id="System.Runtime.CompilerServices.Unsafe" />
-      <dependency id="UDE.CSharp" />
+      <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.4.0" />
+      <dependency id="UDE.CSharp" version="1.1.0" />
     </dependencies>
   </metadata>
   <files>
