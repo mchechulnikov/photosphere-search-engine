@@ -49,9 +49,9 @@ Removing of file from index is only marking non actual files versions as dead. R
 
 ## Implementation
 Contians three projects:
-* `Jbta.SearchEngine`
-* `Jbta.SearchEngine.IntegrationTests`
-* `Jbta.SearchEngine.DemoApp`
+* `Photosphere.SearchEngine`
+* `Photosphere.SearchEngine.IntegrationTests`
+* `Photosphere.SearchEngine.DemoApp`
 
 Based on .NET Framework 4.7.
 
