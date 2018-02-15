@@ -48,7 +48,7 @@ Removing of file from index is only marking non actual files versions as dead. R
 * Files count doesn't matter.
 
 ## Implementation
-Contians three projects:
+Contains three projects:
 * `Photosphere.SearchEngine`
 * `Photosphere.SearchEngine.IntegrationTests`
 * `Photosphere.SearchEngine.DemoApp`
